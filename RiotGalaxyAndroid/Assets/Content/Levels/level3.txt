@@ -1,0 +1,8 @@
+﻿description: First battle
+script: zmeyka1-right
+enemyblue: 3
+interval: 3
+enemyred: 5
+interval: 4
+interval: 0,5
+enemygreen: 5

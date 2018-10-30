@@ -1,0 +1,200 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="RiotGalaxy.Factories.BulletFactory">
+    <Position X="4" Y="4.75" Width="1.5" />
+    <InheritanceLine Type="System.Object" FixedToPoint="true">
+      <Path>
+        <Point X="3.75" Y="3.45" />
+        <Point X="3.75" Y="4.375" />
+        <Point X="4.562" Y="4.375" />
+        <Point X="4.562" Y="4.75" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAEAAAARAgAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Factories\BulletFactory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Object">
+    <Position X="3" Y="1" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="RiotGalaxy.Game">
+    <Position X="2.25" Y="4.75" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="RiotGalaxy.Game.GameState" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Game.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <InheritanceLine Type="System.Object" FixedToPoint="true">
+      <Path>
+        <Point X="3.75" Y="3.45" />
+        <Point X="3.75" Y="4.375" />
+        <Point X="3.062" Y="4.375" />
+        <Point X="3.062" Y="4.75" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAgCAAAAAEABgAAgAAAAAAgAlAAAAAAAEiIQACAIA=</HashCode>
+      <FileName>Game.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RiotGalaxy.Level">
+    <Position X="5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIACAAAAAEAAAAABAEAQAAAAAAACAAAAgEAIA=</HashCode>
+      <FileName>Level.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RiotGalaxy.Resource">
+    <Position X="6" Y="4.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="RiotGalaxy.Resource.Attribute" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="RiotGalaxy.Resource.Drawable" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="RiotGalaxy.Resource.Id" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="RiotGalaxy.Resource.Layout" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="RiotGalaxy.Resource.String" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RiotGalaxy.Objects.GameObject">
+    <Position X="7.75" Y="0.5" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="RiotGalaxy.Objects.GameObject.ObjType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Objects\GameObject.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>gAAAIACAAIAAAAACAAAAAAAAABAAAAgAAEAAAEAEQAA=</HashCode>
+      <FileName>Objects\GameObject.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RiotGalaxy.Objects.Bonus">
+    <Position X="7.75" Y="5.75" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="RiotGalaxy.Objects.Bonus.BonusType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Objects\Bonus.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAABAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Objects\Bonus.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RiotGalaxy.Objects.Bullet">
+    <Position X="9.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAAAAIAAAAAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>Objects\Bullet.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RiotGalaxy.Objects.Enemy">
+    <Position X="9.75" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAAAAIAAAAAAAAAAQAAAAAAAAAAAAA=</HashCode>
+      <FileName>Objects\Enemy.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RiotGalaxy.Objects.PlayerShip">
+    <Position X="9.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAIAAABAAAAIEAAAAAAAAAQQAAgAAAEQAAAA=</HashCode>
+      <FileName>Objects\PlayerShip.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RiotGalaxy.GameSFX.SFX">
+    <Position X="11.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SFX\SFX.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RiotGalaxy.Objects.BonusBulletUP">
+    <Position X="7.75" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>Objects\BonusBulletUP.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RiotGalaxy.Objects.EnemySmallBlue">
+    <Position X="11.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAEAAAAA=</HashCode>
+      <FileName>Objects\EnemySmallBlue.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RiotGalaxy.Objects.EnemySmallRed">
+    <Position X="13.25" Y="3" Width="1.5" />
+    <InheritanceLine Type="RiotGalaxy.Objects.Enemy" ManuallyRouted="true" FixedToPoint="true">
+      <Path>
+        <Point X="11.25" Y="4.533" />
+        <Point X="11.25" Y="2.877" />
+        <Point X="11.627" Y="2.877" />
+        <Point X="11.627" Y="2.801" />
+        <Point X="13.938" Y="2.801" />
+        <Point X="13.938" Y="3" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAEAAAAA=</HashCode>
+      <FileName>Objects\EnemySmallRed.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RiotGalaxy.SceneGame">
+    <Position X="15" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAgAEASQgAAAgAIBgAAAAgAMAAFgBCAgFAwIAA=</HashCode>
+      <FileName>SceneGame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RiotGalaxy.MainActivity">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAACAAACAAAAAAAgAAAAE=</HashCode>
+      <FileName>MainActivity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RiotGalaxy.SceneMainMenu">
+    <Position X="16.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEIAAABAAAIAA=</HashCode>
+      <FileName>SceneMainMenu.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RiotGalaxy.SceneWin">
+    <Position X="16.75" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEIAAABAAAIAA=</HashCode>
+      <FileName>SceneWin.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RiotGalaxy.SceneGameOver">
+    <Position X="16.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEIAAABAAAIAA=</HashCode>
+      <FileName>SceneGameOver.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

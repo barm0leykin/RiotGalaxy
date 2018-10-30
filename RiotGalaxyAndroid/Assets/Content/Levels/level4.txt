@@ -1,0 +1,9 @@
+﻿description: Hive
+script: zmeyka1-left
+totalenemies: 25
+enemyblue: 5
+enemygreen: 5
+enemyred: 5
+script: zmeyka1-right
+enemyblue: 5
+enemyred: 5

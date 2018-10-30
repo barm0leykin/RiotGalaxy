@@ -1,0 +1,5 @@
+point: 3 9	
+point: 3 3
+point: 5 3
+point: 5 7
+point: 8 8

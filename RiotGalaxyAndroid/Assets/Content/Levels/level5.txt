@@ -1,0 +1,24 @@
+﻿description: Red fear
+
+script: zmeyka1-left
+
+enemygreen: 5
+
+interval: 2
+enemyred: 10
+
+interval: 4,5
+interval: 0,5
+enemyblue: 5
+script: zmeyka1-right
+enemyblue: 5
+
+interval: 2
+enemyred: 10
+
+interval: 4
+interval: 1
+enemyred: 5
+
+interval: 1
+enemygreen: 2

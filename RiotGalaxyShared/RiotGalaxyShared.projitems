@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>9561693e-5b39-4623-8fd9-702704080f5e</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>RiotGalaxy</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)App\ApplicationDelegate.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\Command.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\CommandsWeapon.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\UnitCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameEventDirector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\HUD.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LvlEventDirector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Factories\BulletFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\CutScene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\Bonus\Bonus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\Bonus\BonusStar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\ObjBehavior\ObjBehDraw.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\TriggerObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\Console.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\Weapons\ClusterBomb.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\Weapons\Laser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\Weapons\Shell.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\Weapons\Slug.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\FileUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\Options.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GamePlay.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Hive.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\InputHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\MyButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\Level.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\Bonus\BonusBulletUP.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\Bonus\BonusHpUp.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\Bonus\BonusNukeBomb.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\Enemy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\EnemySmallBlue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\EnemySmallGreen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\EnemySmallRed.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\EnemySmallScout.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\GameObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\ObjBehavior\AIState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\ObjBehavior\BehAI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\ObjBehavior\ObjBehCollision.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\ObjBehavior\ObjBehMove.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\ObjBehavior\ObjBehPlayerMove.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\ObjBehavior\ObjBehShoot.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\ObjBehavior\Route.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\PlayerShip.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\Weapons\Bullet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\Weapons\Weapon.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Player.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SceneGame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SceneLose.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SceneMainMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SceneNextLevel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SceneWin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SFX\SFX.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SFX\SfxBlast.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SFX\SfxGalaxy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\Sprite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\SpriteLoader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\Timer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\VectorMath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)World.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)App\Page1.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2037
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{790EEEC2-A294-4727-99D2-6612F5DA87BB}"
+	ProjectSection(SolutionItems) = preProject
+		RiotGalaxyShared\_описание.txt = RiotGalaxyShared\_описание.txt
+		features.txt = features.txt
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RiotGalaxyAndroid", "RiotGalaxyAndroid\RiotGalaxyAndroid.csproj", "{91FDBA9A-303A-446D-A285-AE0B8F1192E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RiotGalaxyDLL", "RiotGalaxyDLL\RiotGalaxyDLL.csproj", "{49A86D6E-CBFE-4C15-9396-15B643F205B6}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "RiotGalaxy", "RiotGalaxyShared\RiotGalaxy.shproj", "{9561693E-5B39-4623-8FD9-702704080F5E}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		RiotGalaxyShared\RiotGalaxyShared.projitems*{91fdba9a-303a-446d-a285-ae0b8f1192e7}*SharedItemsImports = 4
+		RiotGalaxyShared\RiotGalaxyShared.projitems*{9561693e-5b39-4623-8fd9-702704080f5e}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{91FDBA9A-303A-446D-A285-AE0B8F1192E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91FDBA9A-303A-446D-A285-AE0B8F1192E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91FDBA9A-303A-446D-A285-AE0B8F1192E7}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{91FDBA9A-303A-446D-A285-AE0B8F1192E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91FDBA9A-303A-446D-A285-AE0B8F1192E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91FDBA9A-303A-446D-A285-AE0B8F1192E7}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{49A86D6E-CBFE-4C15-9396-15B643F205B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49A86D6E-CBFE-4C15-9396-15B643F205B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49A86D6E-CBFE-4C15-9396-15B643F205B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49A86D6E-CBFE-4C15-9396-15B643F205B6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {77728CEE-DEF6-4F57-9E40-FC61CE2FCA03}
+	EndGlobalSection
+EndGlobal

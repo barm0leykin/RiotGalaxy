@@ -1,0 +1,5 @@
+﻿point: 13 9	
+point: 13 3
+point: 11 3
+point: 11 7
+point: 8 8

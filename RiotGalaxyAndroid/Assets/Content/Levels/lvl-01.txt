@@ -1,0 +1,36 @@
+cut							// "мульт"
+msg "BEGIN!"				// сообщение в мульте
+end
+
+wait 10					// пауза
+
+hive1 4 3					// будем воевать с ульем размером 4x3
+...
+script zmeyka1-left			//следующие враги вылетают слева используя скрипт zmeyka1-left
+line 2 enemyFly1 enemyFly1 enemyFlye1 enemyFly1
+
+wait 3						// пауза 3 секунды
+
+script zmeyka1-right
+line 3 enemyFly1 enemyFly1 enemyFlye1 enemyFly1
+
+wait 5
+
+script zmeyka1-top1			// самые жирные враги прилетают сверху в задний ряд
+line 1 enemyGreen1 enemyGreenBoss1 enemyRedBoss1 enemyGreen1
+...
+end							// конец волны
+
+wait 5
+
+endlevel					// конец уровня
+
+/////////////////
+// v01
+
+set_interval 1				// интервал спавна врагов
+
+enemy blueSm
+enemy blueSm
+
+wait 5

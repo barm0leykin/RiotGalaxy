@@ -1,0 +1,17 @@
+﻿description: Enemy Recons
+
+interval: 1
+
+<sync_cmd: 1>
+script: zmeyka1-left
+enemyblue: 2
+</sync_cmd>
+
+<sync_cmd: 1>
+script: zmeyka1-right
+enemyblue: 2 
+</sync_cmd>
+
+trigger: 1
+
+enemyred: 2

@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{49A86D6E-CBFE-4C15-9396-15B643F205B6}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RiotGalaxyDLL</RootNamespace>
+    <AssemblyName>RiotGalaxyDLL</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
+    <TargetFrameworkVersion>v4.4</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CocosSharp, Version=1.7.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CocosSharp.1.7.1.0\lib\MonoAndroid10\CocosSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Lidgren.Network, Version=2012.1.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CocosSharp.1.7.1.0\lib\MonoAndroid10\Lidgren.Network.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Mono.Android" />
+    <Reference Include="MonoGame.Framework, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CocosSharp.1.7.1.0\lib\MonoAndroid10\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="OpenTK-1.0" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Xamarin.Android.Support.v4, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Xamarin.Android.Support.v4.19.1.0\lib\MonoAndroid10\Xamarin.Android.Support.v4.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\RiotGalaxyShared\App\ApplicationDelegate.cs">
+      <Link>App\ApplicationDelegate.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Commands\Command.cs">
+      <Link>Commands\Command.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Commands\CommandsWeapon.cs">
+      <Link>Commands\CommandsWeapon.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Commands\UnitCommand.cs">
+      <Link>Commands\UnitCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Factories\BulletFactory.cs">
+      <Link>Factories\BulletFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\GameEventDirector.cs">
+      <Link>GameEventDirector.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\GameManager.cs">
+      <Link>GameManager.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\GamePlay.cs">
+      <Link>GamePlay.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\GameState.cs">
+      <Link>GameState.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Hive.cs">
+      <Link>Hive.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\LvlEventDirector.cs">
+      <Link>LvlEventDirector.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\Bonus\Bonus.cs">
+      <Link>Objects\Bonus\Bonus.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\Bonus\BonusBulletUP.cs">
+      <Link>Objects\Bonus\BonusBulletUP.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\Bonus\BonusHpUp.cs">
+      <Link>Objects\Bonus\BonusHpUp.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\Bonus\BonusNukeBomb.cs">
+      <Link>Objects\Bonus\BonusNukeBomb.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\Bonus\BonusStar.cs">
+      <Link>Objects\Bonus\BonusStar.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\Enemy.cs">
+      <Link>Objects\Enemy.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\EnemySmallBlue.cs">
+      <Link>Objects\EnemySmallBlue.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\EnemySmallGreen.cs">
+      <Link>Objects\EnemySmallGreen.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\EnemySmallRed.cs">
+      <Link>Objects\EnemySmallRed.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\EnemySmallScout.cs">
+      <Link>Objects\EnemySmallScout.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\GameObject.cs">
+      <Link>Objects\GameObject.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\ObjBehavior\AIState.cs">
+      <Link>Objects\ObjBehavior\AIState.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\ObjBehavior\BehAI.cs">
+      <Link>Objects\ObjBehavior\BehAI.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\ObjBehavior\ObjBehCollision.cs">
+      <Link>Objects\ObjBehavior\ObjBehCollision.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\ObjBehavior\ObjBehMove.cs">
+      <Link>Objects\ObjBehavior\ObjBehMove.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\ObjBehavior\ObjBehPlayerMove.cs">
+      <Link>Objects\ObjBehavior\ObjBehPlayerMove.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\ObjBehavior\ObjBehShoot.cs">
+      <Link>Objects\ObjBehavior\ObjBehShoot.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\ObjBehavior\Route.cs">
+      <Link>Objects\ObjBehavior\Route.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\Object.cs">
+      <Link>Objects\Object.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\PlayerShip.cs">
+      <Link>Objects\PlayerShip.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\TriggerObject.cs">
+      <Link>Objects\TriggerObject.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\Weapons\Bullet.cs">
+      <Link>Objects\Weapons\Bullet.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\Weapons\Laser.cs">
+      <Link>Objects\Weapons\Laser.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\Weapons\Shell.cs">
+      <Link>Objects\Weapons\Shell.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\Weapons\Slug.cs">
+      <Link>Objects\Weapons\Slug.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Objects\Weapons\Weapon.cs">
+      <Link>Objects\Weapons\Weapon.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Player.cs">
+      <Link>Player.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Scenes\SceneGame.cs">
+      <Link>Scenes\SceneGame.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Scenes\SceneLose.cs">
+      <Link>Scenes\SceneLose.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Scenes\SceneMainMenu.cs">
+      <Link>Scenes\SceneMainMenu.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Scenes\SceneNextLevel.cs">
+      <Link>Scenes\SceneNextLevel.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Scenes\SceneWin.cs">
+      <Link>Scenes\SceneWin.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\SFX\SFX.cs">
+      <Link>SFX\SFX.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\SFX\SfxBlast.cs">
+      <Link>SFX\SfxBlast.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\SFX\SfxGalaxy.cs">
+      <Link>SFX\SfxGalaxy.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Utils\FileUtils.cs">
+      <Link>Utils\FileUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Utils\Level.cs">
+      <Link>Utils\Level.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Utils\Options.cs">
+      <Link>Utils\Options.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Utils\SpriteLoader.cs">
+      <Link>Utils\SpriteLoader.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Utils\Timer.cs">
+      <Link>Utils\Timer.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\Utils\VectorMath.cs">
+      <Link>Utils\VectorMath.cs</Link>
+    </Compile>
+    <Compile Include="..\RiotGalaxyShared\World.cs">
+      <Link>World.cs</Link>
+    </Compile>
+    <Compile Include="Interface\Console.cs" />
+    <Compile Include="Interface\CutScene.cs" />
+    <Compile Include="Interface\HUD.cs" />
+    <Compile Include="Interface\InputHandler.cs" />
+    <Compile Include="Interface\MyButton.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\RiotGalaxyShared\_features.txt">
+      <Link>_features.txt</Link>
+    </Content>
+    <Content Include="..\RiotGalaxyShared\_описание.txt">
+      <Link>_описание.txt</Link>
+    </Content>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
