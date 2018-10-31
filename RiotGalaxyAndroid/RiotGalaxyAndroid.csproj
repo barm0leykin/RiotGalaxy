@@ -168,6 +168,9 @@
   <ItemGroup>
     <AndroidAsset Include="Assets\Content\CutScene\cs=l01-01.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\Content\weapon.txt" />
+  </ItemGroup>
   <Import Project="..\RiotGalaxyShared\RiotGalaxyShared.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

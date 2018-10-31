@@ -1,7 +1,11 @@
+[main]
+width=1280
+height=768
+[player]
 player-name: Nuke SkyRocker
 player-maxhp: 50
 player-gun-rate: 0,8
 player-gun-dmg: 10
 player-maxspeed: 450
 player-acc: 1500 
-player-brakspeed: 800
+player-brakespeed: 800

@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Objects\Weapons\Shell.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Objects\Weapons\Slug.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\FileUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\INIManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\Options.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GamePlay.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameState.cs" />

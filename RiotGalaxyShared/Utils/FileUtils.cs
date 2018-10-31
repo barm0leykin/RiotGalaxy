@@ -42,12 +42,14 @@ namespace RiotGalaxy.Utils
             catch (FileNotFoundException e)
             {
                 System.Diagnostics.Debug.WriteLine("!!!!!!!!!====-------------------------------===FILE NOT FOUND===---------------------------------------====!!!!!!!!!");
+                System.Diagnostics.Debug.WriteLine(e);
                 System.Diagnostics.Debug.WriteLine(e.Message);
                 return false;
             }
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine("!!!!!!!!!====-----------------------------------===CATCH===---------------------------------------------====!!!!!!!!!");
+                System.Diagnostics.Debug.WriteLine(e);
                 System.Diagnostics.Debug.WriteLine(e.Message);
                 return false;
             }

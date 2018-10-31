@@ -12,7 +12,7 @@ namespace RiotGalaxy
     {
         //public enum GameStateEn : int { INIT = 0, TITLE, GAME, GAMEOVER, WIN, PAUSE }
         //public static GameStateEn gameState = GameStateEn.TITLE, prevGameState = GameStateEn.TITLE;
-        public static FileUtils fUtils;     // утилиты для работы с файлами
+        public static FileUtils fUtils;     // утилиты для работы с файлами        
         public static Options opt;          // настройки игры
         public static IGameState state;     // состояние игры
         public static int cur_level = 1;    // с какого уровня начинаем
@@ -49,7 +49,7 @@ namespace RiotGalaxy
         public void Init()
         {
             System.Diagnostics.Debug.WriteLine("=== GAME MANAGER - INIT ===");
-            fUtils  = new FileUtils();
+            fUtils  = new FileUtils();            
             opt     = new Options();
             player  = new Player();
             level   = new Level();
