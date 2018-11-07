@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using CocosSharp;
 using RiotGalaxy.Objects;
-using RiotGalaxy.Objects.Weapons;
 using RiotGalaxy.SFX;
 using RiotGalaxy.Interface;
 using System.Threading.Tasks;
-using RiotGalaxy.Object.Weapons;
 
 namespace RiotGalaxy
 {
@@ -17,9 +15,9 @@ namespace RiotGalaxy
         public bool Pause { get; set; }     // пауза
         public List<GameObject> allObjects; // список всех объектов игры
         
-        public HUD iface;                   // хранилище кнопок
+        public GUI iface;                   // хранилище кнопок
         public World world;                 // мир со своей координатной сеткой
-        public Hive hive;                   // со своей координатной сеткой, в нём роятся враги
+        public Hive hive;                   // улей со своей координатной сеткой, в нём роятся враги
         public PlayerShip playerShip;       // наш корабель
         public LvlEventDirector lvlEventDirector;   // события уровня
         public GameEventDirector gameEventDirector; // прочие события
@@ -27,8 +25,8 @@ namespace RiotGalaxy
         //public Route current_route;
         //CCNode t;
 
-        private bool hasGameEnded = false;
-        private bool StopSignalSended = false;
+        private bool hasGameEnded;
+        private bool StopSignalSended;
 
         public Gameplay()
         {
@@ -37,16 +35,26 @@ namespace RiotGalaxy
         public void Init()
         {
             System.Diagnostics.Debug.WriteLine("=== Gameplay Init() ===");
-            allObjects = new List<Objects.GameObject>();
+            hasGameEnded = false;
+            StopSignalSended = false;
+            allObjects = new List<GameObject>();
             world = new World();
             hive = new Hive();
             lvlEventDirector = new LvlEventDirector();
             gameEventDirector = new GameEventDirector();            
             
-            iface = new HUD();
+            iface = new GUI();
             // Спавн игрока
             //playerShip = new PlayerShip(GameManager.ScGame.gameplayLayer.ContentSize.Width / 2.0f, 50);
-            playerShip = new PlayerShip(new CCPoint(GameManager.ScGame.gameplayLayer.ContentSize.Width / 2.0f, 50));
+            if (playerShip == null)
+            {
+                playerShip = new PlayerShip(new CCPoint(GameManager.ScGame.gameplayLayer.ContentSize.Width / 2.0f, 50));
+            }
+            else
+            {
+                playerShip.Init();
+                //GameManager.ScGame.AddChild(playerShip);
+            }
             allObjects.Add(playerShip);
             GameManager.ScGame.gameplayLayer.AddChild(playerShip);
 
@@ -56,10 +64,6 @@ namespace RiotGalaxy
             pos.Y = GameManager.ScGame.gameplayLayer.ContentSize.Height / 2;
             SpawnSfx(pos, Sfx.SfxType.GALAXY);
 
-            // Логика
-            //BulletFactory.Self.BulletCreated += HandleBulletCreated;
-
-            
             Pause = false;
             hasGameEnded = false;
 
@@ -269,12 +273,14 @@ namespace RiotGalaxy
 
             for (int i = 0; i < allObjects.Count; i++) // удаляем объекты
             {
+                if (allObjects[i].name == "PlayerShip")
+                    break;
                 allObjects[i].Delete();
                 allObjects.Remove(allObjects[i]);
                 i--;
             }
             //userInputHandler = null;
-            playerShip = null;
+            //playerShip = null;
             //RemoveAllChildren(true);
         }
     }//Class

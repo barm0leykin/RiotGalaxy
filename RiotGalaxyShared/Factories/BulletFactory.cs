@@ -1,11 +1,10 @@
 using System;
 using CocosSharp;
-using RiotGalaxy.Object.Weapons;
 using RiotGalaxy.Objects.Weapons;
 
 namespace RiotGalaxy.Factories
 {
-    class BulletFactory
+    /*class BulletFactory
     {
         static Lazy<BulletFactory> self =
             new Lazy<BulletFactory>(() => new BulletFactory());
@@ -32,5 +31,5 @@ namespace RiotGalaxy.Factories
             GameManager.gameplay.allObjects.Add(newBullet);
             return newBullet;
         }
-    }
+    }*/
 }

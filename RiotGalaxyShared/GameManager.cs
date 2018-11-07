@@ -49,9 +49,9 @@ namespace RiotGalaxy
         public void Init()
         {
             System.Diagnostics.Debug.WriteLine("=== GAME MANAGER - INIT ===");
-            fUtils  = new FileUtils();            
-            opt     = new Options();
+            fUtils  = new FileUtils();                        
             player  = new Player();
+            opt = new Options();
             level   = new Level();
             userInputHandler = new InputHandler();
 

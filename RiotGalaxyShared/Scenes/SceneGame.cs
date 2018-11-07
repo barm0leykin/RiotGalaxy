@@ -19,9 +19,6 @@ namespace RiotGalaxy
         //CCRenderTexture render;
 
         private bool HudNeedUpdate = false;
-        /*private bool isTouch = false; //isTouchRelease = false;        
-        private bool isTouchBegan = false;
-        CCPoint locationOnScreen;*/
 
         CCLabel labelLvl;
         CCLabel labelHp;
@@ -37,7 +34,6 @@ namespace RiotGalaxy
             CreateBackgroundLayer();
             CreateGameLayer();
             CreateHUDLayer();
-            //CreateTouchListener();
 
             Schedule(Activity);
             //Schedule(GameDelegate.gameManager.Activity);
@@ -91,7 +87,6 @@ namespace RiotGalaxy
                 UpdateHUD();
                 HudNeedUpdate = false;
             }
-            //HandleInput();
             GameDelegate.gameManager.userInputHandler.HandleScGameInput();
 
             GameManager.gameplay.Activity(time); //// Убрать отсюда            

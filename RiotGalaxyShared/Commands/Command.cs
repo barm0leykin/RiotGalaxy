@@ -44,7 +44,7 @@ namespace RiotGalaxy
         public void Execute()
         {
             System.Diagnostics.Debug.WriteLine("=== CommandWin ===");
-            GameManager.gameplay.iface.Message("=== CommandWin ===", (int)HUD.MsgType.GAME_CONSOL);
+            GameManager.gameplay.iface.Message("=== CommandWin ===", (int)GUI.MsgType.GAME_CONSOL);
 
             IGameState state = new GameStateWinSplash();
             GameDelegate.gameManager.ChangeState(state);
@@ -113,7 +113,7 @@ namespace RiotGalaxy
         public void Execute()
         {
             System.Diagnostics.Debug.WriteLine("=== CommandHpUp ===");
-            GameManager.gameplay.iface.Message("=== CommandHpUp ===", (int)HUD.MsgType.GAME_CONSOL);
+            GameManager.gameplay.iface.Message("=== CommandHpUp ===", (int)GUI.MsgType.GAME_CONSOL);
             GameManager.gameplay.playerShip.HpUp(GameManager.player.MaxHp);
             //GameManager.gameplay.gameEventDirector.AddEvent((int)GameEventDirector.EventsID.HP_UPD); //создаем событие
         }

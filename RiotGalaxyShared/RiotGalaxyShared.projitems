@@ -14,7 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\CommandsWeapon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\UnitCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameEventDirector.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Interface\HUD.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\GUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LvlEventDirector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Factories\BulletFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameManager.cs" />
@@ -29,7 +29,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Objects\Weapons\Shell.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Objects\Weapons\Slug.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\FileUtils.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utils\INIManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\Options.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GamePlay.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameState.cs" />

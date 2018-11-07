@@ -11,8 +11,15 @@ namespace RiotGalaxy.Objects
         //PlayerShip owner;
 
         public ObjBehPlayerMove(GameObject obj) : base(obj)
-        {}
-
+        {
+            LoadMoveOptions();
+        }
+        public void LoadMoveOptions()
+        {
+            maxspeed = Options.plShipOptions.maxspeed;
+            acceleration = Options.plShipOptions.acceleration;
+            brakingSpeed = Options.plShipOptions.brakingSpeed;
+        }
         public void SetMoveDirection(CCPoint touchPoint)
         {
             if (touchPoint.X < owner.PositionX - owner.Width / 2) //влево
@@ -38,7 +45,7 @@ namespace RiotGalaxy.Objects
         {
             moveDirection = -1;
         }
-        public void SetNoMove()
+        public void MoveStop()
         {
             moveDirection = 0;
         }

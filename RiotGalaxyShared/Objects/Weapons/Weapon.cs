@@ -1,30 +1,40 @@
 ﻿using CocosSharp;
 using RiotGalaxy.Factories;
+using RiotGalaxy.Interface;
 using System.Threading;
 using System.Threading.Tasks;
+
+public class WeaponOptions
+{
+    public int burst;          // колво выстрелов в очереди
+    public float burstInterval;   // промежуток между выстрелами в очереди
+    public float reloadSpeed;  // время перезарядки (очередями)
+    public float damage;       // убойная сила
+    public float shellSpeed;   // скорость снаряда
+}
 
 namespace RiotGalaxy.Objects.Weapons
 {
     public class Weapon
     {
-        public enum WeaponType : int { CANNON = 0, AUTOCANNON, MINIGUN, LASER }
+        public enum WeaponType : int { CANNON = 0, MINIGUN, LASER }
         public int weaponType;
-        public float GunFireRate = 1.8f;  // скорострельность
+
+        public WeaponOptions wpOptions;
+
         protected int fireCount = 0;    // счетчик выстрелов
-        protected int damage = 10;      // убойная сила
+        //protected int damage = 10;      // убойная сила
         public bool Safe { get; set; }  // предохранитель
 
-        protected GameObject owner;        
-        //protected GameObject shell;
+        protected GameObject owner;
+        protected GameObject shell;
         protected CCPoint shellPos;
 
-        
-        //protected float direction = 180; // 0 - 360
-        protected float shellSpeed = 200;
+        //protected float shellSpeed = 200;
         protected float aimAngle;
         protected CCVector2 aimVector;        
 
-        public Weapon(GameObject obj)
+        public Weapon(GameObject obj, int lvl = 0)
         {
             owner = obj;
             Safe = false;
@@ -51,154 +61,114 @@ namespace RiotGalaxy.Objects.Weapons
             shellPos.Y += aimVector.Y;
 
             //окончательно целимся - задаем направление и скорость выстрела
-            aimVector.X = 0; aimVector.Y = shellSpeed;
+            aimVector.X = 0; aimVector.Y = wpOptions.shellSpeed;
             GameManager.vMath.RotateVector(ref aimVector, aimAngle);
         }
 
-        virtual public void Fire()
+        public void Fire()
         {
+            if (Safe) // если оружие на предохранителе, то не стреляем
+                return;
+            owner.Schedule(FireOnce, wpOptions.burstInterval, (uint)wpOptions.burst - 1, 0);
+        }
+        virtual public void FireOnce(float time)
+        {
+            if (Safe) // если оружие на предохранителе, то не стреляем
+                return;
+            if (shell == null)
+                return;
+            //System.Diagnostics.Debug.WriteLine("================FireOnce=================");
+            shell.CurrentSpeed  = wpOptions.shellSpeed;
+            shell.Damage        = wpOptions.damage;
+            shell.move.DirectionAngle = aimAngle;
+            shell.playerSide    = owner.playerSide;
             fireCount++;
+            shell.name += "_" + fireCount;
+            GameManager.gameplay.allObjects.Add(shell);
+        }
+
+        virtual public void Upgrade()
+        {
+        }
+        public void LoadWeaponOptions(WeaponOptions opt)
+        {
+            wpOptions = opt;
         }
     }
 
     class WeaponCannon : Weapon
-    {
-        public WeaponCannon(GameObject obj) : base(obj)
+    {        
+        public WeaponCannon(GameObject obj, int lvl = 0) : base(obj, lvl)
         {
             weaponType = (int)WeaponType.CANNON;
             GameManager.player.last_used_gun = (WeaponType)weaponType;
+            wpOptions = Options.weapons.cannons[lvl];
         }
-        override public void Fire()
+        override public void Upgrade()
         {
-            if (Safe) // если оружие на предохранителе, то не стреляем
-                return;
-            System.Diagnostics.Debug.WriteLine("================FireOnce================= " + fireCount);
-            GameObject shell = BulletFactory.Self.CreateNew(shellPos);//GameObject shell = new Bullet(shellPos);
-
-            //окончательно целимся - задаем направление выстрела
-            //velocity = new CCVector2(0, shellSpeed);
-            //GameManager.vMath.RotateVector(ref velocity, aimAngle);
-
-            shell.CurrentSpeed = shellSpeed;
-            shell.move.DirectionAngle = aimAngle;
-            //shell.move.VelocityY = aimVector.Y;
-            //shell.move.VelocityX = aimVector.X;
-            shell.playerSide = owner.playerSide;
-            fireCount++;
-        }
-    }
-
-    class WeaponAutoCannon : Weapon
-    {
-        int burst = 2;
-        //int interval = 250; //0.25f;
-        float interval = 0.25f;
-        //int ActionTime = 0;
-
-        public WeaponAutoCannon(GameObject obj) : base(obj)
-        {
-            weaponType = (int)WeaponType.AUTOCANNON;
-            GameManager.player.last_used_gun = (WeaponType)weaponType;
-        }
-        override public void Fire()
-        {
-            if (Safe) // если оружие на предохранителе, то не стреляем
-                return;
-            
-            owner.Schedule(FireOnce, interval, (uint)burst-1, 0);
-
-            //ActionTime = 0;
-            //Task task = new Task(FireBurst);
-            //task.Start();
-            //GameManager.gameplay.gameEventDirector.GamePause += task.
-        }
-        /*void FireBurst()
-        {
-            int i = 0; // 1!
-
-            //await System.Threading.Tasks.Task.W
-            while ( i < burst)
+            if (GameManager.player.upgrades.cannon +1 < Options.maxWeaponLevel)
             {
-                i++;
-                Thread.Sleep(interval);
-                FireOnce(ActionTime);
+                GameManager.player.upgrades.cannon++;
+                GameManager.gameplay.iface.Message("Gun level " + GameManager.player.upgrades.cannon, (int)GUI.MsgType.GAME_CONSOL);
+                LoadWeaponOptions(Options.weapons.cannons[GameManager.player.upgrades.cannon]);
             }
-        }*/
- 
-        void FireOnce(float time)
+        }
+        override public void FireOnce(float time)
         {
-            //System.Diagnostics.Debug.WriteLine("================FireOnce=================");
             Aim(aimAngle);//чтобы обновить начальные координаты второго снаряда
-
-            GameObject shell = BulletFactory.Self.CreateNew(shellPos);
-
-            shell.CurrentSpeed = shellSpeed;
-            shell.move.DirectionAngle = aimAngle;
-            //shell.move.VelocityY = aimVector.Y;
-            //shell.move.VelocityX = aimVector.X;
-            shell.playerSide = owner.playerSide;
-            fireCount++;
+            //GameObject shell = BulletFactory.Self.CreateNew(shellPos);
+            shell = new Bullet(shellPos);
+            base.FireOnce(time);
         }
     }
 
     class WeaponMinigun : Weapon
     {
-        int burst = 5;
-        //int interval = 250; //0.25f;
-        float interval = 0.1f;
-        //int ActionTime = 0;
-
-        public WeaponMinigun(GameObject obj) : base(obj)
+        public WeaponMinigun(GameObject obj, int lvl = 0) : base(obj, lvl)
         {
             weaponType = (int)WeaponType.MINIGUN;
             GameManager.player.last_used_gun = (WeaponType)weaponType;
-            //GunFireRate = 1.3f;
+            wpOptions = Options.weapons.miniguns[lvl];
         }
-        override public void Fire()
+        override public void Upgrade()
         {
-            if (Safe) // если оружие на предохранителе, то не стреляем
-                return;
-            //Aim(0);
-            owner.Schedule(FireOnce, interval, (uint)burst - 1, 0);
+            if (GameManager.player.upgrades.minigun + 1 < Options.maxWeaponLevel)
+            {
+                GameManager.player.upgrades.minigun++;
+                GameManager.gameplay.iface.Message("Minigun level " + GameManager.player.upgrades.minigun, (int)GUI.MsgType.GAME_CONSOL);
+                LoadWeaponOptions(Options.weapons.miniguns[GameManager.player.upgrades.minigun]);
+            }
         }
-        void FireOnce(float time)
+        override public void FireOnce(float time)
         {
-            //System.Diagnostics.Debug.WriteLine("================FireOnce=================");
-            int rnd = CCRandom.GetRandomInt(-5, 5);
-            Aim(aimAngle + rnd);//
-
-            GameObject shell = new Slug(shellPos);
-
-            shell.CurrentSpeed = shellSpeed;
-            shell.move.DirectionAngle = aimAngle;
-            //shell.move.VelocityY = aimVector.Y;
-            //shell.move.VelocityX = aimVector.X;
-            shell.playerSide = owner.playerSide;
-            fireCount++;
-            GameManager.gameplay.allObjects.Add(shell);
+            int accuracy = CCRandom.GetRandomInt(-5, 5);
+            Aim(aimAngle + accuracy);//
+            shell = new Slug(shellPos);
+            base.FireOnce(time);
         }
     }
 
     class WeaponLaser : Weapon
     {
-        public WeaponLaser(GameObject obj) : base(obj)
+        public WeaponLaser(GameObject obj, int lvl = 0) : base(obj, lvl)
         {
             weaponType = (int)WeaponType.LASER;
             GameManager.player.last_used_gun = (WeaponType)weaponType;
+            wpOptions = Options.weapons.lasers[lvl];
         }
-        override public void Fire()
+        override public void Upgrade()
         {
-            if (Safe) // если оружие на предохранителе, то не стреляем
-                return;
-            GameObject shell = new Laser(shellPos); //BulletFactory.Self.CreateNew(shellPos);//GameObject shell = new Bullet(shellPos);
-            
-            shell.CurrentSpeed = shellSpeed * 2;
-            shell.move.DirectionAngle = 0; // aimAngle;
-            shell.playerSide = owner.playerSide;
-            fireCount++;
-            shell.name += "_" + fireCount;
-            GameManager.gameplay.allObjects.Add(shell);
-            //System.Diagnostics.Debug.WriteLine("=== Fire: " + shell.name);
+            if (GameManager.player.upgrades.laser + 1 < Options.maxWeaponLevel)
+            {
+                GameManager.player.upgrades.laser++;
+                GameManager.gameplay.iface.Message("Laser level " + GameManager.player.upgrades.laser, (int)GUI.MsgType.GAME_CONSOL);
+                LoadWeaponOptions(Options.weapons.lasers[GameManager.player.upgrades.laser]);
+            }
+        }
+        override public void FireOnce(float time)
+        {
+            shell = new Laser(shellPos); 
+            base.FireOnce(time);
         }
     }
 
@@ -206,7 +176,5 @@ namespace RiotGalaxy.Objects.Weapons
     {
         public NoWeapon(GameObject obj) : base(obj)
         { }
-        override public void Fire()
-        { }        
     }
 }

@@ -36,7 +36,7 @@ namespace RiotGalaxy.Objects
         public override bool Collision(GameObject obj)
         {
             if (obj.playerSide && obj.objectType != ObjType.SHELL) // выкл фрэндли-фаер :) и не получаем урон от оружия (оно само нанесет), только от столкновений
-                Hit(obj.Damage);
+                Hit((int)obj.Damage);
             return true;
         }
         public override void Hit(int damage)

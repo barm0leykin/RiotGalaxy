@@ -55,5 +55,36 @@ namespace RiotGalaxy.Utils
             }
             return true;
         }
+        void Parce()
+        { }
+
+        public int GetIntValue(string value_name = "") //int GetIntValue(string block_name = "", string value_name = "")
+        {
+            int result = 0;
+            foreach (string str in fileContent)
+            {
+                if (str.Contains(value_name))
+                {
+                    string val = str.Substring(str.IndexOf("=") + 1);
+                    System.Diagnostics.Debug.WriteLine(value_name + "=" + val);
+                    result = Int32.Parse(val);
+                }
+            }
+            return result;
+        }
+        public string GetStrValue(string value_name = "")
+        {
+            string result = "";
+            foreach (string str in fileContent)
+            {
+                if (str.Contains(value_name))
+                {
+                    string val = str.Substring(str.IndexOf("=") + 1);
+                    //System.Diagnostics.Debug.WriteLine("width=" + val);
+                }
+            }
+            return result;
+        }
+
     }
 }

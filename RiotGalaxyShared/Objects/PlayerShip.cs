@@ -1,9 +1,9 @@
 using CocosSharp;
-using RiotGalaxy.Factories;
 using System.Threading.Tasks;
 using RiotGalaxy.Objects.Weapons;
 using RiotGalaxy.Interface;
 using RiotGalaxy.Objects.ObjBehavior;
+using static RiotGalaxy.Objects.Weapons.Weapon;
 
 namespace RiotGalaxy.Objects
 {
@@ -35,6 +35,7 @@ namespace RiotGalaxy.Objects
         public PlayerShip(CCPoint pos)
         {
             objectType = ObjType.PLAYER;
+            name = "PlayerShip";
             playerSide = true;
             Position = pos;
 
@@ -42,20 +43,15 @@ namespace RiotGalaxy.Objects
             move = new ObjBehPlayerMove(this);
             coll = new BehHardCollision(this);            
             shoot = new ObjBehShootUp(this);
-            //gun = new WeaponCannon(this);
+            gun = new WeaponCannon(this);
             draw = new ObjBehDrawSprite(this);
-            PrepareWeapon();
+            //PrepareWeapon();
 
             //HpMax = 100;
             Hp = GameManager.player.MaxHp;
             Damage = 100;   // сила тарана своей тушкой
-            //GunFireRate = GameManager.player.GunFireRate; // 1f;
 
             // Sprite
-            
-            //sprite = GameManager.sLoader.Load("ship.png"); //new CCSprite("ship"); //
-            //sprite.AnchorPoint = CCPoint.AnchorMiddle;
-            //AddChild(sprite);
             draw.LoadGraphics("ship.png");
 
             // прикрепляем к кораблю невидимую кнопку паузы
@@ -65,37 +61,27 @@ namespace RiotGalaxy.Objects
             GameManager.gameplay.iface.AddButton(btn_pl_pause);
             //GameManager.gameplay.userInputHandler.AddButnHandler(btn_pl_pause);
             //AddLabel();
-
-            Upgrade(); // подтянуть параметры корабля из параметров игрока
         }
-        ~PlayerShip()
+        public void Init()
         {
+            ActionTime = 0;
+            gun.Safe = false;
         }
         private void PrepareWeapon()
         {
-            /*if (GameManager.player.last_used_gun != null)
-                gun = GameManager.player.last_used_gun;
-            else
-                gun = new WeaponCannon(this); // new WeaponBurstCannon(this);*/
-
             switch(GameManager.player.last_used_gun)
             {
-                case Weapon.WeaponType.CANNON:
+                case WeaponType.CANNON:
                     {
                         gun = new WeaponCannon(this);
                         break;
                     }
-                case Weapon.WeaponType.AUTOCANNON:
-                    {
-                        gun = new WeaponAutoCannon(this);
-                        break;
-                    }
-                case Weapon.WeaponType.MINIGUN:
+                case WeaponType.MINIGUN:
                     {
                         gun = new WeaponMinigun(this);
                         break;
                     }
-                case Weapon.WeaponType.LASER:
+                case WeaponType.LASER:
                     {
                         gun = new WeaponLaser(this);
                         break;
@@ -113,11 +99,10 @@ namespace RiotGalaxy.Objects
             move.Move(time);
 
             ActionTime += time;
-            if (ActionTime > gun.GunFireRate) // пора стрелять   // if (ActionTime > GameManager.player.GunFireRate)
+            if (ActionTime > gun.wpOptions.reloadSpeed) // пора стрелять   // if (ActionTime > GameManager.player.GunFireRate)
             {
                 ActionTime = 0;
                 shoot.Shoot(time);
-                //System.Diagnostics.Debug.WriteLine("=== Shoot: " + rounds);
             }
         }
         private void AddLabel()
@@ -128,10 +113,28 @@ namespace RiotGalaxy.Objects
             label.PositionY = 50;
             AddChild(label);
         }
-        public void Upgrade()
+        public void ChangeWeapon(WeaponType weapon)
         {
-            gun.GunFireRate = GameManager.player.GunFireRate;
-            //Schedule(shoot.Shoot, interval: GameManager.player.GunFireRate);
+            switch(weapon)
+            {
+                case WeaponType.CANNON:
+                    {
+                        gun = new WeaponCannon(this, GameManager.player.upgrades.cannon);
+                        break;
+                    }
+                case WeaponType.MINIGUN:
+                    {
+                        gun = new WeaponMinigun(this, GameManager.player.upgrades.minigun);
+                        break;
+                    }
+                case WeaponType.LASER:
+                    {
+                        gun = new WeaponLaser(this, GameManager.player.upgrades.laser);
+                        break;
+                    }
+                default:
+                    break;
+            }
         }
         public override bool Collision(GameObject obj)
         {
@@ -151,7 +154,7 @@ namespace RiotGalaxy.Objects
             System.Diagnostics.Debug.WriteLine("=== Player hit!: " + obj.Damage + " xp, by " + obj.objectType);
             if (GodMode)
                 return;
-            Hp -= obj.Damage;
+            Hp -= (int)obj.Damage;
             //GameManager.gameplay.gameEventDirector.AddEvent((int)GameEventDirector.EventsID.HP_UPD);
 
             AddMyshield();

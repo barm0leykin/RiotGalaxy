@@ -45,8 +45,10 @@
 
             //if(GameManager.ScGame == null)
                 GameManager.ScGame = new SceneGame(GameManager.GameView);
-            //if(GameManager.gameplay == null)
+            if (GameManager.gameplay == null)
                 GameManager.gameplay = new Gameplay();
+            else
+                GameManager.gameplay.Init();
             GameManager.gameplay.Init();
 
             GameManager.ScGame.InitSceneObjects();

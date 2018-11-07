@@ -29,7 +29,7 @@ namespace RiotGalaxy.Objects.Weapons
                     return false;
             }
             hitTargets.Add(obj); // если этому объекту нанесен урон, доблавим его в список, чтобы не фигачить его каждый цикл
-            obj.Hit(Damage); // наносим урон цели
+            obj.Hit((int)Damage); // наносим урон цели
 
             return true;            
         }

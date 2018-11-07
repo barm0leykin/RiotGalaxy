@@ -7,7 +7,7 @@ namespace RiotGalaxy.Interface
     /// Класс будет содержать все элементы интерфейса в одном месте (кнопки и тд)
     /// слово Interface было занято, поэтому HUD :)
     /// </summary>
-    public class HUD
+    public class GUI
     {
         ArrayList buttons;
         Console console;
@@ -15,7 +15,7 @@ namespace RiotGalaxy.Interface
         bool debug_msg_to_cons = false;
         public enum MsgType : int { DEBUG = 0, GAME_CONSOL, MESSAGE }
 
-        public HUD()
+        public GUI()
         {
             buttons = new ArrayList();
             console = new Console();

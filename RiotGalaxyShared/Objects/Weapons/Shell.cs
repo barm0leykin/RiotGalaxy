@@ -29,7 +29,7 @@ namespace RiotGalaxy.Objects.Weapons
                 return false;
             if (playerSide == obj.playerSide) // откл фрэндли-файр
                 return false;
-            obj.Hit(Damage);////////////////!!!!!!!!
+            obj.Hit((int)Damage);////////////////!!!!!!!!
             Hit(obj);
             return true;
         }

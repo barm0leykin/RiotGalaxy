@@ -76,7 +76,7 @@ namespace RiotGalaxy.Interface
                 GameManager.gameplay.playerShip.move.SetMoveDirection(locationOnScreen);    // двигаем playerShip            
             }
             else
-                GameManager.gameplay.playerShip.move.SetNoMove();   // касаний экрана нет, ускорение кораблю больше не предаем
+                GameManager.gameplay.playerShip.move.MoveStop();   // касаний экрана нет, ускорение кораблю больше не предаем
         }
 
         public void CreateTouchListener()

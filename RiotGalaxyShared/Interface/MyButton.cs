@@ -131,19 +131,6 @@ namespace RiotGalaxy.Interface
             cmd = new CommandChWeaponCannon();
         }
     }
-    public class ButtonAutoCannon : MyButton
-    {
-        public ButtonAutoCannon(CCPoint pos) : base(pos)
-        {
-            System.Diagnostics.Debug.WriteLine("=== ButtonAutoCannon ===");
-            name = "btn_auto_cannon";
-            sprite = GameManager.sLoader.Load("btn_auto_cannon.png");
-            sprite.AnchorPoint = CCPoint.AnchorMiddle;
-            AddChild(sprite);
-
-            cmd = new CommandChWeaponAutoCannon();
-        }
-    }
     public class ButtonMinigun : MyButton
     {
         public ButtonMinigun(CCPoint pos) : base(pos)
@@ -258,7 +245,7 @@ namespace RiotGalaxy.Interface
             AddEventListener(listener, this);
         }
 
-        bool touchHits(CCTouch touch)
+        bool TouchHits(CCTouch touch)
         {
             var location = touch.Location;
 
@@ -269,12 +256,12 @@ namespace RiotGalaxy.Interface
 
         bool OnTouchBegan(CCTouch touch, CCEvent touchEvent)
         {
-            bool hits = touchHits(touch);
+            bool hits = TouchHits(touch);
             if (hits)
             {
                 // undo the rotation that was applied by the action attached.
                 Rotation = 0;
-                scaleButtonTo(0.9f);
+                ScaleButtonTo(0.9f);
             }
 
             return hits;
@@ -282,18 +269,18 @@ namespace RiotGalaxy.Interface
 
         void OnTouchEnded(CCTouch touch, CCEvent touchEvent)
         {
-            bool hits = touchHits(touch);
+            bool hits = TouchHits(touch);
             if (hits && Triggered != null)
                 Triggered(this, EventArgs.Empty);
-            scaleButtonTo(1);
+            ScaleButtonTo(1);
         }
 
         void OnTouchCancelled(CCTouch touch, CCEvent touchEvent)
         {
-            scaleButtonTo(1);
+            ScaleButtonTo(1);
         }
 
-        void scaleButtonTo(float scale)
+        void ScaleButtonTo(float scale)
         {
             var action = new CCScaleTo(0.1f, scale);
             action.Tag = 900;

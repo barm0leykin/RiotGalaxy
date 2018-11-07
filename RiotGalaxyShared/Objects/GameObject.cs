@@ -16,7 +16,7 @@ namespace RiotGalaxy.Objects
 
         public enum ObjType : int{ OBJECT = 0, SHELL, BONUS, PLAYER, ENEMY, SFX }
         public ObjType objectType;
-        public int Damage { get; set; } // Сила с которой ударяет своей тушкой по другим объектам
+        public float Damage { get; set; } // Сила с которой ударяет своей тушкой по другим объектам
         public int Hp { get; set; }
         public float Width, Height;
         public float CurrentSpeed, MaxSpeed;
