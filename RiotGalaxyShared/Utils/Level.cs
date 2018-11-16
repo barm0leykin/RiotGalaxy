@@ -41,7 +41,7 @@ namespace RiotGalaxy
         {
             cur_level_num = level_num;
             enemySpawned = 0;   
-            enemyKilled = 0;
+            enemyKilled = 0; 
 
             AllEventsList = new ArrayList();
 
