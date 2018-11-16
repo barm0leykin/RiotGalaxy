@@ -40,7 +40,7 @@ namespace RiotGalaxy
         public bool LoadLevel(int level_num)
         {
             cur_level_num = level_num;
-            enemySpawned = 0;
+            enemySpawned = 0;  
             enemyKilled = 0;
 
             AllEventsList = new ArrayList();
