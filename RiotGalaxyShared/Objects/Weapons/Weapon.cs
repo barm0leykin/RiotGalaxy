@@ -101,7 +101,7 @@ namespace RiotGalaxy.Objects.Weapons
         public WeaponCannon(GameObject obj, int lvl = 0) : base(obj, lvl)
         {
             weaponType = (int)WeaponType.CANNON;
-            GameManager.player.last_used_gun = (WeaponType)weaponType;
+            //GameManager.player.last_used_gun = (WeaponType)weaponType;
             wpOptions = Options.weapons.cannons[lvl];
         }
         override public void Upgrade()
@@ -127,7 +127,7 @@ namespace RiotGalaxy.Objects.Weapons
         public WeaponMinigun(GameObject obj, int lvl = 0) : base(obj, lvl)
         {
             weaponType = (int)WeaponType.MINIGUN;
-            GameManager.player.last_used_gun = (WeaponType)weaponType;
+            //GameManager.player.last_used_gun = (WeaponType)weaponType;
             wpOptions = Options.weapons.miniguns[lvl];
         }
         override public void Upgrade()
@@ -153,7 +153,7 @@ namespace RiotGalaxy.Objects.Weapons
         public WeaponLaser(GameObject obj, int lvl = 0) : base(obj, lvl)
         {
             weaponType = (int)WeaponType.LASER;
-            GameManager.player.last_used_gun = (WeaponType)weaponType;
+            //GameManager.player.last_used_gun = (WeaponType)weaponType;
             wpOptions = Options.weapons.lasers[lvl];
         }
         override public void Upgrade()

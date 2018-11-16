@@ -1,7 +1,5 @@
 ﻿using CocosSharp;
-using RiotGalaxy.Commands;
 using RiotGalaxy.Interface;
-using RiotGalaxy.Objects;
 
 public interface IScene
 {
@@ -35,7 +33,6 @@ namespace RiotGalaxy
             CreateGameLayer();
             CreateHUDLayer();
 
-            Schedule(Activity);
             //Schedule(GameDelegate.gameManager.Activity);
         }
         protected override void AddedToScene()
@@ -45,11 +42,15 @@ namespace RiotGalaxy
             //GameView.Stats.Enabled = true;
         }
 
-        public void InitSceneObjects()
+        public void Init()
         {
+            //CreateBackgroundLayer();
+            //CreateGameLayer();
+            //CreateHUDLayer();
+
             // регистрируем делегат в качестве обработчика событий для обновления HUD
             //GameManager.gameplay.gameEventDirector.RegisterScoreHandler(UpdateHUD);
-            
+
             // а тут - через событие
             GameManager.gameplay.gameEventDirector.PointsUpd += UpdateHUD;
             GameManager.gameplay.gameEventDirector.HpUpd += UpdateHUD;
@@ -79,6 +80,7 @@ namespace RiotGalaxy
             gameplayLayer.AddEventListener(GameDelegate.gameManager.userInputHandler.touchListener);
 
             HudNeedUpdate = true;
+            Schedule(Activity);
         }
         public void Activity(float time)
         {
@@ -178,6 +180,7 @@ namespace RiotGalaxy
         {
             GameManager.gameplay.gameEventDirector.PointsUpd -= UpdateHUD;
             GameManager.gameplay.gameEventDirector.HpUpd -= UpdateHUD;
+            
             UnscheduleAll();
             RemoveAllListeners();
         }

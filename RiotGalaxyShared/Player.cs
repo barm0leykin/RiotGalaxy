@@ -18,7 +18,7 @@ namespace RiotGalaxy
             {
                 score = value;
                 if(GameManager.gameplay != null)
-                    GameManager.gameplay.gameEventDirector.AddEvent((int)EventsID.SCORE_UPD);
+                    GameManager.gameplay.gameEventDirector.AddEvent(EventsID.SCORE_UPD);
             }
         }
         public struct Upgrades // апгрэйды оружия
@@ -31,7 +31,7 @@ namespace RiotGalaxy
         public int MaxHp { get; set; }        
         //       public int Hp { get; set; }
         //public float GunFireRate { get; set; }
-        public Weapon.WeaponType last_used_gun = Weapon.WeaponType.CANNON; 
+        //public Weapon.WeaponType last_used_gun = Weapon.WeaponType.CANNON; 
         public Pers pers;  // персонаж для диалогов в катсценах
         
         public Player()

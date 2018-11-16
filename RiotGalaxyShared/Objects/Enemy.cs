@@ -49,21 +49,20 @@ namespace RiotGalaxy.Objects
         private void Die()
         {
             //CCAudioEngine.SharedEngine.PlayEffect("explode1");
-            
-            /*CCPoint pos = new CCPoint();
-            pos.X = 0; pos.Y = 0;
-            Sfx sfx = new SfxBlast(Position);
-            move = new ObjBehNoMove(this);
-            shoot = new ObjBehNoShoot(this);
-            coll = new ObjBehNoCollision(this);
-            AddChild(sfx);
-            await Task.Delay((int)sfx.timeLife * 1000);
-            RemoveChild(sfx);*/
             //GameManager.player.Score += 10;
-            GameManager.level.enemyKilled++; ///
-            GameManager.level.enemyRemain--;
+            System.Diagnostics.Debug.WriteLine("=== Enemy die...");
+            //GameManager.level.enemyKilled++; ///
+            //GameManager.level.enemyRemain--;
             needToDelete = true;
-            System.Diagnostics.Debug.WriteLine("=== Enemy die...");            
+
+            CommandSpawnSFX sfx = new CommandSpawnSFX(Position);
+            sfx.Execute();
+            CommandSpawnRandomBonus bonus = new CommandSpawnRandomBonus(Position);
+            bonus.Execute();
+            CommandStarBonus star = new CommandStarBonus(Position);
+            star.Execute();
+            GameManager.gameplay.gameEventDirector.AddEvent(GameEventDirector.EventsID.ENEMY_DIE);
+            //GameManager.gameplay.gameEventDirector.AddEvent(GameEventDirector.EventsID.SCORE_UPD);// создаем событие для обновления интерфейса
         }
     }
 }

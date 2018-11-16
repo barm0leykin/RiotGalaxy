@@ -66,32 +66,7 @@ namespace RiotGalaxy.Objects
         {
             ActionTime = 0;
             gun.Safe = false;
-        }
-        private void PrepareWeapon()
-        {
-            switch(GameManager.player.last_used_gun)
-            {
-                case WeaponType.CANNON:
-                    {
-                        gun = new WeaponCannon(this);
-                        break;
-                    }
-                case WeaponType.MINIGUN:
-                    {
-                        gun = new WeaponMinigun(this);
-                        break;
-                    }
-                case WeaponType.LASER:
-                    {
-                        gun = new WeaponLaser(this);
-                        break;
-                    }
-                default:
-                    {
-                        gun = new WeaponCannon(this);
-                        break;
-                    }
-            }
+            Position = new CCPoint(GameManager.ScGame.gameplayLayer.ContentSize.Width / 2.0f, 50);
         }
         override public void Activity(float time)
         {

@@ -69,8 +69,6 @@ namespace RiotGalaxy
             CCAudioEngine.SharedEngine.BackgroundMusicVolume = 0.1f;
             CCAudioEngine.SharedEngine.StopAllEffects();
 
-           
-
             cmd = new CommandMainMenuSplash();  // первым делом включаем сцену с главным меню
             cmd.Execute();
 
@@ -117,7 +115,7 @@ namespace RiotGalaxy
             state.Enter();
         }
         public static void GoToScene(CCScene scene)
-        {
+        {            
             GameView.Director.ReplaceScene(scene);
         }
         public static void DeleteScene(CCScene scene)

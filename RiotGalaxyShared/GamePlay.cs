@@ -41,11 +41,12 @@ namespace RiotGalaxy
             world = new World();
             hive = new Hive();
             lvlEventDirector = new LvlEventDirector();
-            gameEventDirector = new GameEventDirector();            
-            
+            gameEventDirector = new GameEventDirector();         
             iface = new GUI();
+
+            gameEventDirector.EnemyDie += UpdateEnemyesNum;    //регистрируем обработчик события умирание вражины
+
             // Спавн игрока
-            //playerShip = new PlayerShip(GameManager.ScGame.gameplayLayer.ContentSize.Width / 2.0f, 50);
             if (playerShip == null)
             {
                 playerShip = new PlayerShip(new CCPoint(GameManager.ScGame.gameplayLayer.ContentSize.Width / 2.0f, 50));
@@ -53,7 +54,6 @@ namespace RiotGalaxy
             else
             {
                 playerShip.Init();
-                //GameManager.ScGame.AddChild(playerShip);
             }
             allObjects.Add(playerShip);
             GameManager.ScGame.gameplayLayer.AddChild(playerShip);
@@ -74,8 +74,6 @@ namespace RiotGalaxy
             Message("Тебя убили =(");
             await Task.Delay(delay);
             hasGameEnded = true;
-            //GameManager.ShutDownGameProcess();
-            //GameDelegate.gameManager.GameOver("Ты проиграл");
             ICommand cmd = new CommandLose();
             cmd.Execute();
         }
@@ -87,7 +85,6 @@ namespace RiotGalaxy
             hasGameEnded = true;
             ICommand cmd = new CommandWin();
             cmd.Execute();
-            //GameDelegate.gameManager.GameWin();
         }
 
         public void Activity(float time)
@@ -110,11 +107,12 @@ namespace RiotGalaxy
                     Win();
                 }                
             }
-            if (hasGameEnded == false)  // ГЛАВНЫЙ ЦИКЛ ИГРЫ
+            if (hasGameEnded == false)  // ГЛАВНЫЙ ЦИКЛ ИГРОВОГО ПРОЦЕССА
             {                
                 for (int i = 0; i < allObjects.Count; i++) // для каждго объекта игры...
                 {
                     allObjects[i].Activity(time);    // все объекты действуют
+
                     for (int z = 0; z < allObjects.Count; z++)  // проверка на колизии
                     {
                         if (allObjects[i] == allObjects[z]) // столкновение с самим собой не обрабатываем
@@ -125,19 +123,6 @@ namespace RiotGalaxy
                     }
                     if (allObjects[i].needToDelete == true) // удаляем объекты
                     {
-                        if (allObjects[i].objectType == GameObject.ObjType.ENEMY)
-                        {
-                            // БАБАХ!
-                            //SpawnSfx(allObjects[i].Position, Sfx.SfxType.BLAST);
-                            CommandSpawnSFX sfx = new CommandSpawnSFX(allObjects[i].Position);
-                            sfx.Execute();
-                            CommandSpawnRandomBonus bonus = new CommandSpawnRandomBonus(allObjects[i].Position);
-                            bonus.Execute();
-                            CommandStarBonus star = new CommandStarBonus(allObjects[i].Position);
-                            star.Execute();
-
-                            gameEventDirector.AddEvent((int)GameEventDirector.EventsID.HP_UPD);// создаем событие для обновления интерфейса
-                        }
                         allObjects[i].Delete();
                         allObjects.Remove(allObjects[i]);
                         i--; //фишка в том чтобы сдвинуть i на единицу назад, т.к. после удаления следующий элемент будет на том же индексе что и старый (удаленный)
@@ -147,7 +132,11 @@ namespace RiotGalaxy
                 gameEventDirector.Update();     // обработка прочих событий (обновить интерфейс, пауза и тд)
             }// ГЛАВНЫЙ ЦИКЛ
         }//Activity
-
+        void UpdateEnemyesNum()
+        {
+            GameManager.level.enemyKilled++; ///
+            GameManager.level.enemyRemain--;
+        }
         public void SpawnEnemy(Enemy.EnemyType enType)
         {
             if (GameManager.level.enemySpawned >= GameManager.level.total_num_enimies)

@@ -27,7 +27,9 @@
         public void Enter()
         {
             System.Diagnostics.Debug.WriteLine("=== GameStateGameProcess() ===");
-            
+            if (GameManager.gameplay == null)
+                GameManager.gameplay = new Gameplay();
+
             if (GameManager.level.cur_level_num > GameManager.level.totalNumberOfLevels)
             {
                 //GameManager.GameOver("Победа! Все уровни пройдены"); // Всё, прошел игру
@@ -43,17 +45,23 @@
                 return;
             }
 
-            //if(GameManager.ScGame == null)
+            if (GameManager.ScGame == null)
+            {
                 GameManager.ScGame = new SceneGame(GameManager.GameView);
-            if (GameManager.gameplay == null)
-                GameManager.gameplay = new Gameplay();
-            else
+                GameManager.GoToScene(GameManager.ScGame);
+
                 GameManager.gameplay.Init();
-            GameManager.gameplay.Init();
+                GameManager.ScGame.Init();
+            }
+            else
+            {
+                GameManager.ScGame = new SceneGame(GameManager.GameView);
+                GameManager.GoToScene(GameManager.ScGame);
+                //GameManager.GameView.Director.PopScene(); //// не получается(
 
-            GameManager.ScGame.InitSceneObjects();
-            GameManager.GoToScene(GameManager.ScGame);
-
+                GameManager.gameplay.Init();
+                GameManager.ScGame.Init();
+            }
         }
         public void Update(float time)
         {
@@ -64,10 +72,12 @@
         {
             if (GameManager.gameplay != null)
                 GameManager.gameplay.CloseGameplay();
+
             if (GameManager.ScGame != null)
             {
-                GameManager.ScGame.CloseScene();
-                GameManager.ScGame.Dispose();///
+                //GameManager.ScGame.CloseScene();
+                //GameManager.ScGame.Dispose();///
+                GameManager.GameView.Director.PushScene(GameManager.ScGame);
                 //GameManager.DeleteScene(GameManager.ScGame);
             }
         }

@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Collections;
 //using RiotGalaxyAndroid;
-using RiotGalaxy.Utils;
+using RiotGalaxy;
 
 namespace RiotGalaxy
 {
@@ -19,7 +19,7 @@ namespace RiotGalaxy
     {
         public enum LvlEventClass : int { COMMAND = 0, ENEMY, BONUS }
         public enum LvlEventEnemyType : int {  EN_SM_SCOUT, EN_BLUE, EN_GREEN, EN_RED }
-        public enum LvlEventCmdType : int { WAIT = 0, INTERVAL, ROUTE, END, TRIGGER_ON, TRIGGER_OFF, CUT_SC }
+        public enum LvlEventCmdType : int { WAIT = 0, INTERVAL, ROUTE, END, TRIGGER_ON, TRIGGER_OFF, CUT_SC }        
 
         ArrayList CurrentEventsList;    // основной (0) список событий
         public ArrayList AllEventsList; // список списков событий
@@ -49,7 +49,7 @@ namespace RiotGalaxy
             mainEvList.trigger_id = 0;
             mainEvList.curEvent = 0;
             mainEvList.list = new ArrayList();
-
+            
             AllEventsList.Add(mainEvList);
                         
             CurrentEventsList = mainEvList.list;
@@ -69,7 +69,6 @@ namespace RiotGalaxy
             }else
                 return false;            
         }
-
         private void ParceLine(string line)
         {
             //bool sync_cmd_now = false;
