@@ -1,6 +1,6 @@
 ﻿using CocosSharp;
 
-namespace RiotGalaxy.Objects.Weapons
+namespace RiotGalaxy.Weapons
 {
     class Slug : Shell
     {

@@ -1,6 +1,7 @@
 using CocosSharp;
+using RiotGalaxy.Objects;
 
-namespace RiotGalaxy.Objects.Weapons
+namespace RiotGalaxy.Weapons
 {
     class Bullet : Shell
     {

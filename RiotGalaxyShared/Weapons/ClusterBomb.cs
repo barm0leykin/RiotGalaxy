@@ -1,7 +1,7 @@
 ﻿using CocosSharp;
 using System.Collections;
 
-namespace RiotGalaxy.Objects.Weapons
+namespace RiotGalaxy.Weapons
 {
     class ClusterBomb : Shell
     {

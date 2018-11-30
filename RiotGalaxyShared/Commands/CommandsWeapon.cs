@@ -1,6 +1,6 @@
 ﻿using CocosSharp;
 using RiotGalaxy.Interface;
-using RiotGalaxy.Objects.Weapons;
+using RiotGalaxy.Weapons;
 
 namespace RiotGalaxy.Commands
 {

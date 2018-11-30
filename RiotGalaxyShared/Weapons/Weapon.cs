@@ -1,4 +1,5 @@
 ﻿using CocosSharp;
+using RiotGalaxy.Objects;
 using RiotGalaxy.Factories;
 using RiotGalaxy.Interface;
 using System.Threading;
@@ -13,7 +14,7 @@ public class WeaponOptions
     public float shellSpeed;   // скорость снаряда
 }
 
-namespace RiotGalaxy.Objects.Weapons
+namespace RiotGalaxy.Weapons
 {
     public class Weapon
     {
@@ -167,6 +168,7 @@ namespace RiotGalaxy.Objects.Weapons
         }
         override public void FireOnce(float time)
         {
+            Aim(aimAngle);//чтобы обновить начальные координаты второго снаряда
             shell = new Laser(shellPos); 
             base.FireOnce(time);
         }

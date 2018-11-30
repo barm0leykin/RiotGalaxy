@@ -1,6 +1,6 @@
 using System;
 using CocosSharp;
-using RiotGalaxy.Objects.Weapons;
+using RiotGalaxy.Weapons;
 
 namespace RiotGalaxy.Factories
 {

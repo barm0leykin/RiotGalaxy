@@ -1,9 +1,9 @@
 using CocosSharp;
 using System.Threading.Tasks;
-using RiotGalaxy.Objects.Weapons;
+using RiotGalaxy.Weapons;
 using RiotGalaxy.Interface;
 using RiotGalaxy.Objects.ObjBehavior;
-using static RiotGalaxy.Objects.Weapons.Weapon;
+using static RiotGalaxy.Weapons.Weapon;
 
 namespace RiotGalaxy.Objects
 {
@@ -45,10 +45,7 @@ namespace RiotGalaxy.Objects
             shoot = new ObjBehShootUp(this);
             gun = new WeaponCannon(this);
             draw = new ObjBehDrawSprite(this);
-            //PrepareWeapon();
-
-            //HpMax = 100;
-            Hp = GameManager.player.MaxHp;
+            
             Damage = 100;   // сила тарана своей тушкой
 
             // Sprite
@@ -64,6 +61,8 @@ namespace RiotGalaxy.Objects
         }
         public void Init()
         {
+            //HpMax = 100;
+            Hp = GameManager.player.MaxHp;
             ActionTime = 0;
             gun.Safe = false;
             Position = new CCPoint(GameManager.ScGame.gameplayLayer.ContentSize.Width / 2.0f, 50);
@@ -139,6 +138,20 @@ namespace RiotGalaxy.Objects
                 CCAudioEngine.SharedEngine.PlayEffect("explode1");
                 needToDelete = true;
             }
+        }
+        public override void Delete()
+        {
+            //base.Delete();
+            //UnscheduleAll();
+            //GameManager.gameplay.allObjects.Remove(this); //
+            GameManager.ScGame.gameplayLayer.RemoveChild(this);
+            //ai = null;
+
+            //RemoveAllChildren(true);
+            //RemoveFromParent(true);
+            //RemoveAllListeners();
+            //needToDelete = true;
+
         }
         async void AddMyshield(int delay = 2000) // временная неубиваемость
         {

@@ -1,5 +1,5 @@
 ﻿using RiotGalaxy.Interface;
-using RiotGalaxy.Objects.Weapons;
+using RiotGalaxy.Weapons;
 using static RiotGalaxy.GameEventDirector;
 
 namespace RiotGalaxy

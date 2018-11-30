@@ -1,5 +1,5 @@
 using CocosSharp;
-using RiotGalaxy.Objects.Weapons;
+using RiotGalaxy.Weapons;
 using RiotGalaxy.Objects.ObjBehavior;
 using System;
 
@@ -50,7 +50,7 @@ namespace RiotGalaxy.Objects
             //GameManager.gameplay.allObjects.Add(this);
             GameManager.ScGame.gameplayLayer.AddChild(this);
         }
-        public void Delete()
+        virtual public void Delete()
         {
             //System.Diagnostics.Debug.WriteLine("=== Delete() === ");            
             UnscheduleAll();

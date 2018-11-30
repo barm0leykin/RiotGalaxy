@@ -12,7 +12,7 @@ namespace RiotGalaxyAndroid
     [Activity(Label = "RiotGalaxy",
         MainLauncher = true,
         Icon = "@drawable/icon",
-        Theme = "@style/FullscreenHideBars", //"@android:style/Theme.Black.NoTitleBar.Fullscreen",
+        Theme = "@style/RiotGalaxy.SplashScreen", //Тема с сплэшскрином //"@android:style/Theme.Black.NoTitleBar.Fullscreen",
         AlwaysRetainTaskState = true,
         ScreenOrientation = ScreenOrientation.Landscape,
         LaunchMode = LaunchMode.SingleInstance,
@@ -20,17 +20,17 @@ namespace RiotGalaxyAndroid
 
     class MainActivity : Activity
     {
-        //public static AssetManager assets;
         private CCGameView gameView;
-        //Assembly a = Assembly.Load("dllcsharp");
 
         protected override void OnCreate(Bundle bundle)
         {
-            base.OnCreate(bundle);
+            SetTheme(Resource.Style.RiotGalaxy_Fullscreen);   // Установить тему без сплэшскрина         
 
+            base.OnCreate(bundle);
+            
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
-
+            
             // Get our game view from the layout resource,
             // and attach the view created event to it
             gameView = (CCGameView)FindViewById(Resource.Id.GameView);

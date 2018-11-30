@@ -40,6 +40,9 @@ namespace RiotGalaxy.Objects
             }
             return true;
         }
+        public override void Hit(int damage)
+        {            
+        }
         virtual public void ApplyBonus(GameObject obj)
         { }
     }    

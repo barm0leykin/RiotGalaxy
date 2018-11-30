@@ -1,10 +1,11 @@
 ﻿using CocosSharp;
 using RiotGalaxy.Objects.ObjBehavior;
+using RiotGalaxy.Objects;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RiotGalaxy.Objects.Weapons
+namespace RiotGalaxy.Weapons
 {
     class Shell : GameObject
     {

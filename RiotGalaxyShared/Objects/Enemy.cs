@@ -4,7 +4,7 @@ using CocosSharp;
 using RiotGalaxy;
 using RiotGalaxy.Factories;
 using RiotGalaxy.SFX;
-using RiotGalaxy.Objects.Weapons;
+using RiotGalaxy.Weapons;
 using RiotGalaxy.Objects.ObjBehavior;
 
 namespace RiotGalaxy.Objects
@@ -54,15 +54,6 @@ namespace RiotGalaxy.Objects
             //GameManager.level.enemyKilled++; ///
             //GameManager.level.enemyRemain--;
             needToDelete = true;
-
-            CommandSpawnSFX sfx = new CommandSpawnSFX(Position);
-            sfx.Execute();
-            CommandSpawnRandomBonus bonus = new CommandSpawnRandomBonus(Position);
-            bonus.Execute();
-            CommandStarBonus star = new CommandStarBonus(Position);
-            star.Execute();
-            GameManager.gameplay.gameEventDirector.AddEvent(GameEventDirector.EventsID.ENEMY_DIE);
-            //GameManager.gameplay.gameEventDirector.AddEvent(GameEventDirector.EventsID.SCORE_UPD);// создаем событие для обновления интерфейса
         }
     }
 }

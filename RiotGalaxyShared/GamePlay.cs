@@ -123,6 +123,18 @@ namespace RiotGalaxy
                     }
                     if (allObjects[i].needToDelete == true) // удаляем объекты
                     {
+                        if (allObjects[i].objectType == GameObject.ObjType.ENEMY )
+                        {
+                            CommandSpawnSFX sfx = new CommandSpawnSFX(allObjects[i].Position);
+                            sfx.Execute();
+                            CommandSpawnRandomBonus bonus = new CommandSpawnRandomBonus(allObjects[i].Position);
+                            bonus.Execute();
+                            CommandStarBonus star = new CommandStarBonus(allObjects[i].Position);
+                            star.Execute();
+                            GameManager.gameplay.gameEventDirector.AddEvent(GameEventDirector.EventsID.ENEMY_DIE);
+                            //GameManager.gameplay.gameEventDirector.AddEvent(GameEventDirector.EventsID.SCORE_UPD);// создаем событие для обновления интерфейса
+                        }
+
                         allObjects[i].Delete();
                         allObjects.Remove(allObjects[i]);
                         i--; //фишка в том чтобы сдвинуть i на единицу назад, т.к. после удаления следующий элемент будет на том же индексе что и старый (удаленный)

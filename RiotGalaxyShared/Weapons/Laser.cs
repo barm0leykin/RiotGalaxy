@@ -1,7 +1,8 @@
 ﻿using CocosSharp;
 using System.Collections;
+using RiotGalaxy.Objects;
 
-namespace RiotGalaxy.Objects.Weapons
+namespace RiotGalaxy.Weapons
 {
     class Laser : Shell
     {
@@ -19,8 +20,8 @@ namespace RiotGalaxy.Objects.Weapons
         }
         public override bool Collision(GameObject obj)
         {
-            if (obj.objectType == ObjType.BONUS) // бонусы не подбиваем)
-                return false;
+            //if (obj.objectType == ObjType.BONUS) // бонусы не подбиваем)
+            //    return false;
             if (playerSide == obj.playerSide) // откл фрэндли-файр
                 return false;
             foreach (GameObject target in hitTargets) // если этому объекту уже был нанесен урон - выходим

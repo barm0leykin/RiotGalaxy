@@ -24,10 +24,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Objects\ObjBehavior\ObjBehDraw.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Objects\TriggerObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interface\Console.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Objects\Weapons\ClusterBomb.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Objects\Weapons\Laser.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Objects\Weapons\Shell.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Objects\Weapons\Slug.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Weapons\ClusterBomb.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Weapons\Laser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Weapons\Shell.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Weapons\Slug.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\FileUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\Options.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GamePlay.cs" />
@@ -53,8 +53,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Objects\ObjBehavior\ObjBehShoot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Objects\ObjBehavior\Route.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Objects\PlayerShip.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Objects\Weapons\Bullet.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Objects\Weapons\Weapon.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Weapons\Bullet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Weapons\Weapon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SceneGame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SceneLose.cs" />
