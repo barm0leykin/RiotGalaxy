@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace RiotGalaxy
 {
     /// <summary>
-    /// класс геймплея - главныйцикл игры, обработка событий, ввод игрока и тд
+    /// класс геймплея - главный цикл игры, обработка событий, ввод игрока и тд
     /// </summary>
     public class Gameplay
     {

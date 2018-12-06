@@ -58,12 +58,16 @@ namespace RiotGalaxy.Objects
             GameManager.gameplay.iface.AddButton(btn_pl_pause);
             //GameManager.gameplay.userInputHandler.AddButnHandler(btn_pl_pause);
             //AddLabel();
+            Init();
         }
+        
+        // на случай когда объект не создается, а переносится на другой уровень или уровень начинается заново после смерти
         public void Init()
         {
             //HpMax = 100;
             Hp = GameManager.player.MaxHp;
             ActionTime = 0;
+            needToDelete = false;
             gun.Safe = false;
             Position = new CCPoint(GameManager.ScGame.gameplayLayer.ContentSize.Width / 2.0f, 50);
         }
@@ -73,7 +77,7 @@ namespace RiotGalaxy.Objects
             move.Move(time);
 
             ActionTime += time;
-            if (ActionTime > gun.wpOptions.reloadSpeed) // пора стрелять   // if (ActionTime > GameManager.player.GunFireRate)
+            if (ActionTime > gun.wpOptions.reloadSpeed) // пора стрелять 
             {
                 ActionTime = 0;
                 shoot.Shoot(time);

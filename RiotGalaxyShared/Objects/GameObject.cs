@@ -61,6 +61,7 @@ namespace RiotGalaxy.Objects
             shoot = null;
             move = null;            
             coll = null;
+            draw = null;
             /*if(sprite != null)
                 sprite.Dispose();
             sprite = null;*/
@@ -68,7 +69,6 @@ namespace RiotGalaxy.Objects
             RemoveAllChildren(true);
             RemoveFromParent(true);
             RemoveAllListeners();
-            needToDelete = true;            
         }
         virtual public void Activity(float time)
         {
