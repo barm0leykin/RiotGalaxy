@@ -29,7 +29,7 @@ namespace RiotGalaxy.Utils
                     char separator = System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator[0]; //Разделитель в зависимости от региональных настроек
                     while ((line = sr.ReadLine()) != null)
                     {
-                        line = line.Replace(',', separator);//меняем знак разделителя на местный
+                        line = line.Replace(',', separator);    //меняем знак разделителя на местный
                         line = line.Replace('.', separator);
                         fileContent.Add(line);
                         System.Diagnostics.Debug.WriteLine("line: " + line);
