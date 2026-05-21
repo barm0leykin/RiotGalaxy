@@ -26,10 +26,12 @@ namespace RiotGalaxy.Managers
         }
 
         // Ссылки на основные компоненты игры
+        // Основные компоненты
         private Game _game;
         private GraphicsDeviceManager _graphics;
         private ContentManager _content;
         private SpriteBatch _spriteBatch;
+        private SpriteFont _defaultFont;
 
         // Базовые игровые состояния
         public enum GameState { MainMenu, Playing, Paused, GameOver, Victory }
@@ -83,7 +85,20 @@ namespace RiotGalaxy.Managers
         public void LoadContent()
         {
             System.Diagnostics.Debug.WriteLine("=== GameManager Loading Content ===");
-            // Здесь будем загружать спрайты, звуки и т.д.
+            // Создаем простой шрифт программно, так как у нас нет проекта RiotGalaxy.Content
+            // Это временная мера до настройки правильного контента
+            CreateDefaultFont();
+        }
+        
+        /// <summary>
+        /// Создание простого шрифта программно
+        /// </summary>
+        private void CreateDefaultFont()
+        {
+            // Поскольку мы не можем загрузить шрифт из файла, создаем простую текстуру
+            // для отображения базовой информации
+            // В будущем здесь будет загрузка шрифта из проекта контента
+            System.Diagnostics.Debug.WriteLine("Default font creation skipped - will use simple textures");
         }
 
         /// <summary>
@@ -400,28 +415,37 @@ namespace RiotGalaxy.Managers
         private void DrawHUD()
         {
             try {
-                // Рисуем здоровье игрока (пока заглушка)
-                // if (Player != null)
-                // {
-                //     string healthText = $"Health: {Player.Health}/{Player.MaxHealth}";
-                    try {
-                        // _spriteBatch.DrawString(_content.Load<SpriteFont>("TestFont"), 
-                        //     healthText, 
-                        //     new Vector2(10, 10), 
-                        //     Color.White);
-                        DrawSimplePlaceholder(10, 10, 200, 30, "RiotGalaxy HUD");
-                    }
-                    catch
-                    {
-                        // Если шрифт не загружен, просто пропускаем отрисовку текста
-                    }
-                // }
+                // Рисуем здоровье игрока (упрощенная версия без текста)
+                if (Player != null)
+                {
+                    // Отображаем здоровье с помощью цветных прямоугольников
+                    DrawSimplePlaceholder(10, 10, 200, 30, "RiotGalaxy HUD");
+                    
+                    // Рисуем полоску здоровья с помощью прямоугольников
+                    DrawSimplePlaceholder(10, 45, 200, 20, "Health");
+                    
+                    // Отображаем текущее здоровье как часть полоски
+                    int healthWidth = (int)(200 * (float)Player.Health / Player.MaxHealth);
+                    DrawHealthBar(10, 45, healthWidth, 20, Player.Health);
+                }
             }
             catch
             {
                 // Заглушка - просто рисуем прямоугольник
                 DrawSimplePlaceholder(10, 10, 200, 30, "HUD");
             }
+        }
+        
+        /// <summary>
+        /// Рисование полоски здоровья
+        /// </summary>
+        private void DrawHealthBar(int x, int y, int width, int height, int health)
+        {
+            Color barColor = Color.Green;
+            if (health < 30) barColor = Color.Red;
+            else if (health < 60) barColor = Color.Yellow;
+            
+            _spriteBatch.Draw(SimpleTexture, new Rectangle(x, y, width, height), barColor);
         }
         
         /// <summary>

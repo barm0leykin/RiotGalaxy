@@ -6,8 +6,16 @@
     <MonoGamePlatform>DesktopGL</MonoGamePlatform>
   </PropertyGroup>
 
+  <!-- Временно закомментировали пакет MonoGame.Content.Builder.Task
+       из-за отсутствия утилиты dotnet mgcb
+       TODO: Установить утилиту и раскомментировать этот блок
   <ItemGroup>
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <MonoGameContentReference Include="RiotGalaxy.Content.mgcb" />
+  </ItemGroup>
+  -->
 
 </Project>

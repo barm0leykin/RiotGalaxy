@@ -1,0 +1,12 @@
+/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.Content/bin/Debug/net6.0/RiotGalaxy.Content.deps.json
+/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.Content/bin/Debug/net6.0/RiotGalaxy.Content.dll
+/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.Content/bin/Debug/net6.0/RiotGalaxy.Content.pdb
+/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.Content/obj/Debug/net6.0/RiotGalaxy.Content.GeneratedMSBuildEditorConfig.editorconfig
+/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.Content/obj/Debug/net6.0/RiotGalaxy.Content.AssemblyInfoInputs.cache
+/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.Content/obj/Debug/net6.0/RiotGalaxy.Content.AssemblyInfo.cs
+/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.Content/obj/Debug/net6.0/RiotGalaxy.Content.csproj.CoreCompileInputs.cache
+/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.Content/obj/Debug/net6.0/RiotGalaxy.Content.sourcelink.json
+/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.Content/obj/Debug/net6.0/RiotGalaxy.Content.dll
+/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.Content/obj/Debug/net6.0/refint/RiotGalaxy.Content.dll
+/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.Content/obj/Debug/net6.0/RiotGalaxy.Content.pdb
+/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.Content/obj/Debug/net6.0/ref/RiotGalaxy.Content.dll

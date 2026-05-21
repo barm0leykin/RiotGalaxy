@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RiotGalaxy.DesktopGL")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2686798e9cc43cd910f75a67a23bc3c74cb58f49")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+99ad7ef25a6a071a5b553deb2ceb0be2af235124")]
 [assembly: System.Reflection.AssemblyProductAttribute("RiotGalaxy.DesktopGL")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RiotGalaxy.DesktopGL")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

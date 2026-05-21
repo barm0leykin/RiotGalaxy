@@ -1,9 +1,3 @@
-/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/obj/Debug/net6.0/RiotGalaxy.DesktopGL.csproj.AssemblyReference.cache
-/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/obj/Debug/net6.0/RiotGalaxy.DesktopGL.GeneratedMSBuildEditorConfig.editorconfig
-/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/obj/Debug/net6.0/RiotGalaxy.DesktopGL.AssemblyInfoInputs.cache
-/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/obj/Debug/net6.0/RiotGalaxy.DesktopGL.AssemblyInfo.cs
-/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/obj/Debug/net6.0/RiotGalaxy.DesktopGL.csproj.CoreCompileInputs.cache
-/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/obj/Debug/net6.0/RiotGalaxy.DesktopGL.sourcelink.json
 /home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/bin/Debug/net6.0/RiotGalaxy.DesktopGL
 /home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/bin/Debug/net6.0/RiotGalaxy.DesktopGL.deps.json
 /home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/bin/Debug/net6.0/RiotGalaxy.DesktopGL.runtimeconfig.json
@@ -20,6 +14,12 @@
 /home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/bin/Debug/net6.0/runtimes/win-x86/native/soft_oal.dll
 /home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/bin/Debug/net6.0/RiotGalaxy.Core.dll
 /home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/bin/Debug/net6.0/RiotGalaxy.Core.pdb
+/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/obj/Debug/net6.0/RiotGalaxy.DesktopGL.csproj.AssemblyReference.cache
+/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/obj/Debug/net6.0/RiotGalaxy.DesktopGL.GeneratedMSBuildEditorConfig.editorconfig
+/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/obj/Debug/net6.0/RiotGalaxy.DesktopGL.AssemblyInfoInputs.cache
+/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/obj/Debug/net6.0/RiotGalaxy.DesktopGL.AssemblyInfo.cs
+/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/obj/Debug/net6.0/RiotGalaxy.DesktopGL.csproj.CoreCompileInputs.cache
+/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/obj/Debug/net6.0/RiotGalaxy.DesktopGL.sourcelink.json
 /home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/obj/Debug/net6.0/RiotGala.B1815CC8.Up2Date
 /home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/obj/Debug/net6.0/RiotGalaxy.DesktopGL.dll
 /home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.DesktopGL/obj/Debug/net6.0/refint/RiotGalaxy.DesktopGL.dll
