@@ -26,12 +26,18 @@ namespace RiotGalaxy.Managers
         }
 
         // Ссылки на основные компоненты игры
-        // Основные компоненты
         private Game _game;
         private GraphicsDeviceManager _graphics;
         private ContentManager _content;
         private SpriteBatch _spriteBatch;
         private SpriteFont _defaultFont;
+        
+        // Игровые события (аналог GamePlay.cs)
+        public List<Action> GameEvents { get; private set; } = new List<Action>();
+        
+        // Счетчики для отслеживания статистики
+        public int EnemiesKilled { get; private set; }
+        public int EnemiesRemaining { get; private set; }
 
         // Базовые игровые состояния
         public enum GameState { MainMenu, Playing, Paused, GameOver, Victory }
@@ -57,6 +63,10 @@ namespace RiotGalaxy.Managers
             ScreenWidth = 1280;
             ScreenHeight = 768;
             Console.WriteLine($"=== GameManager initialized with state: {CurrentGameState} ===");
+            
+            // Инициализируем статистические счетчики
+            EnemiesKilled = 0;
+            EnemiesRemaining = 0;
         }
 
         /// <summary>
@@ -103,28 +113,35 @@ namespace RiotGalaxy.Managers
 
         /// <summary>
         /// Основной игровой цикл - обновление состояния игры
+        /// Адаптировано из GamePlay.cs (CocosSharp)
         /// </summary>
         public void Update(GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            // Быстрая проверка завершения игры перед обновлением
+            if (CheckGameEndConditions())
+            {
+                return; // Игра окончена, ждем обработку в GameManager.ChangeGameState
+            }
+
             // Обновляем все объекты в соответствии с текущим состоянием
             switch (CurrentGameState)
             {
                 case GameState.MainMenu:
-                    // UpdateMainMenu(deltaTime);
+                    UpdateMainMenu(deltaTime);
                     break;
                 case GameState.Playing:
                     UpdateGameplay(gameTime);
                     break;
                 case GameState.Paused:
-                    // UpdatePaused(deltaTime);
+                    UpdatePaused(deltaTime);
                     break;
                 case GameState.GameOver:
-                    // UpdateGameOver(deltaTime);
+                    UpdateGameOver(deltainity);
                     break;
                 case GameState.Victory:
-                    // UpdateVictory(deltaTime);
+                    UpdateVictory(deltaTime);
                     break;
             }
         }
@@ -218,17 +235,43 @@ namespace RiotGalaxy.Managers
 
         private void UpdateGameplay(GameTime gameTime)
         {
-            // Обновляем все игровые объекты
-            foreach (var gameObject in GameObjects)
+            Console.WriteLine($"=== UpdateGameplay: Processing {GameObjects.Count} objects ===");
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            
+            // Аналог основного цикла из GamePlay.cs - обрабатываем все объекты
+            for (int i = 0; i < GameObjects.Count; i++)
             {
-                gameObject.Update(gameTime);
+                if (GameObjects[i] == null)
+                    continue;
+                
+                // Обновляем состояние объекта
+                GameObjects[i].Update(gameTime);
+                
+                // Проверка столкновений с другими объектами
+                for (int z = 0; z < GameObjects.Count; z++)
+                {
+                    if (i == z) continue; // Пропускаем столкновение с самим собой
+                    
+                    if (GameObjects[i].Intersects(GameObjects[z]))
+                    {
+                        ProcessCollision(GameObjects[i], GameObjects[z]);
+                    }
+                }
+                
+                // Проверяем, нужно ли удалить объект
+                if (!GameObjects[i].IsAlive)
+                {
+                    Console.WriteLine($"=== Marking object for removal: {GameObjects[i].GetType().Name} ===");
+                }
             }
-
-            // Проверка столкновений (пока аналогично CocosSharp)
-            CheckCollisions();
-
-            // Удаление объектов отмеченных для удаления
+            
+            // Удаляем объекты помеченные для удаления (аналог GamePlay.cs)
             RemoveDeadObjects();
+            
+            Console.WriteLine($"=== UpdateGameplay: Successfully processed {GameObjects.Count} objects ===");
+            
+            // Обрабатываем игровые события (аналог GamePlay.cs lvlEventDirector.Update(time); gameEventDirector.Update())
+            ProcessGameEvents();
         }
 
         #endregion
@@ -347,14 +390,21 @@ namespace RiotGalaxy.Managers
             Console.WriteLine("=== InitializeGameplay method called ===");
             try
             {
+                // Сбрас статистики (аналог начала уровня)
+                EnemiesKilled = 0;
+                EnemiesRemaining = 0;
+                
                 // Инициализация игрового процесса
                 GameObjects.Clear();
                 
-                // Создаем игрока
+                // Создаем игрока (аналог GamePlay.cs)
                 Player = new PlayerShip(new Vector2(ScreenWidth / 2, ScreenHeight - 100));
                 Player.SetGraphicsDevice(GraphicsDevice);
                 GameObjects.Add(Player);
-
+                
+                // Регистрируем обработчики событий (аналог GamePlay.cs)
+                SetupGameplayEvents();
+                
                 Console.WriteLine($"=== Gameplay Initialized - Player created at ({Player.Position.X}, {Player.Position.Y}) ===");
                 Console.WriteLine($"=== Total game objects: {GameObjects.Count} ===");
             }
@@ -365,6 +415,54 @@ namespace RiotGalaxy.Managers
                 // Заглушка - просто очищаем объекты
                 GameObjects.Clear();
             }
+        }
+        
+        /// <summary>
+        /// Настройка игровых событий (аналог GamePlay.cs)
+        /// </summary>
+        private void SetupGameplayEvents()
+        {
+            // Очищаем предыдущие события
+            GameEvents.Clear();
+            
+            // В будущем здесь будут регистрированы основные игровые события
+            // Например: событие смерти врага, достижение目标和 т.п.
+        }
+        
+        /// <summary>
+        /// Проверка условий завершения игры (аналог GamePlay.cs)
+        /// </summary>
+        private bool CheckGameEndConditions()
+        {
+            switch (CurrentGameState)
+            {
+                case GameState.Playing:
+                    // Проверяем здоровье игрока
+                    if (Player != null && Player.Health <= 0)
+                    {
+                        Console.WriteLine("=== Player died - game should end ===");
+                        ChangeGameState(GameState.GameOver);
+                        return true;
+                    }
+                    
+                    // Проверяем количество оставшихся врагов
+                    if (EnemiesRemaining > 0 && EnemiesKilled >= EnemiesRemaining)
+                    {
+                        Console.WriteLine("=== All enemies defeated - game should end ===");
+                        ChangeGameState(GameState.Victory);
+                        return true;
+                    }
+                    break;
+                    
+                case GameState.MainMenu:
+                case GameState.Paused:
+                case GameState.GameOver:
+                case GameState.Victory:
+                    // В этих состояниях игра не продолжается
+                    break;
+            }
+            
+            return false;
         }
 
         private void CleanupGameplay()
@@ -402,14 +500,43 @@ namespace RiotGalaxy.Managers
 
         private void RemoveDeadObjects()
         {
-            // Удаляем объекты отмеченные для удаления
+            // Удаляем объекты отмеченные для удаления (аналог GamePlay.cs)
             for (int i = GameObjects.Count - 1; i >= 0; i--)
             {
                 if (!GameObjects[i].IsAlive)
                 {
+                    // Специальная обработка для разных типов объектов
+                    var objectType = GameObjects[i].GetType().Name;
+                    Console.WriteLine($"=== Removing {objectType} ===");
+                    
+                    // Для врагов и бонусов выполняем дополнительные действия (аналог GamePlay.cs)
+                    if (objectType.Contains("Enemy"))
+                    {
+                        // Игровое событие о гибели врага
+                        TriggerEnemyDeathEvent(GameObjects[i]);
+                    }
+                    
+                    // Удаляем объект из списка
                     GameObjects.RemoveAt(i);
                 }
             }
+        }
+        
+/// <summary>
+        /// Обработка смерти врага (аналог событий в GamePlay.cs)
+        /// </summary>
+        private void TriggerEnemyDeath(GameObject enemy)
+        {
+            // Обновляем счетчики
+            EnemiesKilled++;
+            Console.WriteLine($"=== Enemy killed. Total killed: {EnemiesKilled}, Remaining: {EnemiesRemaining} ===");
+            
+            // В будущем здесь будут игровые события
+            // Например: gameEventDirector.AddEvent(GameEventDirector.EventsID.ENEMY_DIE);
+            Console.WriteLine($"=== Enemy death event triggered ===");
+            
+            // Добавляем событие в список событий для обработки в конце обновления
+            GameEvents.Add(() => Console.WriteLine($"Processing enemy death..."));
         }
 
         private void DrawHUD()
@@ -471,6 +598,32 @@ namespace RiotGalaxy.Managers
             _spriteBatch.Draw(SimpleTexture, new Rectangle(x, y, width, height), Color.White);
             // Для отладки можно использовать консольный вывод
             System.Diagnostics.Debug.WriteLine($"Drawing text placeholder: {text} at ({x},{y})");
+        }
+
+        /// <summary>
+        /// Обработка игровых событий (аналог gameEventDirector.Update() из GamePlay.cs)
+        /// </summary>
+        private void ProcessGameEvents()
+        {
+            // Обрабатываем события в безопасном цикле, чтобы избежать problemas с изменением списка во время итерации
+            var eventsToProcess = new List<Action>(GameEvents);
+            
+            // Копируем события и очищаем основной список
+            foreach (var gameEvent in GameEvents)
+            {
+                eventsToProcess.Add(gameEvent);
+            }
+            
+            // Очищаем основной список
+            GameEvents.Clear();
+            
+            // Обрабатываем скопированные события
+            foreach (var gameEvent in eventsToProcess)
+            {
+                gameEvent?.Invoke();
+            }
+            
+            Console.WriteLine($"=== Processed {eventsToProcess.Count} game events");
         }
 
         #endregion

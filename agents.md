@@ -20,6 +20,32 @@
 - актуализируй файл MonoGame/tasks.md по мере хода работ
 - сохраняй контекст разговора в директории ai-agent/memory/ но избегай лишних деталей
 
+## шаблоны сессий
+
+при начале новой сессии используй следующий шаблон кон
+текста:
+
+```
+Продолжи разработку проекта RiotGalaxy на MonoGame. Используй систему памяти для восстановления контекста.
+
+Текущая структура проекта:
+- /home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/ (основной проект)
+- ai-agent/memory/ (система памяти)
+
+Ключевые файлы:
+- MonoGame/tasks.md (план migrations)
+- MonoGame/RiotGalaxy.Core/Game1.cs (основной класс игры)
+- MonoGame/RiotGalaxy.Core/Managers/GameManager.cs (менеджер игры)
+- MonoGame/RiotGalaxy.Core/GameObjects/PlayerShip.cs (корабль игрока)
+
+Сначала:
+1. Загрузи контекст проекта из ai-agent/memory/
+2. Восстанови последнюю сессию
+3. Получи сводку действий из summary.txt
+
+Затем продолжай с текущей задачи согласно tasks.md.
+```
+
 ## система памяти
 
 в директории ai-agent/ реализована система сохранения контекста:

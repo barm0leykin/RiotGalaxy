@@ -1,0 +1,11 @@
+{
+  "project_name": "RiotGalaxy",
+  "project_type": "Kubernetes с ArgoCD",
+  "last_modified": "2026-05-21T17:04:11.299735",
+  "components": {
+    "AuthService": "Обеспечивает аутентификацию и авторизацию пользователей через JWT"
+  },
+  "important_files": [
+    "src/services/auth.service.ts"
+  ]
+}

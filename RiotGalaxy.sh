@@ -1,12 +1,17 @@
 #!/bin/bash
 # Многофункциональный скрипт для управления проектом RiotGalaxy (MonoGame)
 
-# Цвета для вывода
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# Цвета для вывода (отключены для совместимости)
+# GREEN='\033[0;32m'
+# YELLOW='\033[1;33m'
+# RED='\033[0;31m'
+# BLUE='\033[0;34m'
+# NC='\033[0m' # No Color
+GREEN=""
+YELLOW=""
+RED=""
+BLUE=""
+NC=""
 
 # Функция для вывода справки
 show_help() {
@@ -35,7 +40,14 @@ show_help() {
 }
 
 # Функция для проверки нахождения в корневой директории
-check_root_directory() {
+# и перехода в корневую директорию проекта
+go_to_root_directory() {
+    # Получение пути к скрипту
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    
+    # Переключаемся на корневую директорию проекта
+    cd "$SCRIPT_DIR"
+    
     if [ ! -d "MonoGame" ]; then
         echo -e "${RED}Ошибка: директория MonoGame не найдена!${NC}"
         echo -e "${YELLOW}Возможно вы находитесь не в корневой директории проекта.${NC}"
@@ -49,12 +61,12 @@ build_project() {
     local clean=$1
     local release=$2
     
-    check_root_directory
+    go_to_root_directory
     
     echo -e "${BLUE}Сборка проекта RiotGalaxy${NC}"
     echo "------------------------------------"
     
-    cd RiotGalaxy/MonoGame
+    cd MonoGame
     
     # Очистка если нужно
     if [ "$clean" = "true" ]; then
@@ -85,17 +97,24 @@ build_project() {
 run_game() {
     local skip_build=$1
     
-    # Сборка если нужно
-    if [ "$skip_build" != "no-build" ] && build_project; then
-        return 1
-    fi
+    # Получение пути к скрипту и переход в корневую директорию
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    cd "$SCRIPT_DIR"
     
-    check_root_directory
+    # Сборка если нужно
+    if [ "$skip_build" != "no-build" ]; then
+        if ! build_project; then
+            echo -e "${RED}Ошибка: сборка не удалась, запуск игры отменен${NC}"
+            return 1
+        fi
+    else
+        go_to_root_directory
+    fi
     
     echo -e "${BLUE}Запуск игры RiotGalaxy${NC}"
     echo "-----------------------"
     
-    cd RiotGalaxy/MonoGame
+    cd MonoGame
     echo -e "${GREEN}Выполняется команда: dotnet run --project RiotGalaxy.DesktopGL/RiotGalaxy.DesktopGL.csproj${NC}"
     dotnet run --project RiotGalaxy.DesktopGL/RiotGalaxy.DesktopGL.csproj
     
@@ -104,11 +123,11 @@ run_game() {
 
 # Функция для очистки
 clean_project() {
-    check_root_directory
+    go_to_root_directory
     
     echo -e "${YELLOW}Очистка проекта...${NC}"
     
-    cd RiotGalaxy/MonoGame
+    cd MonoGame
     dotnet clean
     rm -rf RiotGalaxy.Core/bin/
     rm -rf RiotGalaxy.Core/obj/
@@ -120,20 +139,23 @@ clean_project() {
 
 # Функция для показа статуса
 show_status() {
-    check_root_directory
+    go_to_root_directory
     
     echo -e "${BLUE}Статус проекта RiotGalaxy${NC}"
     echo "-----------------------"
     
-    cd RiotGalaxy/MonoGame
+    cd MonoGame
     
-    # Проверяем наличие исполняемых файлов
-    if [ -f "RiotGalaxy.DesktopGL/bin/Debug/net6.0/RiotGalaxy.DesktopGL.exe" ]; then
-        echo -e "${GREEN}✓ Исполняемый файл найден: RiotGalaxy.DesktopGL.exe${NC}"
-        echo -e "${GREEN}  Статус: ГОТОВ К ЗАПУСКУ${NC}"
+    # Проверяем наличие исполняемых файлов (для Linux без расширения .exe)
+    if [ -f "RiotGalaxy.DesktopGL/bin/Debug/net6.0/RiotGalaxy.DesktopGL" ]; then
+        echo "✓ Исполняемый файл найден: RiotGalaxy.DesktopGL"
+        echo "  Статус: ГОТОВ К ЗАПУСКУ"
+    elif [ -f "RiotGalaxy.DesktopGL/bin/Debug/net6.0/RiotGalaxy.DesktopGL.exe" ]; then
+        echo "✓ Исполняемый файл найден: RiotGalaxy.DesktopGL.exe"
+        echo "  Статус: ГОТОВ К ЗАПУСКУ"
     else
-        echo -e "${YELLOW}⚠ Исполняемый файл не найден${NC}"
-        echo -e "${YELLOW}  Статус: ТРЕБУЕТСЯ СБОРКА${NC}"
+        echo "⚠ Исполняемый файл не найден"
+        echo "  Статус: ТРЕБУЕТСЯ СБОРКА"
     fi
     
     # Показываем размер директорий
@@ -145,10 +167,13 @@ show_status() {
 
 # Функция для показа статуса задач
 show_tasks() {
-    if [ -f "tasks.md" ]; then
+    go_to_root_directory
+    
+    if [ -f "MonoGame/tasks.md" ]; then
         echo -e "${BLUE}Статус задач разработки${NC}"
         echo "---------------------------"
         
+        cd MonoGame
         grep -E "^##|^### [0-9]+\." tasks.md | while read -r line; do
             if [[ $line =~ ^## ]]; then
                 echo -e "${NC}${line}"
@@ -174,12 +199,14 @@ update_task() {
     local task_id="$1"
     local status="$2"
     
-    if [ ! -f "RiotGalaxy/MonoGame/update_tasks.py" ]; then
+    go_to_root_directory
+    
+    if [ ! -f "MonoGame/update_tasks.py" ]; then
         echo -e "${RED}Ошибка: скрипт update_tasks.py не найден!${NC}"
         return 1
     fi
     
-    cd RiotGalaxy/MonoGame
+    cd MonoGame
     python3 update_tasks.py "$task_id" "$status"
 }
 
@@ -191,8 +218,8 @@ case "$1" in
     "build")
         shift
         # Проверяем флаги
-        local clean_flag=false
-        local release_flag=false
+        clean_flag=false
+        release_flag=false
         for arg in "$@"; do
             if [ "$arg" = "--clean" ]; then
                 clean_flag=true
@@ -206,7 +233,7 @@ case "$1" in
     "run"|"start")
         shift
         # Проверяем флаг
-        local no_build_flag=false
+        no_build_flag=""
         if [ "$1" = "--no-build" ]; then
             no_build_flag="no-build"
         fi
@@ -230,8 +257,8 @@ case "$1" in
         fi
         
         # По умолчанию статус "completed", если не указан
-        local status="${2:-completed}"
-        update_task "$1" "$status"
+        status="${3:-completed}"
+        update_task "$2" "$status"
         ;;
     *)
         # По умолчанию просто запускаем игру
