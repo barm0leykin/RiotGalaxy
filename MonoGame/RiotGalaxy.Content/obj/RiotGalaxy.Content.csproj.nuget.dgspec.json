@@ -1,0 +1,86 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.Content/RiotGalaxy.Content.csproj": {}
+  },
+  "projects": {
+    "/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.Content/RiotGalaxy.Content.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.Content/RiotGalaxy.Content.csproj",
+        "projectName": "RiotGalaxy.Content",
+        "projectPath": "/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.Content/RiotGalaxy.Content.csproj",
+        "packagesPath": "/home/ADMSK/kudr1/.nuget/packages/",
+        "outputPath": "/home/ADMSK/kudr1/projects/RiotGalaxy/MonoGame/RiotGalaxy.Content/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ADMSK/kudr1/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "/usr/lib/dotnet/library-packs": {},
+          "https://aka.ms/dotnet7/nuget/index.json": {},
+          "https://aka.ms/dotnet8/nuget/index.json": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.100"
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "MonoGame.Content.Builder.Task": {
+              "target": "Package",
+              "version": "[3.8.1.303, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[6.0.36, 6.0.36]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[6.0.36, 6.0.36]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/9.0.117/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
