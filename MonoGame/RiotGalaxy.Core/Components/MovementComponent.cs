@@ -33,10 +33,32 @@ namespace RiotGalaxy.Components
     
     /// <summary>
     /// Компонент движения для игрока
+    /// Адаптация ObjBehPlayerMove из CocosSharp
     /// </summary>
     public class PlayerMovementComponent : MovementComponent
     {
         private float _minX, _maxX, _minY, _maxY;
+        private float _maxSpeed = 450, _acceleration = 1500, _brakingSpeed = 800;
+        private int _moveDirection = 0; // <0 left, 0 stop, >0 right
+        private float _velocityX = 0;
+        
+        public float MaxSpeed 
+        { 
+            get => _maxSpeed; 
+            set => _maxSpeed = value; 
+        }
+        
+        public float Acceleration 
+        { 
+            get => _acceleration; 
+            set => _acceleration = value; 
+        }
+        
+        public float BrakingSpeed 
+        { 
+            get => _brakingSpeed; 
+            set => _brakingSpeed = value; 
+        }
         
         public PlayerMovementComponent(GameObject owner, float speed) : base(owner, speed)
         {
@@ -45,6 +67,9 @@ namespace RiotGalaxy.Components
             _maxX = 1280;
             _minY = 0;
             _maxY = 768;
+            
+            // Параметры движения по умолчанию
+            _maxSpeed = speed;
         }
         
         public void SetBounds(float minX, float maxX, float minY, float maxY)
@@ -57,14 +82,130 @@ namespace RiotGalaxy.Components
         
         public override void Update(GameTime gameTime)
         {
-            // Движение игрока управляется через InputManager
-            // Этот метод может содержать дополнительную логику, если необходимо
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Move(deltaTime);
         }
         
         /// <summary>
-        /// Перемещение игрока в указанном направлении
+        /// Установка направления движения по точке касания
+        /// Аналог SetMoveDirection из CocosSharp
         /// </summary>
-        public void Move(Vector2 direction)
+        public void SetMoveDirection(Vector2 touchPoint)
+        {
+            float playerLeft = _owner.Position.X - _owner.Width / 2;
+            float playerRight = _owner.Position.X + _owner.Width / 2;
+            
+            if (touchPoint.X < playerLeft) // влево
+            {
+                if (_velocityX > 0) // для мгновенного разворота
+                    _velocityX = 0;
+                _moveDirection = -1;
+            }
+            else if (touchPoint.X > playerRight) // вправо
+            {
+                if (_velocityX < 0)
+                    _velocityX = 0;
+                _moveDirection = 1;
+            }
+            else
+                _moveDirection = 0;
+        }
+        
+        /// <summary>
+        /// Движение вправо
+        /// </summary>
+        public void MoveRight()
+        {
+            _moveDirection = 1;
+            Console.WriteLine("=== Player movement: RIGHT ===");
+        }
+        
+        /// <summary>
+        /// Движение влево
+        /// </summary>
+        public void MoveLeft()
+        {
+            _moveDirection = -1;
+            Console.WriteLine("=== Player movement: LEFT ===");
+        }
+        
+        /// <summary>
+        /// Остановка движения
+        /// Аналог MoveStop из CocosSharp
+        /// </summary>
+        public void MoveStop()
+        {
+            _moveDirection = 0;
+            Console.WriteLine("=== Player movement: STOP ===");
+        }
+        
+        /// <summary>
+        /// Основной метод движения
+        /// Аналог Move из CocosSharp
+        /// </summary>
+        private void Move(float deltaTime)
+        {
+            bool moved = false;
+            
+            // Ускоряемся
+            if (_moveDirection < 0)
+            {
+                _velocityX -= _acceleration * deltaTime;
+                moved = true;
+            }
+            else if (_moveDirection > 0)
+            {
+                _velocityX += _acceleration * deltaTime;
+                moved = true;
+            }
+            else // если не ускоряемся, то тормозим
+            {
+                // Тормозим
+                if (_velocityX < 0) // двигаемся влево
+                {
+                    _velocityX += _brakingSpeed * deltaTime; // торможение
+                    if (_velocityX > 0) // если слишком затормозили, то стоп
+                        _velocityX = 0;
+                    moved = true;
+                }
+                else if (_velocityX > 0) // двигаемся вправо
+                {
+                    _velocityX -= _brakingSpeed * deltaTime;
+                    if (_velocityX < 0)
+                        _velocityX = 0;
+                    moved = true;
+                }
+            }
+
+            // Ограничение скорости
+            if (_velocityX > _maxSpeed)
+                _velocityX = _maxSpeed;
+            if (_velocityX < -_maxSpeed)
+                _velocityX = -_maxSpeed;
+
+            // Двигаемся
+            Vector2 newPosition = new Vector2(_owner.Position.X + _velocityX * deltaTime, _owner.Position.Y);
+            
+            // Ограничение движения по горизонтали
+            float newX = MathHelper.Clamp(newPosition.X, _owner.Width / 2, _maxX - _owner.Width / 2);
+            
+            // Если достигли границы, останавливаемся
+            if (newX <= _owner.Width / 2 || newX >= _maxX - _owner.Width / 2)
+            {
+                _velocityX = 0;
+            }
+            
+            // Применяем новую позицию, только если она изменилась
+            if (Math.Abs(_owner.Position.X - newX) > 0.01f)
+            {
+                _owner.Position = new Vector2(newX, _owner.Position.Y);
+            }
+        }
+        
+        /// <summary>
+        /// Перемещение игрока в указанном направлении (legacy метод)
+        /// </summary>
+        public void MoveDirect(Vector2 direction)
         {
             Vector2 newPosition = _owner.Position + direction * _speed;
             

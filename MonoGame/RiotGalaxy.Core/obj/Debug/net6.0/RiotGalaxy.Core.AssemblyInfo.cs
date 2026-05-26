@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RiotGalaxy.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e6c98ae3710ef144b39b8c47e07e0269617e7ce7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6fa28966c79c0e57c3969c4337e167066a56f87a")]
 [assembly: System.Reflection.AssemblyProductAttribute("RiotGalaxy.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RiotGalaxy.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

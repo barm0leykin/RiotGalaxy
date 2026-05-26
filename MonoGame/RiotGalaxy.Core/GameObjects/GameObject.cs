@@ -21,6 +21,10 @@ namespace RiotGalaxy.GameObjects
         // Размеры объекта
         public Vector2 Size { get; set; }
         
+        // Удобное свойство для доступа к ширине и высоте
+        public float Width => Size.X;
+        public float Height => Size.Y;
+        
         // Родительский объект для поддержки иерархии
         public GameObject Parent { get; set; }
         

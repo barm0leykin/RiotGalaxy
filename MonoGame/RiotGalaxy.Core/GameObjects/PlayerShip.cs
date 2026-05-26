@@ -58,6 +58,9 @@ namespace RiotGalaxy.GameObjects
             Movement = new PlayerMovementComponent(this, Speed);
             Shooting = new PlayerShootingComponent(this);
             Collision = new PlayerCollisionComponent(this);
+            
+            // Убедимся, что компоненты правильно инициализированы
+            Console.WriteLine($"=== PlayerShip initialized with MovementComponent at position {Position} ===");
 
             // Текстура будет создана позже после установки GraphicsDevice
             Texture = null;
