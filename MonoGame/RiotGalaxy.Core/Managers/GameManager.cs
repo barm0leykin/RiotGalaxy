@@ -480,6 +480,9 @@ private void InitializeGameplay()
                     playerMovement.SetBounds(0, ScreenWidth, 0, ScreenHeight);
                 }
                 
+                // Подписываемся на события игрока
+                SubscribeToPlayerEvents();
+                
                 GameObjects.Add(Player);
                 
                 // Регистрируем обработчики событий (аналог GamePlay.cs строка 47)
@@ -539,7 +542,7 @@ Console.WriteLine($"Error initializing gameplay: {ex.Message}");
             Console.WriteLine("=== Initial objects spawned ===");
         }
         
-        /// <summary>
+/// <summary>
         /// Настройка игровых событий (аналог GamePlay.cs)
         /// </summary>
         private void SetupGameplayEvents()
@@ -547,8 +550,58 @@ Console.WriteLine($"Error initializing gameplay: {ex.Message}");
             // Очищаем предыдущие события
             GameEvents.Clear();
             
-            // В будущем здесь будут регистрированы основные игровые события
+            // В будущем здесь будут регистрироваться основные игровые события
             // Например: событие смерти врага, достижение目标和 т.п.
+        }
+        
+        /// <summary>
+        /// Подписка на события игрока
+        /// </summary>
+        private void SubscribeToPlayerEvents()
+        {
+            if (Player == null) return;
+            
+            // Подписываемся на события здоровья игрока
+            Player.HealthChanged += OnPlayerHealthChanged;
+            Player.PlayerDied += OnPlayerDied;
+            Player.PlayerRespawned += OnPlayerRespawned;
+            
+            Console.WriteLine("=== GameManager subscribed to player events ===");
+        }
+        
+        /// <summary>
+        /// Обработчик изменения здоровья игрока
+        /// </summary>
+        private void OnPlayerHealthChanged(int oldHealth, int newHealth)
+        {
+            Console.WriteLine($"=== GameManager: Player health changed from {oldHealth} to {newHealth} ===");
+            
+            // Здесь можно добавить дополнительную логику:
+            // - Обновление HUD
+            // - Звуковые эффекты
+            // - Визуальная обратная связь
+        }
+        
+        /// <summary>
+        /// Обработчик смерти игрока
+        /// </summary>
+        private void OnPlayerDied()
+        {
+            Console.WriteLine("=== GameManager: Player died! ===");
+            
+            // Меняем состояние игры на GameOver
+            ChangeGameState(GameState.GameOver);
+        }
+        
+        /// <summary>
+        /// Обработчик воскрешения игрока
+        /// </summary>
+        private void OnPlayerRespawned()
+        {
+            Console.WriteLine("=== GameManager: Player respawned! ===");
+            
+            // Здесь можно добавить дополнительную логику при воскрешении
+            // Например: сброс бонусов, перезапуск уровня и т.д.
         }
 
         /// <summary>
@@ -589,9 +642,26 @@ Console.WriteLine($"Error initializing gameplay: {ex.Message}");
 
         private void CleanupGameplay()
         {
+            // Отписываемся от событий игрока
+            UnsubscribeFromPlayerEvents();
+            
             // Очистка ресурсов игрового процесса
             GameObjects.Clear();
             Player = null;
+        }
+        
+        /// <summary>
+        /// Отписка от событий игрока
+        /// </summary>
+        private void UnsubscribeFromPlayerEvents()
+        {
+            if (Player == null) return;
+            
+            Player.HealthChanged -= OnPlayerHealthChanged;
+            Player.PlayerDied -= OnPlayerDied;
+            Player.PlayerRespawned -= OnPlayerRespawned;
+            
+            Console.WriteLine("=== GameManager unsubscribed from player events ===");
         }
 
         private void CheckCollisions()

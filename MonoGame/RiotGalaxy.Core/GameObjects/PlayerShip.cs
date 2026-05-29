@@ -28,8 +28,17 @@ namespace RiotGalaxy.GameObjects
             get { return _health; }
             set
             {
+                int oldHealth = _health;
                 _health = Math.Max(0, Math.Min(value, MaxHealth));
-                // Здесь будет событие об обновлении здоровья
+                
+                // Вызываем событие об изменении здоровья
+                OnHealthChanged(oldHealth, _health);
+                
+                // Проверяем состояние игрока
+                if (_health <= 0 && IsAlive)
+                {
+                    Die();
+                }
             }
         }
         public int MaxHealth { get; set; }
@@ -42,17 +51,27 @@ namespace RiotGalaxy.GameObjects
         public float FireRate { get; set; }
         private float _timeSinceLastShot = 0f;
 
-        // Параметры неуязвимости
+        // Параметры неуязвимости (аналог GodMode в CocosSharp)
         public bool IsInvulnerable { get; private set; }
         private float _invulnerabilityTime = 0f;
+        private const float DEFAULT_INVULNERABILITY_TIME = 2000f; // 2 секунды по умолчанию
+        
+        // Состояние игрока (переопределяем базовый)
+        public new bool IsAlive { get; private set; } = true;
+        
+        // События
+        public event Action<int, int> HealthChanged; // oldHealth, newHealth
+        public event Action PlayerDied;
+        public event Action PlayerRespawned;
 
         public PlayerShip(Vector2 position) : base(position, new Vector2(60, 60))
         {
-            MaxHealth = 100;
+            MaxHealth = 100; // По умолчанию 100 HP, как в CocosSharp
             Health = MaxHealth;
             Speed = 300f; // пикселей в секунду
             CurrentWeapon = WeaponType.Cannon;
             FireRate = 2f; // выстрелов в секунду
+            IsAlive = true;
 
             // Инициализируем компоненты
             Movement = new PlayerMovementComponent(this, Speed);
@@ -61,6 +80,7 @@ namespace RiotGalaxy.GameObjects
             
             // Убедимся, что компоненты правильно инициализированы
             Console.WriteLine($"=== PlayerShip initialized with MovementComponent at position {Position} ===");
+            Console.WriteLine($"=== Player health initialized: {Health}/{MaxHealth} ===");
 
             // Текстура будет создана позже после установки GraphicsDevice
             Texture = null;
@@ -79,12 +99,13 @@ namespace RiotGalaxy.GameObjects
             // Обновляем таймеры
             _timeSinceLastShot += deltaTime;
 
+            // Обновляем состояние неуязвимости
             if (IsInvulnerable)
             {
                 _invulnerabilityTime -= deltaTime;
                 if (_invulnerabilityTime <= 0)
                 {
-                    IsInvulnerable = false;
+                    DeactivateInvulnerability();
                 }
             }
 
@@ -132,41 +153,94 @@ namespace RiotGalaxy.GameObjects
 
         /// <summary>
         /// Получение урона
+        /// Аналог Hit из CocosSharp
         /// </summary>
         public void TakeDamage(int damage)
         {
             if (!IsAlive || IsInvulnerable)
                 return;
 
+            Console.WriteLine($"=== Player taking damage: {damage}, current HP: {Health} ===");
+            
+            // Наносим урон
             Health -= damage;
 
-            if (Health <= 0)
+            // Если еще живы, активируем временную неуязвимость (щит)
+            if (IsAlive)
             {
-                Health = 0;
-                IsAlive = false;
-            }
-            else
-            {
-                // Активируем временную неуязвимость
-                ActivateInvulnerability(2f);
+                ActivateInvulnerability(DEFAULT_INVULNERABILITY_TIME);
             }
         }
 
         /// <summary>
         /// Восстановление здоровья
+        /// Аналог HpUp из CocosSharp
         /// </summary>
         public void Heal(int amount)
         {
+            Console.WriteLine($"=== Player healing: {amount}, current HP: {Health} ===");
             Health += amount;
         }
 
         /// <summary>
         /// Активация неуязвимости на указанное время
+        /// Аналог AddMyshield из CocosSharp
         /// </summary>
         public void ActivateInvulnerability(float duration)
         {
             IsInvulnerable = true;
             _invulnerabilityTime = duration;
+            Console.WriteLine($"=== Shield activated for {duration}ms ===");
+        }
+
+        /// <summary>
+        /// Деактивация неуязвимости
+        /// </summary>
+        private void DeactivateInvulnerability()
+        {
+            IsInvulnerable = false;
+            _invulnerabilityTime = 0;
+            Console.WriteLine("=== Shield deactivated ===");
+        }
+
+        /// <summary>
+        /// Смерть игрока
+        /// </summary>
+        private void Die()
+        {
+            if (!IsAlive) return;
+            
+            Console.WriteLine("=== Player died! ===");
+            IsAlive = false;
+            
+            // Вызываем событие смерти
+            PlayerDied?.Invoke();
+            
+            // Здесь будет событие смерти игрока
+            // Например: GameManager.Instance.ChangeGameState(GameManager.GameState.GameOver);
+        }
+
+        /// <summary>
+        /// Воскрешение игрока
+        /// </summary>
+        public void Respawn()
+        {
+            Console.WriteLine("=== Player respawning ===");
+            Health = MaxHealth;
+            IsAlive = true;
+            IsInvulnerable = false;
+            
+            // Сброс позиции (может быть настроен в потомках)
+            // Position = new Vector2(GameManager.Instance.ScreenWidth / 2, GameManager.Instance.ScreenHeight - 100);
+            
+            // Даем временную неуязвимость после воскрешения
+            ActivateInvulnerability(DEFAULT_INVULNERABILITY_TIME);
+            
+            // Сброс других параметров
+            _timeSinceLastShot = 0;
+            
+            // Вызываем событие воскрешения
+            PlayerRespawned?.Invoke();
         }
 
         /// <summary>
@@ -254,27 +328,79 @@ namespace RiotGalaxy.GameObjects
         /// </summary>
         private void DrawAdditionalInfo(SpriteBatch spriteBatch)
         {
-            // Если неуязвим, рисуем щит
+            // Если неуязвим, рисуем щит (аналог AddMyshield из CocosSharp)
             if (IsInvulnerable)
             {
                 // Создаем простую текстуру для щита (если еще не создана)
                 // Это просто пример, в реальном приложении текстуры лучше кэшировать
                 if (_graphicsDevice == null) return; // Пропускаем если не установлен GraphicsDevice
-                Texture2D shieldTexture = CreateSimpleTexture(Color.Blue);
+                Texture2D shieldTexture = CreateSimpleShieldTexture();
                 
-                // Рисуем щит немного больше размера корабля
+                // Рисуем прозрачный внешний слой щита
                 spriteBatch.Draw(
                     shieldTexture, 
                     Position, 
                     null, 
-                    new Color(0, 100, 255, 100), // Полупрозрачный синий
+                    new Color(100, 150, 255, 40), // Очень прозрачный синий
                     Rotation, 
                     new Vector2(32, 32), 
                     1.2f, 
                     SpriteEffects.None, 
                     0f
                 );
+                
+                // Рисуем основной слой щита
+                spriteBatch.Draw(
+                    shieldTexture, 
+                    Position, 
+                    null, 
+                    new Color(0, 100, 255, 80), // Полупрозрачный синий
+                    Rotation, 
+                    new Vector2(32, 32), 
+                    1.0f, 
+                    SpriteEffects.None, 
+                    0f
+                );
             }
+        }
+        
+        /// <summary>
+        /// Создание простой текстуры для щита
+        /// </summary>
+        private Texture2D CreateSimpleShieldTexture()
+        {
+            // Создаем текстуру 64x64 в форме круга для щита
+            Texture2D texture = new Texture2D(_graphicsDevice, 64, 64);
+            Color[] data = new Color[64 * 64];
+            
+            int centerX = 32;
+            int centerY = 32;
+            int radius = 30;
+            
+            for (int y = 0; y < 64; y++)
+            {
+                for (int x = 0; x < 64; x++)
+                {
+                    int index = y * 64 + x;
+                    // Создаем круг для щита
+                    float distance = (float)Math.Sqrt(Math.Pow(x - centerX, 2) + Math.Pow(y - centerY, 2));
+                    if (distance <= radius)
+                    {
+                        // Градиент от центра к краям
+                        float alpha = 1.0f - (distance / radius);
+                        byte alphaByte = (byte)(alpha * 255);
+                        data[index] = new Color((byte)0, (byte)150, (byte)255, alphaByte);
+                    }
+                    else
+                    {
+                        // Прозрачные пиксели вне круга
+                        data[index] = Color.Transparent;
+                    }
+                }
+            }
+            
+            texture.SetData(data);
+            return texture;
         }
 
         /// <summary>
@@ -298,6 +424,22 @@ namespace RiotGalaxy.GameObjects
                 Texture = CreateSimpleTexture(Color.Lime);
                 Console.WriteLine("=== PlayerShip texture created with Lime color ===");
             }
+        }
+        
+        /// <summary>
+        /// Обработчик изменения здоровья
+        /// </summary>
+        private void OnHealthChanged(int oldHealth, int newHealth)
+        {
+            Console.WriteLine($"=== Player health changed: {oldHealth} -> {newHealth} ===");
+            
+            // Вызываем событие об изменении здоровья
+            HealthChanged?.Invoke(oldHealth, newHealth);
+            
+            // Здесь можно добавить дополнительную логику, например:
+            // - Визуальные эффекты при получении урона
+            // - Звуковые эффекты
+            // - Обновление UI
         }
     }
 }

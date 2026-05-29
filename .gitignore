@@ -85,3 +85,7 @@ docs/.doctrees/
 # Local configuration files
 appsettings.local.json
 *.local.json
+
+## kilo
+.kilo/
+.kilo/*
