@@ -67,31 +67,38 @@ MonoGame/
 
 ```text
 RiotGalaxy.Core/
-├── Game1.cs                 # главный класс игры (наследник Game) — дирижёр цикла
-├── Managers/                # «менеджеры» — глобальные системы (синглтоны)
-│   ├── GameManager.cs       #   центральный диспетчер: состояния, список объектов, отрисовка
-│   ├── InputManager.cs      #   обработка ввода (клавиатура/мышь/тач)
-│   └── AudioManager.cs      #   загрузка и проигрывание звуков
-├── GameObjects/             # игровые объекты (всё, что живёт на экране)
-│   ├── GameObject.cs        #   базовый класс (позиция, размер, текстура, Update/Draw)
-│   ├── PlayerShip.cs        #   корабль игрока
-│   ├── Enemy.cs, Bullet.cs, Bonus.cs
+├── Game1.cs                 # главный класс игры (наследник Game) — делегирует в GameManager
+├── Managers/                # глобальные системы (синглтоны)
+│   ├── GameManager.cs       #   состояния, список объектов, столкновения, уровни, отрисовка
+│   ├── InputManager.cs      #   ввод (клавиатура/мышь), GUI-кнопки
+│   └── AudioManager.cs      #   загрузка/проигрывание звуков
+├── GameObjects/             # всё, что живёт на экране
+│   ├── GameObject.cs        #   базовый класс (позиция/размер/текстура/Update/Draw)
+│   ├── PlayerShip.cs        #   корабль игрока (HP, щит, оружие, очки)
+│   ├── Enemy.cs + EnemySmallBlue/Green/Red/Scout.cs
+│   ├── Shell.cs + Bullet/Slug/Laser.cs        # снаряды
+│   └── Bonus.cs (+ BonusHpUp/BulletUp/NukeBomb/Star)
+├── Weapons/                 # система оружия (паттерн «Стратегия»)
+│   ├── Weapon.cs            #   база + WeaponCannon/Minigun/Laser/NoWeapon
+│   └── WeaponOptions.cs, WeaponConfig.cs (грузит weapons.yaml)
 ├── Components/              # компоненты поведения (паттерн «Стратегия»)
-│   ├── MovementComponent.cs #   как объект двигается
-│   ├── ShootingComponent.cs #   как стреляет
-│   └── CollisionComponent.cs#   как обрабатывает столкновения
-├── Commands/                # паттерн «Команда» (события/действия)
-├── AI/                      # ИИ врагов (паттерн «Состояние»)
-├── Interface/               # UI-элементы (напр. MyButton)
-└── Utils/                   # вспомогательные классы
+│   ├── MovementComponent.cs, EnemyBounceMovement.cs
+│   └── ShootingComponent.cs, CollisionComponent.cs
+├── Screens/                 # экраны меню (см. §14)
+│   ├── Screen.cs, ScreenSystem.cs
+│   └── SplashScreen / MainMenuScreen / SettingsScreen / NextLevelScreen
+├── Commands/                # паттерн «Команда» (смена оружия, kill all, next level…)
+├── Interface/               # MyButton + кнопки (тестовая панель)
+├── Utils/                   # Level.cs, GameOptions.cs, GameSettings.cs, Yaml.cs
+└── AI/                      # (пусто — заготовка под этап 10: формации/боссы)
 ```
 
 Эта раскладка повторяет архитектуру оригинала на CocosSharp (см. [prd.md](../prd.md)):
-сохранены паттерны **Strategy** (компоненты), **Command** (команды), **State** (ИИ и
-состояния игры).
+сохранены паттерны **Strategy** (компоненты/оружие), **Command** (команды), **State**
+(состояния игры).
 
-> Часть папок (`AI/`, `Utils/`) пока пустые — это заготовки под будущие этапы миграции.
-> `GameObjects/Enemy.cs`, `Bonus.cs` тоже на ранней стадии. Актуальный статус — в [tasks.md](tasks.md).
+> Папка `AI/` пока пустая — заготовка под этап 10 (формации/боссы). Остальное реализовано;
+> актуальный статус по этапам — в [tasks.md](tasks.md).
 
 ---
 
@@ -163,13 +170,13 @@ protected override void Update(GameTime gameTime)  { …ввод…; _gameManage
 protected override void Draw(GameTime gameTime)    { _gameManager.Draw(gameTime); }
 ```
 
-Плюс `Game1.Update` обрабатывает глобальные клавиши (Esc — выход/в меню, Space — старт,
-P — пауза) с «детектом нажатия» через `_previousKeyboardState` (чтобы реагировать на
-*момент* нажатия, а не на удержание).
+Плюс `Game1.Update` обрабатывает клавиши **игровых** состояний (Playing/Paused/GameOver/
+Victory): Esc/P — пауза и снятие, Space — рестарт на экранах конца игры. Ввод **меню**
+(Splash/MainMenu/Settings/NextLevel) обрабатывают сами экраны (см. §14). «Детект нажатия»
+— через `_previousKeyboardState` (реагируем на *момент* нажатия, а не удержание).
 
-> 💡 Почему ты сразу видишь геймплей, а не меню: в `Game1` есть флажок
-> `_autoTransition = true`, который на первом же кадре переключает состояние
-> `MainMenu → Playing` (для удобства тестирования). Это временно.
+> 💡 При старте `GameManager.LoadContent` вызывает `ChangeGameState(Splash)` — игра
+> начинается с заставки → меню → игра (прежний авто-переход сразу в Playing убран).
 
 ---
 
@@ -178,13 +185,18 @@ P — пауза) с «детектом нажатия» через `_previousKe
 [GameManager.cs](RiotGalaxy.Core/Managers/GameManager.cs) — центральный диспетчер
 (синглтон `GameManager.Instance`). Отвечает за:
 
-- **Состояния игры** (паттерн State) — `enum GameState { MainMenu, Playing, Paused, GameOver, Victory }`.
-  И `Update`, и `Draw` внутри делают `switch` по текущему состоянию.
-- **Список игровых объектов** — `List<GameObject> GameObjects`. В режиме `Playing`
-  каждый кадр он перебирает список: вызывает `Update` у каждого, проверяет столкновения,
-  удаляет «мёртвые» объекты.
-- **Отрисовку** — держит `SpriteBatch`, рисует фон, все объекты и HUD.
-- **Экран** — `ScreenWidth=1280`, `ScreenHeight=768`.
+- **Состояния игры** (паттерн State) —
+  `enum GameState { Splash, MainMenu, Settings, Playing, Paused, GameOver, Victory, NextLevel }`.
+  И `Update`, и `Draw` делают `switch` по состоянию. Состояния-**меню** (Splash, MainMenu,
+  Settings, NextLevel) делегируются в `ScreenSystem` (см. §14); игровые (Playing/Paused/…)
+  обрабатываются в самом `GameManager`. Переходы — через `ChangeGameState`, который решает,
+  что чистить/инициализировать (новая партия, пауза = сохранить, между уровнями = сохранить игрока).
+- **Список игровых объектов** — `List<GameObject> GameObjects`. В `Playing` каждый кадр:
+  спавн врагов по таймлайну уровня, `Update` каждого объекта, проверка столкновений
+  (`ProcessCollision`), удаление «мёртвых».
+- **Уровни/прогрессия** — текущий уровень и переход на следующий (см. §15).
+- **Отрисовку** — держит `SpriteBatch`, рисует фон, объекты, HUD и тестовые кнопки.
+- **Экран** — `ScreenWidth/Height` (из `options.yaml`, по умолчанию 1280×768).
 
 ### Как рисуется кадр (`GameManager.Draw`)
 
@@ -271,17 +283,25 @@ ship.png  ──[ MGCB / dotnet-mgcb ]──►  ship.xnb  ──[ Content.Load<
 
 ```text
 RiotGalaxy.Content/
-├── RiotGalaxy.Content.mgcb     # рецепт сборки
+├── RiotGalaxy.Content.mgcb     # рецепт сборки (.xnb): Images, Backgrounds, Sounds, шрифт
 ├── Images/                     # спрайты (26 шт., нарезаны из старого атласа images.png)
 │   ├── ship.png, enemyBlue.png, bullet.png, shield.png …
 ├── Backgrounds/                # фоны: background_blue (1280×768), background, SCConvoy_0
 ├── Sounds/                     # звуки: fire1.wav, explode1.wav
-└── TestFont.spritefont         # описание шрифта (DejaVu Sans Mono)
+├── TestFont.spritefont         # описание шрифта (DejaVu Sans Mono, + кириллица)
+├── Config/                     # YAML-конфиги (НЕ через MGCB): weapons.yaml, options.yaml
+└── Levels/                     # уровни: level1..5.yaml (НЕ через MGCB)
 ```
 
-> Важная тонкость этого проекта: пути в `.mgcb` отсчитываются от папки самого `.mgcb`,
-> поэтому ресурсы лежат **прямо** в `RiotGalaxy.Content/` (а имя ассета для загрузки —
-> это путь без расширения, напр. `"Images/ship"`).
+> Важная тонкость: пути в `.mgcb` отсчитываются от папки самого `.mgcb`, поэтому
+> бинарные ресурсы (`Images/Sounds/Backgrounds/`шрифт) лежат **прямо** в `RiotGalaxy.Content/`,
+> а имя ассета для загрузки — путь без расширения (напр. `"Images/ship"`).
+>
+> **Два пути доставки контента:** бинарные ассеты идут через **MGCB → `.xnb`** и грузятся
+> `Content.Load<…>`. А **текстовые** конфиги/уровни (`Config/*.yaml`, `Levels/*.yaml`)
+> компилировать незачем — они копируются в выход «как есть» через `<None ... CopyToOutputDirectory>`
+> в [DesktopGL.csproj](RiotGalaxy.DesktopGL/RiotGalaxy.DesktopGL.csproj) и читаются из
+> `AppContext.BaseDirectory/Content/...` (см. §16).
 
 ### Как грузят ресурсы в коде
 
@@ -341,14 +361,121 @@ var pad = GamePad.GetState(PlayerIndex.One);
 AudioManager.Instance.PlayEffect("fire1");   // громкость 0.1, как в оригинале
 ```
 
-Загрузка происходит в `GameManager.LoadContent`. Сейчас звуки только *загружены*;
-реальные вызовы `PlayEffect` (на выстрел/взрыв) добавятся на этапах оружия и боёв.
+Загрузка — в `GameManager.LoadContent`. `fire1` играет на выстреле игрока (оружие),
+`explode1` — при гибели врага. Громкость `EffectsVolume` берётся из `settings.yaml`
+(меню «Настройки», см. §14/§16). Музыки (BGM) в проекте нет.
 
 ---
 
-## 11. Как собрать и запустить
+## 11. Оружие и снаряды
 
-### 11.0. Что нужно один раз
+Папка [Weapons/](RiotGalaxy.Core/Weapons/). Иерархия `Weapon` (паттерн «Стратегия»):
+база + `WeaponCannon` / `WeaponMinigun` / `WeaponLaser` / `NoWeapon`. У игрока — `PlayerShip.Gun`.
+
+- **`WeaponOptions`** — параметры: `burst` (выстрелов в очереди), `burstInterval`,
+  `reloadSpeed` (между очередями), `damage`, `shellSpeed`. Грузятся по уровням из
+  `weapons.yaml` (`WeaponConfig.Load`, есть встроенные дефолты-фолбэк).
+- **`Weapon.Update/Fire`** сами ведут очередь и перезарядку (в CocosSharp был `Schedule`).
+  `Aim(угол)` задаёт направление/точку появления снаряда (с учётом инверсии оси Y).
+- **Уровни оружия**: `Weapon.Level`/`Upgrade()`; уровни запоминаются по типу в
+  `PlayerShip._weaponLevels`, апгрейд — бонусом BulletUp или кнопкой.
+
+Снаряды — [Shell.cs](RiotGalaxy.Core/GameObjects/Shell.cs) (база) и `Bullet` (пушка),
+`Slug` (пулемёт), `Laser` (пробивает насквозь, `IsPiercing`). Летят прямо, гибнут за
+экраном. `PlayerSide` = чей снаряд (ставится из `owner is PlayerShip`).
+
+Стрельба игрока: удержание **Space** (темп держит само оружие); смена оружия — клавиши
+**1/2/3** или тестовые кнопки (§17).
+
+## 12. Враги
+
+[Enemy.cs](RiotGalaxy.Core/GameObjects/Enemy.cs) + типы `EnemySmallBlue/Green/Red/Scout`
+(`EnemyType { RND, SM_SCOUT, BLUE, GREEN, RED }`). У каждого свои Hp/урон/скорость/спрайт.
+
+- **Движение** — [EnemyBounceMovement](RiotGalaxy.Core/Components/EnemyBounceMovement.cs):
+  отскок от боковых границ (поле −10%) + телепорт снизу-вверх. `SetDirection(угол)`.
+- **Стрельба** (базовый AI): по таймеру `ShootInterval` (~3с). Паттерны: синий/зелёный —
+  вниз, красный — прицельно в игрока, скаут — не стреляет.
+- Гибель: `TakeDamage`→`Die` (звук `explode1`), уменьшает `EnemiesRemaining`, роняет бонус.
+
+## 13. Бонусы и столкновения (бой)
+
+**Столкновения** (этап столкновений) делаются без физдвижка: `GameManager.ProcessGameObjects`
+двойным циклом находит пересечения (AABB через `GameObject.GetBounds/Intersects`) и зовёт
+`ProcessCollision(a,b)` — диспетчер пар: снаряд игрока↔враг, враг↔игрок (таран),
+вражеский снаряд↔игрок, бонус↔игрок. Лазер не исчезает при попадании.
+
+**Бонусы** — [Bonus.cs](RiotGalaxy.Core/GameObjects/Bonus.cs): `BonusHpUp` (хил),
+`BonusBulletUp` (апгрейд оружия), `BonusNukeBomb` (убить всех), `BonusStar` (очки,
+притягивается к игроку в радиусе магнита). Падают вниз; при подборе вызывается `Apply(player)`.
+Выпадают при гибели врага (`SpawnBonusOnEnemyDeath`: всегда звезда + 30% шанс усиления).
+
+## 14. Меню и экраны (ScreenSystem)
+
+Папка [Screens/](RiotGalaxy.Core/Screens/). Лёгкая система экранов меню параллельно
+игровым состояниям:
+
+- **`Screen`** (база) — сам читает клавиатуру/мышь (с защитой от ложного клика на 1-м кадре),
+  имеет хелпер центрированного текста.
+- **`ScreenSystem`** — хранит активный экран, проксирует Update/Draw.
+- Экраны: **`SplashScreen`** (текстовый логотип + таймер → меню), **`MainMenuScreen`**
+  (кнопки Начать/Настройки/Выход, мышь+клавиатура), **`SettingsScreen`** (громкость, сохр.
+  в `settings.yaml`), **`NextLevelScreen`** (между уровнями: номер/описание/очки).
+
+`GameManager` для состояний `Splash/MainMenu/Settings/NextLevel` делегирует Update/Draw в
+`ScreenSystem`; экран создаётся в `ChangeGameState`. Игровые состояния (Playing/Paused/…)
+рисует/обновляет сам `GameManager`.
+
+## 15. Уровни и прогрессия
+
+[Utils/Level.cs](RiotGalaxy.Core/Utils/Level.cs) грузит `Content/Levels/level{N}.yaml`
+и разворачивает события в таймлайн спавна. `GameManager` спавнит врагов по `Level.Tick(dt)`,
+ведёт `EnemiesRemaining`. Когда все враги уровня заспавнены и убиты — переход на следующий
+(`NextLevel` экран) или, если уровней больше нет, — `Victory`. Игрок и счёт переносятся
+между уровнями. Поражение (`GameOver`) и победа показывают очки и предлагают рестарт.
+
+Формат уровня (YAML):
+
+```yaml
+description: "First battle"
+spawnInterval: 1.0          # интервал между спавнами по умолчанию
+events:
+  - { enemy: blue, count: 3 }
+  - { interval: 3 }          # сменить интервал
+  - { enemy: red, count: 5 }
+  - { wait: 2 }              # пауза
+```
+
+## 16. Конфиги (YAML)
+
+Через библиотеку **YamlDotNet**. Хелпер [Utils/Yaml.cs](RiotGalaxy.Core/Utils/Yaml.cs)
+(camelCase, тихий фолбэк). Файлы:
+
+| Файл | Что | Загрузчик |
+|---|---|---|
+| `Content/Config/weapons.yaml` | параметры оружия по уровням | `Weapons.WeaponConfig.Load()` |
+| `Content/Config/options.yaml` | экран + параметры игрока (HP, скорость…) | `Utils.GameOptions.Load()` |
+| `settings.yaml` (рядом с .exe) | громкость (пользовательская) | `Utils.GameSettings` |
+
+Все три читаются в `GameManager.LoadContent`. У каждого конфига есть дефолты в коде —
+игра работает и без файлов. Уровни (`Level`) — тоже YAML (§15).
+
+> Почему YAML, а не Content Pipeline: это **текстовые** конфиги, их не нужно компилировать
+> в `.xnb`. Они копируются в выход через `<None CopyToOutputDirectory>` (см. §8) и читаются
+> обычным `File.ReadAllText` из `AppContext.BaseDirectory`.
+
+## 17. Тестовая панель (debug)
+
+Внизу слева во время игры — ряд кнопок ([Interface/MyButton.cs](RiotGalaxy.Core/Interface/MyButton.cs),
+регистрируются в `InputManager.GuiButtons`): смена оружия (Cannon/Minigun/Laser), апгрейд,
+лечение, «убить всех», «следующий уровень». Каждая кнопка несёт `ICommand` (папка
+[Commands/](RiotGalaxy.Core/Commands/)). Создаются при старте партии, чистятся при выходе в меню.
+
+---
+
+## 18. Как собрать и запустить
+
+### 18.0. Что нужно один раз
 
 - **.NET SDK** (проект на `net6.0`, но `RollForward=Major` позволяет собирать и на новых SDK — например, на установленном 9.x).
 - **`dotnet-mgcb`** — компилятор ресурсов. Ставится локально из манифеста [.config/dotnet-tools.json](.config/dotnet-tools.json):
@@ -360,7 +487,7 @@ AudioManager.Instance.PlayEffect("fire1");   // громкость 0.1, как �
 
   Без него сборка контента (`.xnb`) падает с `dotnet mgcb … not found`.
 
-### 11.1. Быстрый запуск (дев)
+### 18.1. Быстрый запуск (дев)
 
 ```bash
 # из корня репозитория — собирает и запускает:
@@ -371,10 +498,14 @@ dotnet build RiotGalaxy.sln
 dotnet run --project RiotGalaxy.DesktopGL/RiotGalaxy.DesktopGL.csproj
 ```
 
-Управление сейчас: **Space** — старт, **P** — пауза, **Esc** — в меню/выход
-(стрелки — движение корабля).
+Управление сейчас:
 
-### 11.2. Dev (Debug) vs Release сборка
+- **Меню**: мышь или стрелки + Enter; Space — начать; Esc — выход.
+- **В игре**: ←/→ или A/D — движение, **Space** — огонь, **1/2/3** — смена оружия,
+  **Esc/P** — пауза (в паузе **Q** — выход в меню).
+- **Конец игры** (победа/поражение): Space — заново, Esc — в меню.
+
+### 18.2. Dev (Debug) vs Release сборка
 
 `dotnet` собирает в конфигурации **Debug** по умолчанию. Флаг `-c` (`--configuration`)
 переключает:
@@ -398,7 +529,7 @@ dotnet run -c Release --project RiotGalaxy.DesktopGL/RiotGalaxy.DesktopGL.csproj
 В обоих случаях рядом появляется папка `Content/` со скомпилированными `.xnb`
 (копируется автоматически благодаря `MonoGameContentReference`).
 
-### 11.3. Сборка дистрибутива под разные ОС (`dotnet publish`)
+### 18.3. Сборка дистрибутива под разные ОС (`dotnet publish`)
 
 `build`/`run` годятся для разработки. Чтобы получить **готовый дистрибутив** для
 конкретной операционной системы, используют `dotnet publish` с указанием **RID**
@@ -442,14 +573,14 @@ dotnet publish RiotGalaxy.DesktopGL/RiotGalaxy.DesktopGL.csproj \
 > сборке — нужен интернет. Сборка под `osx-*`/`win-*` с Linux работает (это просто
 > упаковка), но саму игру для финальной проверки лучше запускать на целевой ОС.
 
-### 11.4. Сборка в Docker (требование PRD)
+### 18.4. Сборка в Docker (требование PRD)
 
 Согласно [prd.md](../prd.md), сборка должна идти в контейнере, без установки пакетов в
 хост. Идея: в образе есть .NET SDK, внутри выполняется `dotnet tool restore` (ставит
 `dotnet-mgcb`) и затем `dotnet publish` под нужный RID. Dockerfile в проекте пока не
 заведён — это часть будущего этапа CI/CD.
 
-### 11.5. Мобильные платформы (Android / iOS) — пока не настроены
+### 18.5. Мобильные платформы (Android / iOS) — пока не настроены
 
 В решении сейчас **только** `Core`, `Content`, `DesktopGL`. Каталоги
 `RiotGalaxy.Android/` и `RiotGalaxy.iOS/` существуют, но **пустые** — это заготовки под
@@ -461,7 +592,7 @@ workloads (`dotnet workload install android` / `ios`), плюс Android SDK / Xc
 
 ---
 
-## 12. Частые грабли новичка (и как их обходим здесь)
+## 19. Частые грабли новичка (и как их обходим здесь)
 
 | Симптом | Причина | Решение |
 |---|---|---|
@@ -474,7 +605,7 @@ workloads (`dotnet workload install android` / `ios`), плюс Android SDK / Xc
 
 ---
 
-## 13. Куда смотреть дальше
+## 20. Куда смотреть дальше
 
 - **Хочешь понять поток управления** → начни с [Program.cs](RiotGalaxy.DesktopGL/Program.cs)
   → [Game1.cs](RiotGalaxy.Core/Game1.cs) → [GameManager.cs](RiotGalaxy.Core/Managers/GameManager.cs).
