@@ -42,7 +42,6 @@ namespace RiotGalaxy.Interface
         {
             if (!blocked)
             {
-                Console.WriteLine("=== Button pressed: " + name + " ===");
                 cmd.Execute();
                 blocked = true;
                 await Task.Delay(delay);
@@ -106,7 +105,6 @@ namespace RiotGalaxy.Interface
     {
         public ButtonWin(Vector2 pos) : base(pos)
         {
-            Console.WriteLine("=== ButtonWin ===");
             name = "btn_win";
             Width = 64;
             Height = 64;
@@ -122,7 +120,6 @@ namespace RiotGalaxy.Interface
     {
         public ButtonPause(Vector2 pos) : base(pos)
         {
-            Console.WriteLine("=== ButtonPause ===");
             name = "btn_pause";
             Width = 64;
             Height = 64;
@@ -140,7 +137,6 @@ namespace RiotGalaxy.Interface
         
         public ButtonPlayerPause(Vector2 pos, GameObject obj) : base(pos)
         {            
-            Console.WriteLine("=== ButtonPlayerPause ===");
             name = "btn_player_pause";
             Width = 64;
             Height = 64;
@@ -169,7 +165,6 @@ namespace RiotGalaxy.Interface
     {
         public ButtonCannon(Vector2 pos) : base(pos)
         {
-            Console.WriteLine("=== ButtonCannon ===");
             name = "btn_cannon";
             Width = 64;
             Height = 64;
@@ -185,7 +180,6 @@ namespace RiotGalaxy.Interface
     {
         public ButtonMinigun(Vector2 pos) : base(pos)
         {
-            Console.WriteLine("=== ButtonMinigun ===");
             name = "btn_minigun";
             Width = 64;
             Height = 64;
@@ -201,7 +195,6 @@ namespace RiotGalaxy.Interface
     {
         public ButtonLaser(Vector2 pos) : base(pos)
         {
-            Console.WriteLine("=== ButtonLaser ===");
             name = "btn_laser";
             Width = 64;
             Height = 64;
@@ -217,7 +210,6 @@ namespace RiotGalaxy.Interface
     {
         public ButtonUpgradeGun(Vector2 pos) : base(pos)
         {
-            Console.WriteLine("=== ButtonUpgradeGun ===");
             name = "btn_upgrade_gun";
             Width = 64;
             Height = 64;
@@ -233,7 +225,6 @@ namespace RiotGalaxy.Interface
     {
         public ButtonHpUp(Vector2 pos) : base(pos)
         {
-            Console.WriteLine("=== ButtonHpUp ===");
             name = "btn_hp_up";
             Width = 64;
             Height = 64;

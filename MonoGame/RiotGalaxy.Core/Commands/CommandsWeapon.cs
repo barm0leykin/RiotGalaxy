@@ -18,13 +18,11 @@ namespace RiotGalaxy.Commands
         
         public void Execute()
         {
-            Console.WriteLine("=== CommandUpgradeGun ===");
             var player = GameManager.Instance.Player;
             if (player != null)
             {
                 // В будущем здесь будет обновление оружия
                 // player.gun.Upgrade();
-                Console.WriteLine("Weapon升级功能待实现");
             }
         }
     }
@@ -37,13 +35,11 @@ namespace RiotGalaxy.Commands
         
         public void Execute()
         {
-            Console.WriteLine("=== CommandChWeaponCannon ===");
             var player = GameManager.Instance.Player;
             if (player != null)
             {
                 // В будущем здесь будет смена оружия
                 // player.ChangeWeapon(Weapon.WeaponType.CANNON);
-                Console.WriteLine("武器切换到加农炮功能待实现");
             }
         }
     }
@@ -56,13 +52,11 @@ namespace RiotGalaxy.Commands
         
         public void Execute()
         {
-            Console.WriteLine("=== CommandChWeaponMinigun ===");
             var player = GameManager.Instance.Player;
             if (player != null)
             {
                 // В будущем здесь будет смена оружия
                 // player.ChangeWeapon(Weapon.WeaponType.MINIGUN);
-                Console.WriteLine("武器切换到机枪功能待实现");
             }
         }
     }
@@ -75,13 +69,11 @@ namespace RiotGalaxy.Commands
         
         public void Execute()
         {
-            Console.WriteLine("=== CommandChWeaponLaser ===");
             var player = GameManager.Instance.Player;
             if (player != null)
             {
                 // В будущем здесь будет смена оружия
                 // player.ChangeWeapon(Weapon.WeaponType.LASER);
-                Console.WriteLine("武器切换到激光功能待实现");
             }
         }
     }

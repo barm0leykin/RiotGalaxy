@@ -87,8 +87,6 @@ namespace RiotGalaxy.GameObjects
             Gun = new WeaponCannon(this);
             
             // Убедимся, что компоненты правильно инициализированы
-            Console.WriteLine($"=== PlayerShip initialized with MovementComponent at position {Position} ===");
-            Console.WriteLine($"=== Player health initialized: {Health}/{MaxHealth} ===");
 
             // Текстура загружается в LoadContent (спрайт "Images/ship")
             Texture = null;
@@ -145,7 +143,6 @@ namespace RiotGalaxy.GameObjects
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             // Отладочное сообщение
-            Console.WriteLine($"=== Drawing PlayerShip at ({Position.X}, {Position.Y}), IsAlive: {IsAlive} ===");
             
             if (!IsAlive)
                 return;
@@ -186,7 +183,6 @@ namespace RiotGalaxy.GameObjects
             if (!IsAlive || IsInvulnerable)
                 return;
 
-            Console.WriteLine($"=== Player taking damage: {damage}, current HP: {Health} ===");
             
             // Наносим урон
             Health -= damage;
@@ -204,7 +200,6 @@ namespace RiotGalaxy.GameObjects
         /// </summary>
         public void Heal(int amount)
         {
-            Console.WriteLine($"=== Player healing: {amount}, current HP: {Health} ===");
             Health += amount;
         }
 
@@ -216,7 +211,6 @@ namespace RiotGalaxy.GameObjects
         {
             IsInvulnerable = true;
             _invulnerabilityTime = duration;
-            Console.WriteLine($"=== Shield activated for {duration}ms ===");
         }
 
         /// <summary>
@@ -226,7 +220,6 @@ namespace RiotGalaxy.GameObjects
         {
             IsInvulnerable = false;
             _invulnerabilityTime = 0;
-            Console.WriteLine("=== Shield deactivated ===");
         }
 
         /// <summary>
@@ -236,7 +229,6 @@ namespace RiotGalaxy.GameObjects
         {
             if (!IsAlive) return;
             
-            Console.WriteLine("=== Player died! ===");
             IsAlive = false;
             
             // Вызываем событие смерти
@@ -251,7 +243,6 @@ namespace RiotGalaxy.GameObjects
         /// </summary>
         public void Respawn()
         {
-            Console.WriteLine("=== Player respawning ===");
             Health = MaxHealth;
             IsAlive = true;
             IsInvulnerable = false;
@@ -289,7 +280,6 @@ namespace RiotGalaxy.GameObjects
                     Gun = new WeaponLaser(this);
                     break;
             }
-            Console.WriteLine($"=== Weapon changed to {weaponType} ===");
         }
 
         /// <summary>
@@ -457,7 +447,6 @@ namespace RiotGalaxy.GameObjects
             try
             {
                 Texture = content.Load<Texture2D>(ShipSpriteAsset);
-                Console.WriteLine($"=== PlayerShip sprite '{ShipSpriteAsset}' loaded ({Texture.Width}x{Texture.Height}) ===");
             }
             catch (Exception ex)
             {
@@ -473,7 +462,6 @@ namespace RiotGalaxy.GameObjects
         /// </summary>
         private void OnHealthChanged(int oldHealth, int newHealth)
         {
-            Console.WriteLine($"=== Player health changed: {oldHealth} -> {newHealth} ===");
             
             // Вызываем событие об изменении здоровья
             HealthChanged?.Invoke(oldHealth, newHealth);

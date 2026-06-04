@@ -51,7 +51,6 @@ namespace RiotGalaxy.Managers
         private InputManager()
         {
             GuiButtons = new List<MyButton>();
-            Console.WriteLine("=== InputManager initialized ===");
             CreateTouchListener();
         }
 
@@ -163,7 +162,6 @@ namespace RiotGalaxy.Managers
         /// </summary>
         public void AddButnHandler(MyButton btn)
         {
-            Console.WriteLine("=== AddButton ===");
             GuiButtons.Add(btn);
         }
 
@@ -278,7 +276,6 @@ namespace RiotGalaxy.Managers
             {
                 // Используем компонент движения игрока
                 playerMovement.SetMoveDirection(inputPosition);
-                Console.WriteLine($"=== Setting player movement to position: {inputPosition} ===");
             }
         }
 
@@ -292,7 +289,6 @@ namespace RiotGalaxy.Managers
             {
                 // Используем компонент движения игрока
                 playerMovement.MoveStop();
-                Console.WriteLine("=== Stopping player movement ===");
             }
         }
 
@@ -348,7 +344,6 @@ namespace RiotGalaxy.Managers
                     break;
                 case GameManager.GameState.MainMenu:
                     // Выйти из игры
-                    Console.WriteLine("=== Quit game requested ===");
                     break;
             }
         }

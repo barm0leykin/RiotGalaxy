@@ -19,7 +19,6 @@ namespace RiotGalaxy.Commands
         
         public void Execute()
         {
-            Console.WriteLine("=== CommandKillAll ===");
             var gameObjects = GameManager.Instance.GameObjects;
             
             foreach (var obj in gameObjects)
@@ -40,7 +39,6 @@ namespace RiotGalaxy.Commands
         
         public void Execute()
         {
-            Console.WriteLine("=== CommandWin ===");
             GameManager.Instance.ChangeGameState(GameManager.GameState.Victory);
         }
     }
@@ -53,7 +51,6 @@ namespace RiotGalaxy.Commands
         
         public void Execute()
         {
-            Console.WriteLine("=== CommandLose ===");
             GameManager.Instance.ChangeGameState(GameManager.GameState.GameOver);
         }
     }
@@ -66,7 +63,6 @@ namespace RiotGalaxy.Commands
         
         public void Execute()
         {
-            Console.WriteLine("=== CommandMainMenu ===");
             GameManager.Instance.ChangeGameState(GameManager.GameState.MainMenu);
         }
     }
@@ -79,7 +75,6 @@ namespace RiotGalaxy.Commands
         
         public void Execute()
         {
-            Console.WriteLine("=== CommandStartGame ===");
             GameManager.Instance.ChangeGameState(GameManager.GameState.Playing);
         }
     }
@@ -92,7 +87,6 @@ namespace RiotGalaxy.Commands
         
         public void Execute()
         {
-            Console.WriteLine("=== CommandSwitchPause ===");
             var currentState = GameManager.Instance.CurrentGameState;
             
             if (currentState == GameManager.GameState.Playing)
@@ -114,7 +108,6 @@ namespace RiotGalaxy.Commands
         
         public void Execute()
         {
-            Console.WriteLine("=== CommandPause ===");
             GameManager.Instance.ChangeGameState(GameManager.GameState.Paused);
         }
     }
@@ -127,7 +120,6 @@ namespace RiotGalaxy.Commands
         
         public void Execute()
         {
-            Console.WriteLine("=== CommandResume ===");
             GameManager.Instance.ChangeGameState(GameManager.GameState.Playing);
         }
     }
@@ -140,14 +132,12 @@ namespace RiotGalaxy.Commands
         
         public void Execute()
         {
-            Console.WriteLine("=== CommandHpUp ===");
             var player = GameManager.Instance.Player;
             if (player != null)
             {
                 // В будущем здесь будет восстановление здоровья
                 // player.HpUp(player.MaxHealth);
                 player.Health = player.MaxHealth;
-                Console.WriteLine("Health restored to maximum");
             }
         }
     }
@@ -162,7 +152,6 @@ namespace RiotGalaxy.Commands
         
         public void Execute()
         {
-            Console.WriteLine("=== CommandPauseWeaponMenu ===");
             var currentState = GameManager.Instance.CurrentGameState;
             
             if (currentState == GameManager.GameState.Playing)

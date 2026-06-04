@@ -2,74 +2,125 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using RiotGalaxy.Components;
+using RiotGalaxy.Managers;
+using RiotGalaxy.Weapons;
 
 namespace RiotGalaxy.GameObjects
 {
     /// <summary>
-    /// Класс врага
+    /// Типы врагов (как в CocosSharp).
+    /// </summary>
+    public enum EnemyType { RND = 0, SM_SCOUT, BLUE, GREEN, RED }
+
+    /// <summary>
+    /// Базовый класс врага. Адаптация Enemy из CocosSharp.
+    /// Конкретные параметры (Hp, урон, скорость, спрайт, траектория) задают наследники.
     /// </summary>
     public class Enemy : GameObject
     {
-        // Параметры врага
-        public float Speed { get; set; } = 2f;
-        public int Health { get; set; } = 30;
-        public int MaxHealth { get; set; } = 30;
+        public EnemyType Type { get; protected set; } = EnemyType.RND;
+        public int Hp { get; set; } = 10;
+        public int MaxHp { get; set; } = 10;
         public int Damage { get; set; } = 10;
-        public int ScoreValue { get; set; } = 100;
-        
-        public Enemy(Vector2 position, EnemyType type) : base(position, GetSizeForType(type))
+        public float MaxSpeed { get; set; } = 100f;
+        public float CurrentSpeed { get; set; } = 100f;
+
+        // Типизированный доступ к компоненту движения с отскоком
+        protected EnemyBounceMovement Move;
+
+        // Оружие врага (аналог Enemy.gun из CocosSharp)
+        public Weapon Gun { get; protected set; }
+        protected float ShootInterval = 3f; // сек между выстрелами
+        private float _actionTime;
+
+        protected static readonly Random Rnd = new Random();
+
+        public Enemy(Vector2 position) : base(position, new Vector2(45, 45))
         {
-            // Инициализация компонентов
-            Movement = new EnemyMovementComponent(this, Speed, MovementPattern.Linear);
-            Shooting = new EnemyShootingComponent(this, 1f, ShootingPattern.Direct);
-            Collision = new EnemyCollisionComponent(this);
+            Gun = new WeaponCannon(this);
+            _actionTime = (float)Rnd.NextDouble() * ShootInterval; // разнобой старта стрельбы
         }
-        
-        private static Vector2 GetSizeForType(EnemyType type)
-        {
-            switch (type)
-            {
-                case EnemyType.Small:
-                    return new Vector2(45, 45);
-                case EnemyType.Medium:
-                    return new Vector2(55, 55);
-                case EnemyType.Large:
-                    return new Vector2(60, 60);
-                default:
-                    return new Vector2(50, 50);
-            }
-        }
-        
+
         public override void Update(GameTime gameTime)
         {
             if (!IsAlive)
                 return;
-                
-            base.Update(gameTime);
+
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            // Оружие (очереди/перезарядка)
+            Gun?.Update(gameTime);
+
+            // Решение о стрельбе по таймеру (базовый AI)
+            _actionTime += dt;
+            if (_actionTime >= ShootInterval)
+            {
+                _actionTime = 0f;
+                Shoot();
+            }
+
+            base.Update(gameTime); // движение через компонент
         }
-        
+
+        /// <summary>Поведение стрельбы. По умолчанию враг не стреляет (переопределяется типами).</summary>
+        protected virtual void Shoot() { }
+
+        /// <summary>Выстрел строго вниз (аналог ObjBehShootDown).</summary>
+        protected void ShootDown()
+        {
+            Gun.Aim(MathHelper.Pi); // 180° = вниз
+            Gun.Fire();
+        }
+
+        /// <summary>Прицельный выстрел в игрока (аналог ObjBehShootAimToPlayer).</summary>
+        protected void ShootAimAtPlayer()
+        {
+            var player = GameManager.Instance.Player;
+            if (player == null)
+                return;
+            Vector2 d = player.Position - Position;
+            float angle = (float)Math.Atan2(d.X, -d.Y); // конвенция Weapon.Aim: 0=вверх, π=вниз
+            Gun.Aim(angle);
+            Gun.Fire();
+        }
+
         /// <summary>
-        /// Получение урона
+        /// Загрузка спрайта врага из Content Pipeline (аналог draw.LoadGraphics).
+        /// </summary>
+        protected void LoadSprite(string asset)
+        {
+            try
+            {
+                Texture = GameManager.Instance.Content.Load<Texture2D>(asset);
+                if (Texture != null)
+                    Size = new Vector2(Texture.Width, Texture.Height);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"=== Enemy sprite '{asset}' load failed: {ex.Message} ===");
+            }
+        }
+
+        /// <summary>
+        /// Получение урона. Аналог Enemy.Hit из CocosSharp.
         /// </summary>
         public void TakeDamage(int damage)
         {
-            Health -= damage;
-            if (Health <= 0)
+            Hp -= damage;
+            if (Hp <= 0)
             {
-                Health = 0;
-                IsAlive = false;
+                Hp = 0;
+                Die();
             }
         }
-    }
-    
-    /// <summary>
-    /// Типы врагов
-    /// </summary>
-    public enum EnemyType
-    {
-        Small,
-        Medium,
-        Large,
-        Boss
+
+        /// <summary>
+        /// Уничтожение врага.
+        /// </summary>
+        protected virtual void Die()
+        {
+            IsAlive = false; // GameManager удалит объект и обновит счётчики
+            AudioManager.Instance.PlayEffect("explode1");
+        }
     }
 }

@@ -117,7 +117,6 @@ namespace RiotGalaxy.Components
         public void MoveRight()
         {
             _moveDirection = 1;
-            Console.WriteLine("=== Player movement: RIGHT ===");
         }
         
         /// <summary>
@@ -126,7 +125,6 @@ namespace RiotGalaxy.Components
         public void MoveLeft()
         {
             _moveDirection = -1;
-            Console.WriteLine("=== Player movement: LEFT ===");
         }
         
         /// <summary>
@@ -136,7 +134,6 @@ namespace RiotGalaxy.Components
         public void MoveStop()
         {
             _moveDirection = 0;
-            Console.WriteLine("=== Player movement: STOP ===");
         }
         
         /// <summary>

@@ -36,7 +36,6 @@ namespace RiotGalaxy.Managers
             try
             {
                 _effects[key] = content.Load<SoundEffect>(asset);
-                Console.WriteLine($"=== SoundEffect '{key}' loaded from '{asset}' ===");
             }
             catch (Exception ex)
             {

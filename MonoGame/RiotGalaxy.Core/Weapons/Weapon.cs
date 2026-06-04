@@ -89,7 +89,8 @@ namespace RiotGalaxy.Weapons
 
             _burstRemaining = Math.Max(1, Options.burst);
             _reloadTimer = Options.reloadSpeed;
-            AudioManager.Instance.PlayEffect("fire1");
+            if (_owner is PlayerShip)
+                AudioManager.Instance.PlayEffect("fire1"); // звук только у игрока
 
             // первый выстрел очереди — сразу
             FireOnce();
@@ -116,7 +117,7 @@ namespace RiotGalaxy.Weapons
             shell.Damage = (int)Options.damage;
             shell.Direction = _aimDir;
             shell.Rotation = _aimAngle;
-            shell.PlayerSide = true; // оружие принадлежит игроку
+            shell.PlayerSide = (_owner is PlayerShip); // сторона снаряда = сторона стрелка
 
             _fireCount++;
             GameManager.Instance.GameObjects.Add(shell);
