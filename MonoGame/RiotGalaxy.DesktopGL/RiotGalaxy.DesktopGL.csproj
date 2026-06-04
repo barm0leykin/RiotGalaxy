@@ -28,4 +28,10 @@
     </MonoGameContentReference>
   </ItemGroup>
 
+  <!-- Текстовые/YAML-конфиги и уровни копируются в выход как есть (мимо Content Pipeline) -->
+  <ItemGroup>
+    <None Include="..\RiotGalaxy.Content\Config\*.yaml" Link="Content\Config\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\RiotGalaxy.Content\Levels\*.yaml" Link="Content\Levels\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,19 @@
+# Параметры оружия по уровням (перенесено из оригинального weapon.ini).
+# Поля: burst (выстрелов в очереди), burstInterval (сек между выстрелами),
+#       reloadSpeed (сек между очередями), damage (урон), shellSpeed (скорость снаряда)
+maxWeaponLevel: 3
+
+cannon:
+  - { burst: 1, burstInterval: 0.25, reloadSpeed: 2.0,  damage: 10, shellSpeed: 200 }
+  - { burst: 1, burstInterval: 0.25, reloadSpeed: 1.5,  damage: 10, shellSpeed: 200 }
+  - { burst: 2, burstInterval: 0.25, reloadSpeed: 2.4,  damage: 10, shellSpeed: 200 }
+
+minigun:
+  - { burst: 3, burstInterval: 0.1,  reloadSpeed: 2.0,  damage: 4,  shellSpeed: 200 }
+  - { burst: 4, burstInterval: 0.1,  reloadSpeed: 2.0,  damage: 4,  shellSpeed: 200 }
+  - { burst: 4, burstInterval: 0.1,  reloadSpeed: 1.6,  damage: 4,  shellSpeed: 200 }
+
+laser:
+  - { burst: 1, burstInterval: 0.25, reloadSpeed: 2.65, damage: 10, shellSpeed: 400 }
+  - { burst: 1, burstInterval: 0.25, reloadSpeed: 2.0,  damage: 10, shellSpeed: 400 }
+  - { burst: 2, burstInterval: 0.25, reloadSpeed: 1.6,  damage: 10, shellSpeed: 400 }

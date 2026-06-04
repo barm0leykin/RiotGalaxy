@@ -74,11 +74,8 @@ namespace RiotGalaxy.Interface
             Texture2D textureToDraw = sprite ?? defaultTexture;
             if (textureToDraw != null)
             {
-                spriteBatch.Draw(
-                    textureToDraw, 
-                    new Rectangle((int)Position.X, (int)Position.Y, Width, Height), 
-                    Color.White
-                );
+                // Рисуем по тому же прямоугольнику, что и проверка клика (GetRect)
+                spriteBatch.Draw(textureToDraw, GetRect(), Color.White);
             }
         }
     }
@@ -228,8 +225,23 @@ namespace RiotGalaxy.Interface
             name = "btn_hp_up";
             Width = 64;
             Height = 64;
-            
+
             cmd = new CommandHpUp();
+        }
+    }
+
+    /// <summary>
+    /// Тестовая кнопка: следующий уровень
+    /// </summary>
+    public class ButtonNextLevel : MyButton
+    {
+        public ButtonNextLevel(Vector2 pos) : base(pos)
+        {
+            name = "btn_next_level";
+            Width = 64;
+            Height = 64;
+
+            cmd = new CommandNextLevel();
         }
     }
 }

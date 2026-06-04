@@ -1,80 +1,50 @@
-using System;
-using Microsoft.Xna.Framework;
-using RiotGalaxy.Commands;
+using RiotGalaxy.GameObjects;
 using RiotGalaxy.Managers;
 
 namespace RiotGalaxy.Commands
 {
     /// <summary>
-    /// Команды для управления оружием
-    /// Адаптировано из CocosSharp CommandsWeapon.cs
+    /// Команды для управления оружием (адаптировано из CocosSharp CommandsWeapon.cs).
     /// </summary>
-    
+
     public class CommandUpgradeGun : ICommand
     {
-        public CommandUpgradeGun()
-        {
-        }
-        
         public void Execute()
         {
-            var player = GameManager.Instance.Player;
-            if (player != null)
-            {
-                // В будущем здесь будет обновление оружия
-                // player.gun.Upgrade();
-            }
+            GameManager.Instance.Player?.UpgradeWeapon();
         }
     }
 
     public class CommandChWeaponCannon : ICommand
     {
-        public CommandChWeaponCannon()
-        {
-        }
-        
         public void Execute()
         {
-            var player = GameManager.Instance.Player;
-            if (player != null)
-            {
-                // В будущем здесь будет смена оружия
-                // player.ChangeWeapon(Weapon.WeaponType.CANNON);
-            }
+            GameManager.Instance.Player?.ChangeWeapon(WeaponType.Cannon);
         }
     }
 
     public class CommandChWeaponMinigun : ICommand
     {
-        public CommandChWeaponMinigun()
-        {
-        }
-        
         public void Execute()
         {
-            var player = GameManager.Instance.Player;
-            if (player != null)
-            {
-                // В будущем здесь будет смена оружия
-                // player.ChangeWeapon(Weapon.WeaponType.MINIGUN);
-            }
+            GameManager.Instance.Player?.ChangeWeapon(WeaponType.MachineGun);
         }
     }
 
     public class CommandChWeaponLaser : ICommand
     {
-        public CommandChWeaponLaser()
-        {
-        }
-        
         public void Execute()
         {
-            var player = GameManager.Instance.Player;
-            if (player != null)
-            {
-                // В будущем здесь будет смена оружия
-                // player.ChangeWeapon(Weapon.WeaponType.LASER);
-            }
+            GameManager.Instance.Player?.ChangeWeapon(WeaponType.Laser);
+        }
+    }
+
+    /// <summary>Тестовая команда: перейти к следующему уровню.</summary>
+    public class CommandNextLevel : ICommand
+    {
+        public void Execute()
+        {
+            GameManager.Instance.DebugNextLevel();
         }
     }
 }

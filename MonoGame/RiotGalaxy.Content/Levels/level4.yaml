@@ -1,0 +1,9 @@
+# Уровень 4 (перенос из level4.txt; маршруты опущены)
+description: "Hive"
+spawnInterval: 1.0
+events:
+  - { enemy: blue, count: 5 }
+  - { enemy: green, count: 5 }
+  - { enemy: red, count: 5 }
+  - { enemy: blue, count: 5 }
+  - { enemy: red, count: 5 }

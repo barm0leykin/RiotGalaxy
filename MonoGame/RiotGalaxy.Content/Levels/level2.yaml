@@ -1,0 +1,6 @@
+# Уровень 2 (перенос из level2.txt; маршруты/sync_cmd опущены — этап 10)
+description: "Enemy Recons"
+spawnInterval: 1.0
+events:
+  - { enemy: blue, count: 4 }
+  - { enemy: red, count: 2 }

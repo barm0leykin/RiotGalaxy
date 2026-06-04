@@ -77,15 +77,19 @@ namespace RiotGalaxy.GameObjects
 
         public PlayerShip(Vector2 position) : base(position, new Vector2(60, 60))
         {
-            MaxHealth = 100; // По умолчанию 100 HP, как в CocosSharp
+            // Параметры игрока из options.yaml (Utils.GameOptions)
+            MaxHealth = Utils.GameOptions.PlayerMaxHp;
             Health = MaxHealth;
-            Speed = 300f; // пикселей в секунду
+            Speed = Utils.GameOptions.PlayerMaxSpeed;
             CurrentWeapon = WeaponType.Cannon;
             FireRate = 2f; // выстрелов в секунду
             IsAlive = true;
 
             // Инициализируем компоненты
-            Movement = new PlayerMovementComponent(this, Speed);
+            var movement = new PlayerMovementComponent(this, Speed);
+            movement.Acceleration = Utils.GameOptions.PlayerAcceleration;
+            movement.BrakingSpeed = Utils.GameOptions.PlayerBrakeSpeed;
+            Movement = movement;
             Shooting = new PlayerShootingComponent(this);
             Collision = new PlayerCollisionComponent(this);
 

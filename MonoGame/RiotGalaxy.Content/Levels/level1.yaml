@@ -1,0 +1,9 @@
+# Уровень 1 (перенос из level1.txt)
+# events обрабатываются по порядку:
+#   { enemy: <green|blue|red|scout>, count: N } — заспавнить N врагов с текущим интервалом
+#   { interval: T }  — задать интервал между спавнами (сек)
+#   { wait: T }      — пауза T секунд
+description: "First contact!"
+spawnInterval: 1.0
+events:
+  - { enemy: green, count: 2 }

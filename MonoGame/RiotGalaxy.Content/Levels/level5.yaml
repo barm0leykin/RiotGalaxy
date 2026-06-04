@@ -1,0 +1,16 @@
+# Уровень 5 (перенос из level5.txt; маршруты опущены)
+description: "Red fear"
+spawnInterval: 1.0
+events:
+  - { enemy: green, count: 5 }
+  - { interval: 2 }
+  - { enemy: red, count: 10 }
+  - { interval: 0.5 }
+  - { enemy: blue, count: 5 }
+  - { enemy: blue, count: 5 }
+  - { interval: 2 }
+  - { enemy: red, count: 10 }
+  - { interval: 1 }
+  - { enemy: red, count: 5 }
+  - { interval: 1 }
+  - { enemy: green, count: 2 }
