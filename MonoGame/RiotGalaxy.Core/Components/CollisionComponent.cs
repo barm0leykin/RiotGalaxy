@@ -78,8 +78,8 @@ namespace RiotGalaxy.Components
                 return;
                 
             // Если у владельца пули и этого объекта разные "стороны", наносим урон
-            bool isEnemyCollision = (_owner is Enemy && !bullet.IsEnemyBullet) || 
-                                   (_owner is PlayerShip && bullet.IsEnemyBullet);
+            bool isEnemyCollision = (_owner is Enemy && bullet.PlayerSide) ||
+                                   (_owner is PlayerShip && !bullet.PlayerSide);
                                    
             if (isEnemyCollision)
             {
@@ -161,8 +161,8 @@ namespace RiotGalaxy.Components
         public BulletCollisionComponent(Bullet bullet) : base(bullet, 5f)
         {
             _bullet = bullet;
-            
-            if (_bullet.IsEnemyBullet)
+
+            if (!_bullet.PlayerSide)
             {
                 _collisionLayers.Add(CollisionLayer.EnemyBullet);
             }
@@ -171,18 +171,18 @@ namespace RiotGalaxy.Components
                 _collisionLayers.Add(CollisionLayer.PlayerBullet);
             }
         }
-        
+
         public override void OnCollide(GameObject other)
         {
             // Продолжительность пули после столкновения
-            if (_bullet.IsEnemyBullet && other is PlayerShip)
+            if (!_bullet.PlayerSide && other is PlayerShip)
             {
-                _bullet.IsActive = false;
+                _bullet.IsAlive = false;
             }
-            else if (!_bullet.IsEnemyBullet && other is Enemy)
+            else if (_bullet.PlayerSide && other is Enemy)
             {
                 if (!_bullet.IsPiercing) // Обычные пули исчезают при попадании
-                    _bullet.IsActive = false;
+                    _bullet.IsAlive = false;
             }
         }
     }

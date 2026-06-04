@@ -56,6 +56,9 @@ namespace RiotGalaxy.Managers
         public Texture2D SimpleTexture { get; set; }
         public GraphicsDevice GraphicsDevice => _graphics.GraphicsDevice;
 
+        // Доступ к загрузчику контента (нужен игровым объектам для загрузки спрайтов)
+        public ContentManager Content => _content;
+
         // Фоновое изображение (задник)
         private Texture2D _background;
         

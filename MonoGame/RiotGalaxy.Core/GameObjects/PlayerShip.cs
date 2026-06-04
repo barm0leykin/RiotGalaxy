@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using RiotGalaxy.Components;
+using RiotGalaxy.Weapons;
 
 namespace RiotGalaxy.GameObjects
 {
@@ -52,6 +53,9 @@ namespace RiotGalaxy.GameObjects
         public float FireRate { get; set; }
         private float _timeSinceLastShot = 0f;
 
+        // Текущее оружие (аналог playerShip.gun из CocosSharp)
+        public Weapon Gun { get; private set; }
+
         // Параметры неуязвимости (аналог GodMode в CocosSharp)
         public bool IsInvulnerable { get; private set; }
         private float _invulnerabilityTime = 0f;
@@ -78,6 +82,9 @@ namespace RiotGalaxy.GameObjects
             Movement = new PlayerMovementComponent(this, Speed);
             Shooting = new PlayerShootingComponent(this);
             Collision = new PlayerCollisionComponent(this);
+
+            // Оружие по умолчанию — пушка (аналог CocosSharp)
+            Gun = new WeaponCannon(this);
             
             // Убедимся, что компоненты правильно инициализированы
             Console.WriteLine($"=== PlayerShip initialized with MovementComponent at position {Position} ===");
@@ -115,8 +122,21 @@ namespace RiotGalaxy.GameObjects
                 }
             }
 
+            // Обновляем оружие (очереди/перезарядка)
+            Gun?.Update(gameTime);
+
             // Вызываем базовый метод (обновляет компоненты)
             base.Update(gameTime);
+        }
+
+        /// <summary>
+        /// Выстрел из текущего оружия. Аналог вызова playerShip.gun.Fire().
+        /// </summary>
+        public void Fire()
+        {
+            if (!IsAlive)
+                return;
+            Gun?.Fire();
         }
 
         /// <summary>
@@ -256,18 +276,20 @@ namespace RiotGalaxy.GameObjects
         {
             CurrentWeapon = weaponType;
 
+            // Пересоздаём оружие соответствующего типа (аналог ChangeWeapon из CocosSharp)
             switch (weaponType)
             {
                 case WeaponType.Cannon:
-                    FireRate = 2f;
+                    Gun = new WeaponCannon(this);
                     break;
                 case WeaponType.MachineGun:
-                    FireRate = 10f;
+                    Gun = new WeaponMinigun(this);
                     break;
                 case WeaponType.Laser:
-                    FireRate = 1f;
+                    Gun = new WeaponLaser(this);
                     break;
             }
+            Console.WriteLine($"=== Weapon changed to {weaponType} ===");
         }
 
         /// <summary>

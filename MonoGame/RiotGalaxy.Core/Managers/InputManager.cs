@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using RiotGalaxy.Commands;
 using RiotGalaxy.Interface;
 using RiotGalaxy.Components;
+using RiotGalaxy.GameObjects;
 
 namespace RiotGalaxy.Managers
 {
@@ -200,6 +201,20 @@ namespace RiotGalaxy.Managers
             var player = GameManager.Instance.Player;
             bool hasKeyboardInput = false;
             Vector2 movementInput = Vector2.Zero;
+
+            // Стрельба: удержание Пробела. Темп/очереди/перезарядку контролирует само оружие.
+            if (IsKeyPressed(Keys.Space) && player != null)
+            {
+                player.Fire();
+            }
+
+            // Смена оружия: 1 — пушка, 2 — пулемёт, 3 — лазер
+            if (player != null)
+            {
+                if (IsKeyJustPressed(Keys.D1)) player.ChangeWeapon(WeaponType.Cannon);
+                else if (IsKeyJustPressed(Keys.D2)) player.ChangeWeapon(WeaponType.MachineGun);
+                else if (IsKeyJustPressed(Keys.D3)) player.ChangeWeapon(WeaponType.Laser);
+            }
             
             // Обработка клавиатурного ввода для движения
             if (IsKeyPressed(Keys.A) || IsKeyPressed(Keys.Left))
@@ -314,11 +329,7 @@ namespace RiotGalaxy.Managers
         private void HandleShootAction()
         {
             var player = GameManager.Instance.Player;
-            if (player != null)
-            {
-                // В будущем здесь будет вызов метода стрельбы
-                Console.WriteLine("=== Player shooting action ===");
-            }
+            player?.Fire();
         }
 
         /// <summary>

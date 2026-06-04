@@ -348,18 +348,116 @@ AudioManager.Instance.PlayEffect("fire1");   // громкость 0.1, как �
 
 ## 11. Как собрать и запустить
 
+### 11.0. Что нужно один раз
+
+- **.NET SDK** (проект на `net6.0`, но `RollForward=Major` позволяет собирать и на новых SDK — например, на установленном 9.x).
+- **`dotnet-mgcb`** — компилятор ресурсов. Ставится локально из манифеста [.config/dotnet-tools.json](.config/dotnet-tools.json):
+
+  ```bash
+  cd MonoGame
+  dotnet tool restore        # один раз после клона: поставит dotnet-mgcb
+  ```
+
+  Без него сборка контента (`.xnb`) падает с `dotnet mgcb … not found`.
+
+### 11.1. Быстрый запуск (дев)
+
 ```bash
-# из корня репозитория:
-./run_game.sh                          # собирает решение и запускает игру
+# из корня репозитория — собирает и запускает:
+./run_game.sh
 
 # или вручную из папки MonoGame:
-dotnet tool restore                    # один раз: поставить dotnet-mgcb (для сборки ресурсов)
 dotnet build RiotGalaxy.sln
 dotnet run --project RiotGalaxy.DesktopGL/RiotGalaxy.DesktopGL.csproj
 ```
 
 Управление сейчас: **Space** — старт, **P** — пауза, **Esc** — в меню/выход
 (стрелки — движение корабля).
+
+### 11.2. Dev (Debug) vs Release сборка
+
+`dotnet` собирает в конфигурации **Debug** по умолчанию. Флаг `-c` (`--configuration`)
+переключает:
+
+```bash
+# Debug — для разработки: без оптимизаций, с отладочной информацией (.pdb), быстрее компиляция
+dotnet build -c Debug
+
+# Release — для распространения: с оптимизациями, работает быстрее
+dotnet build -c Release
+dotnet run -c Release --project RiotGalaxy.DesktopGL/RiotGalaxy.DesktopGL.csproj
+```
+
+Куда кладётся результат:
+
+| Конфигурация | Путь к бинарникам |
+|---|---|
+| Debug | `RiotGalaxy.DesktopGL/bin/Debug/net6.0/` |
+| Release | `RiotGalaxy.DesktopGL/bin/Release/net6.0/` |
+
+В обоих случаях рядом появляется папка `Content/` со скомпилированными `.xnb`
+(копируется автоматически благодаря `MonoGameContentReference`).
+
+### 11.3. Сборка дистрибутива под разные ОС (`dotnet publish`)
+
+`build`/`run` годятся для разработки. Чтобы получить **готовый дистрибутив** для
+конкретной операционной системы, используют `dotnet publish` с указанием **RID**
+(Runtime Identifier) — кода целевой платформы.
+
+Проект `RiotGalaxy.DesktopGL` (OpenGL) кроссплатформенный — один и тот же код собирается
+под все десктопные ОС, меняется только RID:
+
+| ОС | RID |
+|---|---|
+| Windows 64-bit | `win-x64` |
+| Linux 64-bit | `linux-x64` |
+| macOS (Intel) | `osx-x64` |
+| macOS (Apple Silicon) | `osx-arm64` |
+
+```bash
+# Self-contained (включает .NET runtime — на машине пользователя SDK не нужен):
+dotnet publish RiotGalaxy.DesktopGL/RiotGalaxy.DesktopGL.csproj \
+    -c Release -r win-x64 --self-contained true
+
+# Под Linux:
+dotnet publish RiotGalaxy.DesktopGL/RiotGalaxy.DesktopGL.csproj \
+    -c Release -r linux-x64 --self-contained true
+
+# Под macOS (Apple Silicon):
+dotnet publish RiotGalaxy.DesktopGL/RiotGalaxy.DesktopGL.csproj \
+    -c Release -r osx-arm64 --self-contained true
+```
+
+Результат — в `bin/Release/net6.0/<RID>/publish/` (вместе с папкой `Content/`).
+
+Полезные флаги:
+
+- `--self-contained true` — упаковать .NET в дистрибутив (пользователю не нужен
+  установленный runtime). `false` — дистрибутив меньше, но требует .NET на машине.
+- `-p:PublishSingleFile=true` — собрать в один исполняемый файл.
+- `-p:PublishTrimmed=true` — отрезать неиспользуемый код (меньше размер; с MonoGame
+  тестируйте — тримминг иногда удаляет нужное через рефлексию).
+
+> ⚠️ Кросс-публикация скачивает runtime-пакеты целевой платформы с nuget при первой
+> сборке — нужен интернет. Сборка под `osx-*`/`win-*` с Linux работает (это просто
+> упаковка), но саму игру для финальной проверки лучше запускать на целевой ОС.
+
+### 11.4. Сборка в Docker (требование PRD)
+
+Согласно [prd.md](../prd.md), сборка должна идти в контейнере, без установки пакетов в
+хост. Идея: в образе есть .NET SDK, внутри выполняется `dotnet tool restore` (ставит
+`dotnet-mgcb`) и затем `dotnet publish` под нужный RID. Dockerfile в проекте пока не
+заведён — это часть будущего этапа CI/CD.
+
+### 11.5. Мобильные платформы (Android / iOS) — пока не настроены
+
+В решении сейчас **только** `Core`, `Content`, `DesktopGL`. Каталоги
+`RiotGalaxy.Android/` и `RiotGalaxy.iOS/` существуют, но **пустые** — это заготовки под
+будущие этапы.
+
+Когда дойдём: мобильные сборки MonoGame требуют отдельных проектов-обёрток и .NET
+workloads (`dotnet workload install android` / `ios`), плюс Android SDK / Xcode.
+Платформонезависимая логика из `Core` переиспользуется как есть.
 
 ---
 
