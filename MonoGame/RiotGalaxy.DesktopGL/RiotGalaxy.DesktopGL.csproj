@@ -20,9 +20,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RiotGalaxy.Core\RiotGalaxy.Core.csproj" />
-    <!-- Temporarily disabled content reference
-    <ProjectReference Include="..\RiotGalaxy.Content\RiotGalaxy.Content.csproj" />
-    -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <MonoGameContentReference Include="..\RiotGalaxy.Content\RiotGalaxy.Content.mgcb">
+      <ContentFolder>Content</ContentFolder>
+    </MonoGameContentReference>
   </ItemGroup>
 
 </Project>

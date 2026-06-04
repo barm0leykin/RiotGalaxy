@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using RiotGalaxy.Components;
 
@@ -82,9 +83,14 @@ namespace RiotGalaxy.GameObjects
             Console.WriteLine($"=== PlayerShip initialized with MovementComponent at position {Position} ===");
             Console.WriteLine($"=== Player health initialized: {Health}/{MaxHealth} ===");
 
-            // Текстура будет создана позже после установки GraphicsDevice
+            // Текстура загружается в LoadContent (спрайт "Images/ship")
             Texture = null;
         }
+
+        /// <summary>
+        /// Имя спрайта корабля в Content Pipeline (атлас CocosSharp -> Images/ship)
+        /// </summary>
+        public const string ShipSpriteAsset = "Images/ship";
 
         /// <summary>
         /// Обновление состояния корабля
@@ -415,14 +421,28 @@ namespace RiotGalaxy.GameObjects
         /// </summary>
         public void SetGraphicsDevice(GraphicsDevice graphicsDevice)
         {
+            // GraphicsDevice нужен для генерации текстуры щита (CreateSimpleShieldTexture)
+            // и для фолбэк-заглушки, если спрайт не загрузится.
             _graphicsDevice = graphicsDevice;
-            
-            // Создаем текстуру для корабля после установки GraphicsDevice
-            if (Texture == null)
+        }
+
+        /// <summary>
+        /// Загрузка спрайта корабля из Content Pipeline.
+        /// Заменяет прежнюю заглушку (зелёный квадрат) реальным спрайтом "Images/ship".
+        /// </summary>
+        public void LoadContent(ContentManager content)
+        {
+            try
             {
-                // Используем ярко-зеленый цвет, чтобы корабль был хорошо виден на черном фоне
-                Texture = CreateSimpleTexture(Color.Lime);
-                Console.WriteLine("=== PlayerShip texture created with Lime color ===");
+                Texture = content.Load<Texture2D>(ShipSpriteAsset);
+                Console.WriteLine($"=== PlayerShip sprite '{ShipSpriteAsset}' loaded ({Texture.Width}x{Texture.Height}) ===");
+            }
+            catch (Exception ex)
+            {
+                // Фолбэк на заглушку, чтобы игра не падала, если ассет недоступен
+                Console.WriteLine($"=== Failed to load '{ShipSpriteAsset}', falling back to placeholder: {ex.Message} ===");
+                if (_graphicsDevice != null)
+                    Texture = CreateSimpleTexture(Color.Lime);
             }
         }
         

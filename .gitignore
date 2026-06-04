@@ -1,31 +1,76 @@
-# .NET / MonoGame build and output directories
-MonoGame/*/bin/
-MonoGame/*/obj/
-[Mm]onoGame/*/bin/
-[Mm]onoGame/*/obj/
-*. dll
-*. exe
-*. pdb
+# ===== Сборка .NET / MonoGame =====
+# Каталоги сборки на любом уровне вложенности
+[Bb]in/
+[Oo]bj/
 
+# Артефакты компиляции
+*.dll
+*.exe
+*.pdb
+*.dll.config
+*.cache
+*.cache.*
+
+# Скомпилированный контент MonoGame (.xnb генерируются из исходников в bin/).
+# ВНИМАНИЕ: НЕ игнорируем *.xnb глобально — в CocoSharp есть исходные .xnb.
+# Достаточно того, что собранный контент лежит в bin/ (уже игнорируется выше).
+
+# Пользовательские файлы MonoGame Content Builder (сам *.mgcb — ИСХОДНИК, его коммитим!)
+*.mgcb.user
+
+# ===== Среды разработки =====
 # Visual Studio Code
 .vscode/
 *.code-workspace
 
-# Rider Rider
+# Rider / JetBrains
 .idea/
 *.iml
 *.iws
 
-# MonoGame content builders
-*.mgcb
-*.mgcb.user
-*.mgcb.xml
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.sln.docstates
 
-# Log files
+# ===== NuGet =====
+*.nupkg
+*.snupkg
+packages/
+!*/packages/repositories.config
+
+# ===== Тесты =====
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+# ===== Python (скрипты в tools/) =====
+__pycache__/
+*.py[cod]
+
+# ===== Логи и временные файлы =====
 *.log
 logs/
+*.tmp
+*.temp
+*.bak
+*.backup
+*~
 
-# OS generated files
+# ===== Локальная конфигурация =====
+appsettings.local.json
+*.local.json
+**/Properties/launchSettings.json
+
+# ===== AI-агент / прочее =====
+ai-agent/memory/sessions/
+ai-agent/sessions/
+*.session
+.kilo/
+
+# ===== OS =====
 .DS_Store
 .DS_Store?
 ._*
@@ -34,58 +79,7 @@ logs/
 ehthumbs.db
 Thumbs.db
 
-# User-specific files
-*.suo
-*.user
-*.sln.docstates
-
-# Backup files
-*.bak
-*.backup
-*~
-
-# Temporary files
-*.tmp
-*.temp
-
-# AI agent generated files
-ai-agent/memory/sessions/
-ai-agent/sessions/
-*.session
-
-# Build results and packaging
-*.nupkg
-*.snupkg
-**/Properties/launchSettings.json
-
-# Test results
-TestResults/
-*.trx
-*.coverage
-*.coveragexml
-
-# NuGet
-!*/packages/repositories.config
-packages/
-
-# Content packages
-Content/**/*.*
-!/Content/Content.mgcb
-
-# Cache files
-*.cache
-*.cache.*
-
-# Compiled documentation
-docs/_build/
-docs/_static/
-docs/.doctrees/
-*.chm
-
-# Local configuration files
-appsettings.local.json
-*.local.json
-
-## kilo
-.kilo/
-.kilo/*
+# ===== ВАЖНО: что НЕ игнорируем (нужно в репозитории) =====
+# !MonoGame/.config/dotnet-tools.json  — манифест dotnet-mgcb (для `dotnet tool restore`)
+# !**/*.mgcb                            — рецепт сборки контента
+# !MonoGame/RiotGalaxy.Content/**       — исходные спрайты/звуки/фоны/шрифты

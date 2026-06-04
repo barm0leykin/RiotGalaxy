@@ -55,6 +55,9 @@ namespace RiotGalaxy.Managers
         // Вспомогательные текстуры
         public Texture2D SimpleTexture { get; set; }
         public GraphicsDevice GraphicsDevice => _graphics.GraphicsDevice;
+
+        // Фоновое изображение (задник)
+        private Texture2D _background;
         
         // Обработчик ввода пользователя
         public InputManager userInputHandler;
@@ -102,8 +105,21 @@ namespace RiotGalaxy.Managers
         public void LoadContent()
         {
             System.Diagnostics.Debug.WriteLine("=== GameManager Loading Content ===");
-            // Создаем простой шрифт программно, так как у нас нет проекта RiotGalaxy.Content
-            // Это временная мера до настройки правильного контента
+
+            // Загружаем фоновое изображение (1280x768, точно под разрешение игры)
+            try
+            {
+                _background = _content.Load<Texture2D>("Backgrounds/background_blue");
+                Console.WriteLine("=== Background 'Backgrounds/background_blue' loaded ===");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"=== Failed to load background: {ex.Message} ===");
+            }
+
+            // Загружаем звуковые эффекты (fire1, explode1)
+            AudioManager.Instance.LoadContent(_content);
+
             CreateDefaultFont();
         }
         
@@ -161,6 +177,12 @@ namespace RiotGalaxy.Managers
             _graphics.GraphicsDevice.Clear(Color.Black);
 
             _spriteBatch.Begin();
+
+            // Рисуем фоновое изображение (задник) под всеми состояниями
+            if (_background != null)
+            {
+                _spriteBatch.Draw(_background, new Rectangle(0, 0, ScreenWidth, ScreenHeight), Color.White);
+            }
 
             // Рисуем в соответствии с текущим состоянием
             switch (CurrentGameState)
@@ -472,6 +494,7 @@ private void InitializeGameplay()
                 // Создаем игрока (аналог GamePlay.cs строка 49-58)
                 Player = new PlayerShip(new Vector2(ScreenWidth / 2, ScreenHeight - 100));
                 Player.SetGraphicsDevice(GraphicsDevice);
+                Player.LoadContent(_content); // Загружаем реальный спрайт корабля "Images/ship"
                 Player.Health = Player.MaxHealth; // Сбрасываем здоровье игрока до максимума
                 
                 // Устанавливаем границы движения для компонента движения игрока

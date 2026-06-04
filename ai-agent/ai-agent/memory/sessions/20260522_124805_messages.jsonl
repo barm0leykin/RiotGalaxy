@@ -1,2 +1,0 @@
-{"timestamp": "2026-05-22T12:48:05.417886", "role": "human", "content": "Покажи структуру проекта и основные компоненты"}
-{"timestamp": "2026-05-22T12:48:05.418324", "role": "assistant", "content": "Проект RiotGalaxy - это набор приложений развернутых в Kubernetes с помощью ArgoCD.\n\nОсновные компоненты:\n1. Backend-сервисы на C#\n2. Frontend-приложения\n3. Kubernetes-манифесты\n4. Конфигурации ArgoCD\n\nДля более подробной информации изучите файлы prd.md и tasks.md."}
