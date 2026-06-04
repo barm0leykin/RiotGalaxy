@@ -18,6 +18,10 @@ namespace RiotGalaxy.Weapons
         public WeaponOptions Options;
         public bool Safe { get; set; } // предохранитель
 
+        // Уровень прокачки и таблица параметров по уровням
+        public int Level { get; protected set; }
+        protected WeaponOptions[] _levels;
+
         protected GameObject _owner;
         protected int _fireCount = 0;
 
@@ -38,6 +42,14 @@ namespace RiotGalaxy.Weapons
         }
 
         public void LoadWeaponOptions(WeaponOptions opt) => Options = opt;
+
+        /// <summary>Привязать таблицу уровней и выставить стартовый уровень.</summary>
+        protected void InitLevel(WeaponOptions[] levels, int lvl)
+        {
+            _levels = levels;
+            Level = Math.Clamp(lvl, 0, levels.Length - 1);
+            Options = levels[Level];
+        }
 
         /// <summary>
         /// Прицеливание под углом (рад, 0 = вверх). Вычисляет направление и точку
@@ -123,7 +135,15 @@ namespace RiotGalaxy.Weapons
             GameManager.Instance.GameObjects.Add(shell);
         }
 
-        public virtual void Upgrade() { }
+        /// <summary>Повысить уровень оружия (перезагрузить параметры следующего уровня).</summary>
+        public virtual void Upgrade()
+        {
+            if (_levels != null && Level + 1 < _levels.Length)
+            {
+                Level++;
+                Options = _levels[Level];
+            }
+        }
     }
 
     /// <summary>Пушка: одиночные мощные снаряды (Bullet).</summary>
@@ -132,7 +152,7 @@ namespace RiotGalaxy.Weapons
         public WeaponCannon(GameObject owner, int lvl = 0) : base(owner)
         {
             WeaponTypeId = (int)WeaponType.CANNON;
-            Options = WeaponConfig.Cannons[lvl];
+            InitLevel(WeaponConfig.Cannons, lvl);
         }
 
         protected override Shell CreateShell(Vector2 position) => new Bullet(position);
@@ -146,7 +166,7 @@ namespace RiotGalaxy.Weapons
         public WeaponMinigun(GameObject owner, int lvl = 0) : base(owner)
         {
             WeaponTypeId = (int)WeaponType.MINIGUN;
-            Options = WeaponConfig.Miniguns[lvl];
+            InitLevel(WeaponConfig.Miniguns, lvl);
         }
 
         protected override float GetFireAngle()
@@ -165,7 +185,7 @@ namespace RiotGalaxy.Weapons
         public WeaponLaser(GameObject owner, int lvl = 0) : base(owner)
         {
             WeaponTypeId = (int)WeaponType.LASER;
-            Options = WeaponConfig.Lasers[lvl];
+            InitLevel(WeaponConfig.Lasers, lvl);
         }
 
         protected override Shell CreateShell(Vector2 position) => new Laser(position);

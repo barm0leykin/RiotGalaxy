@@ -56,6 +56,12 @@ namespace RiotGalaxy.GameObjects
         // Текущее оружие (аналог playerShip.gun из CocosSharp)
         public Weapon Gun { get; private set; }
 
+        // Очки игрока (за звёзды-бонусы)
+        public int Score { get; set; }
+
+        // Сохранённые уровни прокачки по типам оружия (индекс = (int)WeaponType)
+        private readonly int[] _weaponLevels = new int[3];
+
         // Параметры неуязвимости (аналог GodMode в CocosSharp)
         public bool IsInvulnerable { get; private set; }
         private float _invulnerabilityTime = 0f;
@@ -267,19 +273,31 @@ namespace RiotGalaxy.GameObjects
         {
             CurrentWeapon = weaponType;
 
-            // Пересоздаём оружие соответствующего типа (аналог ChangeWeapon из CocosSharp)
+            // Пересоздаём оружие соответствующего типа с сохранённым уровнем прокачки
+            int lvl = _weaponLevels[(int)weaponType];
             switch (weaponType)
             {
                 case WeaponType.Cannon:
-                    Gun = new WeaponCannon(this);
+                    Gun = new WeaponCannon(this, lvl);
                     break;
                 case WeaponType.MachineGun:
-                    Gun = new WeaponMinigun(this);
+                    Gun = new WeaponMinigun(this, lvl);
                     break;
                 case WeaponType.Laser:
-                    Gun = new WeaponLaser(this);
+                    Gun = new WeaponLaser(this, lvl);
                     break;
             }
+        }
+
+        /// <summary>
+        /// Повысить уровень текущего оружия (бонус BulletUp). Уровень сохраняется по типу.
+        /// </summary>
+        public void UpgradeWeapon()
+        {
+            if (Gun == null)
+                return;
+            Gun.Upgrade();
+            _weaponLevels[(int)CurrentWeapon] = Gun.Level;
         }
 
         /// <summary>

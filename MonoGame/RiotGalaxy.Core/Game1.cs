@@ -55,35 +55,11 @@ namespace RiotGalaxy.Core
             _gameManager.SimpleTexture = CreateSimpleTexture(Color.White);
         }
 
-        private bool _autoTransition = true; // Автоматический переход в Playing
-
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || 
-                Keyboard.GetState().IsKeyDown(Keys.Escape))
-            {
-                // Выход только из главного меню
-                if (_gameManager.CurrentGameState == GameManager.GameState.MainMenu)
-                {
-                    Exit();
-                }
-                else
-                {
-                    // В остальных случаях возвращаем в главное меню
-                    _gameManager.ChangeGameState(GameManager.GameState.MainMenu);
-                }
-            }
+            // Ввод игровых состояний (меню/настройки обрабатывают сами экраны)
+            HandleGameplayKeys();
 
-            // Автоматический переход в состояние Playing для тестирования
-            if (_autoTransition && _gameManager.CurrentGameState == GameManager.GameState.MainMenu)
-            {
-                _gameManager.ChangeGameState(GameManager.GameState.Playing);
-                _autoTransition = false; // Только один раз
-            }
-
-            // Обработка клавиатуры для управления игрой
-            HandleKeyboardInput();
-            
             // Передаем обновление в GameManager
             _gameManager.Update(gameTime);
 
@@ -101,35 +77,29 @@ namespace RiotGalaxy.Core
         /// <summary>
         /// Обработка ввода с клавиатуры
         /// </summary>
-        private void HandleKeyboardInput()
+        private void HandleGameplayKeys()
         {
             var keyboardState = Keyboard.GetState();
-            
+
             switch (_gameManager.CurrentGameState)
             {
-                case GameManager.GameState.MainMenu:
-                    // В главном меню - клавиша Пробел для старта игры
-                    if (keyboardState.IsKeyDown(Keys.Space) && !_previousKeyboardState.IsKeyDown(Keys.Space))
-                    {
-                        _gameManager.ChangeGameState(GameManager.GameState.Playing);
-                    }
-                    break;
-                    
                 case GameManager.GameState.Playing:
-                    // В игре - клавиша P для паузы
-                    if (keyboardState.IsKeyDown(Keys.P) && !_previousKeyboardState.IsKeyDown(Keys.P))
+                    // В игре - Esc (или P) ставит на паузу
+                    if ((keyboardState.IsKeyDown(Keys.Escape) && !_previousKeyboardState.IsKeyDown(Keys.Escape)) ||
+                        (keyboardState.IsKeyDown(Keys.P) && !_previousKeyboardState.IsKeyDown(Keys.P)))
                     {
                         _gameManager.ChangeGameState(GameManager.GameState.Paused);
                     }
                     break;
-                    
+
                 case GameManager.GameState.Paused:
-                    // В паузе - клавиша P для продолжения, ESC для выхода в меню
-                    if (keyboardState.IsKeyDown(Keys.P) && !_previousKeyboardState.IsKeyDown(Keys.P))
+                    // В паузе - Esc (или P) продолжает игру, Q - выход в главное меню
+                    if ((keyboardState.IsKeyDown(Keys.Escape) && !_previousKeyboardState.IsKeyDown(Keys.Escape)) ||
+                        (keyboardState.IsKeyDown(Keys.P) && !_previousKeyboardState.IsKeyDown(Keys.P)))
                     {
                         _gameManager.ChangeGameState(GameManager.GameState.Playing);
                     }
-                    else if (keyboardState.IsKeyDown(Keys.Escape) && !_previousKeyboardState.IsKeyDown(Keys.Escape))
+                    else if (keyboardState.IsKeyDown(Keys.Q) && !_previousKeyboardState.IsKeyDown(Keys.Q))
                     {
                         _gameManager.ChangeGameState(GameManager.GameState.MainMenu);
                     }
@@ -146,8 +116,20 @@ namespace RiotGalaxy.Core
                         _gameManager.ChangeGameState(GameManager.GameState.MainMenu);
                     }
                     break;
+
+                case GameManager.GameState.Victory:
+                    // На экране победы - Space перезапуск, Esc в меню
+                    if (keyboardState.IsKeyDown(Keys.Space) && !_previousKeyboardState.IsKeyDown(Keys.Space))
+                    {
+                        _gameManager.ChangeGameState(GameManager.GameState.Playing);
+                    }
+                    else if (keyboardState.IsKeyDown(Keys.Escape) && !_previousKeyboardState.IsKeyDown(Keys.Escape))
+                    {
+                        _gameManager.ChangeGameState(GameManager.GameState.MainMenu);
+                    }
+                    break;
             }
-            
+
             // Сохраняем предыдущее состояние клавиатуры
             _previousKeyboardState = keyboardState;
         }

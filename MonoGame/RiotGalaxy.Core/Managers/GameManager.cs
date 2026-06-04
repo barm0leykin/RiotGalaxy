@@ -41,8 +41,14 @@ namespace RiotGalaxy.Managers
         public int EnemiesRemaining { get; private set; }
 
         // Базовые игровые состояния
-        public enum GameState { MainMenu, Playing, Paused, GameOver, Victory }
+        public enum GameState { Splash, MainMenu, Settings, Playing, Paused, GameOver, Victory }
         public GameState CurrentGameState { get; private set; }
+
+        // Система экранов меню (заставка/меню/настройки)
+        public Screens.ScreenSystem Screens { get; private set; } = new Screens.ScreenSystem();
+
+        // Доступ к шрифту для экранов
+        public SpriteFont Font => _defaultFont;
 
         // Основные объекты игры
         public List<GameObject> GameObjects { get; private set; }
@@ -129,6 +135,10 @@ namespace RiotGalaxy.Managers
             {
                 Console.WriteLine($"=== Failed to load font 'TestFont': {ex.Message} ===");
             }
+
+            // Загружаем сохранённые настройки (громкость) и стартуем с заставки
+            Utils.GameSettings.Load();
+            ChangeGameState(GameState.Splash);
         }
 
         /// <summary>
@@ -157,8 +167,10 @@ namespace RiotGalaxy.Managers
             // Обновляем все объекты в соответствии с текущим состоянием
             switch (CurrentGameState)
             {
+                case GameState.Splash:
                 case GameState.MainMenu:
-                    UpdateMainMenu(deltaTime);
+                case GameState.Settings:
+                    Screens.Update(gameTime);
                     break;
                 case GameState.Playing:
                     UpdateGameplay(gameTime);
@@ -193,8 +205,10 @@ namespace RiotGalaxy.Managers
             // Рисуем в соответствии с текущим состоянием
             switch (CurrentGameState)
             {
+                case GameState.Splash:
                 case GameState.MainMenu:
-                    DrawMainMenu(gameTime);
+                case GameState.Settings:
+                    Screens.Draw(_spriteBatch);
                     break;
                 case GameState.Playing:
                     DrawGameplay(gameTime);
@@ -218,25 +232,34 @@ namespace RiotGalaxy.Managers
         /// </summary>
         public void ChangeGameState(GameState newState)
         {
-            
-            // Очистка ресурсов при выходе из состояния
-            switch (CurrentGameState)
-            {
-                case GameState.Playing:
-                    CleanupGameplay();
-                    break;
-            }
+            GameState oldState = CurrentGameState;
+
+            // Очистка геймплея только при НАСТОЯЩЕМ выходе из партии.
+            // Пауза (Playing <-> Paused) партию сохраняет.
+            bool leavingGame =
+                (oldState == GameState.Playing && newState != GameState.Paused) ||
+                (oldState == GameState.Paused && newState != GameState.Playing);
+            if (leavingGame)
+                CleanupGameplay();
 
             CurrentGameState = newState;
 
             // Инициализация ресурсов при входе в состояние
             switch (newState)
             {
+                case GameState.Splash:
+                    Screens.Change(new Screens.SplashScreen());
+                    break;
                 case GameState.MainMenu:
-                    InitializeMainMenu();
+                    Screens.Change(new Screens.MainMenuScreen());
+                    break;
+                case GameState.Settings:
+                    Screens.Change(new Screens.SettingsScreen());
                     break;
                 case GameState.Playing:
-                    InitializeGameplay();
+                    // Новая партия только если пришли не из паузы (иначе — продолжение).
+                    if (oldState != GameState.Paused)
+                        InitializeGameplay();
                     break;
             }
         }
@@ -402,8 +425,10 @@ namespace RiotGalaxy.Managers
                 new Rectangle(0, 0, ScreenWidth, ScreenHeight),
                 new Color(0, 0, 0, 150));
 
-            // Рисуем текст паузы
-            DrawCenteredText("ПАУЗА", ScreenHeight / 2f, Color.White);
+            // Меню паузы
+            DrawCenteredText("ПАУЗА", ScreenHeight / 2f - 40, Color.White);
+            DrawCenteredText("Esc / P — продолжить", ScreenHeight / 2f + 20, Color.Yellow);
+            DrawCenteredText("Q — выход в меню", ScreenHeight / 2f + 56, Color.Gray);
         }
 
         private void DrawGameOver(GameTime gameTime)
@@ -586,18 +611,44 @@ Console.WriteLine($"Error initializing gameplay: {ex.Message}");
             
             
             // Для врагов выполняем дополнительные действия (аналог GamePlay.cs)
-            if (obj.GetType().Name.Contains("Enemy"))
+            if (obj is Enemy)
             {
                 // Запускаем ивент смерти врага
                 TriggerEnemyDeathEvent(obj);
-                
-                // todo: Добавить спавн бонусов (аналог CommandSpawnRandomBonus)
-                // todo: Добавить визуальные эффекты (аналог CommandSpawnSFX)
-                // todo: Добавитьstars (аналог CommandStarBonus)
+
+                // Выпадение бонусов из убитого врага
+                SpawnBonusOnEnemyDeath(obj.Position);
             }
-            
+
             // Выполняем базовое удаление объекта
             obj.IsAlive = false; // Помечаем объект как мертвый
+        }
+
+        private static readonly Random _bonusRnd = new Random();
+
+        /// <summary>
+        /// Выпадение бонусов из убитого врага: всегда звезда (очки) + иногда усиление.
+        /// Аналог CommandStarBonus + CommandSpawnRandomBonus из CocosSharp.
+        /// </summary>
+        private void SpawnBonusOnEnemyDeath(Vector2 pos)
+        {
+            // Звезда выпадает всегда
+            GameObjects.Add(new BonusStar(pos));
+
+            // С шансом 30% — случайное усиление
+            int roll = _bonusRnd.Next(100);
+            if (roll < 30)
+            {
+                int kind = _bonusRnd.Next(100);
+                Bonus bonus;
+                if (kind < 45)
+                    bonus = new BonusHpUp(pos);        // 45%
+                else if (kind < 90)
+                    bonus = new BonusBulletUp(pos);    // 45%
+                else
+                    bonus = new BonusNukeBomb(pos);    // 10%
+                GameObjects.Add(bonus);
+            }
         }
 
         /// <summary>
@@ -678,6 +729,22 @@ Console.WriteLine($"Error initializing gameplay: {ex.Message}");
             {
                 ShellHitsPlayer(sh, ps);
             }
+            // Игрок подобрал бонус
+            else if (a is Bonus bonus && b is PlayerShip player)
+            {
+                bonus.Apply(player);
+                bonus.IsAlive = false;
+            }
+        }
+
+        /// <summary>Уничтожить всех врагов на экране (бонус NukeBomb).</summary>
+        public void KillAllEnemies()
+        {
+            foreach (var obj in GameObjects)
+            {
+                if (obj is Enemy enemy)
+                    enemy.TakeDamage(enemy.Hp);
+            }
         }
 
         private void ShellHitsEnemy(Shell shell, Enemy enemy)
@@ -741,10 +808,19 @@ Console.WriteLine($"Error initializing gameplay: {ex.Message}");
             if (Player == null)
                 return;
 
-            // Текст здоровья
+            // Текст здоровья и очков
             if (_defaultFont != null)
+            {
                 _spriteBatch.DrawString(_defaultFont, $"HP: {Player.Health}/{Player.MaxHealth}",
                     new Vector2(10, 10), Color.White);
+
+                string scoreText = $"Очки: {Player.Score}";
+                float scoreW = _defaultFont.MeasureString(scoreText).X;
+                _spriteBatch.DrawString(_defaultFont, scoreText, new Vector2(ScreenWidth - scoreW - 10, 10), Color.White);
+
+                string weaponText = $"Оружие: {Player.CurrentWeapon} (ур. {Player.Gun.Level + 1})";
+                _spriteBatch.DrawString(_defaultFont, weaponText, new Vector2(10, 60), Color.LightGray);
+            }
 
             // Полоска здоровья: тёмный фон + цветная заполненная часть
             if (SimpleTexture != null)
