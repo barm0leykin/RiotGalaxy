@@ -74,6 +74,13 @@ namespace RiotGalaxy.GameObjects
             Move = null;
         }
 
+        /// <summary>Пустить врага по маршруту; end — поведение после маршрута (отскок/разлёт/формация).</summary>
+        public void SetRoute(Route route, RouteEndBehavior end = RouteEndBehavior.Bounce, Hive hive = null)
+        {
+            Movement = new RouteMovement(this, CurrentSpeed, route, end, hive);
+            Move = null;
+        }
+
         /// <summary>
         /// Применить параметры из конфига (enemies.yaml) к врагу заданного типа,
         /// включая рандомизацию скорости/интервала стрельбы. Вызывается в конструкторах типов.

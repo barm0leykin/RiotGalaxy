@@ -8,20 +8,20 @@ blue:
   hp: 10
   damage: 10
   speed: 130
-  shootInterval: 3
+  shootInterval: 4
 
 green:
   hp: 10
   damage: 10
   speedMin: 100
   speedMax: 150
-  shootInterval: 3
+  shootInterval: 4
 
 red:
   hp: 20
   damage: 10
   speed: 60
-  shootInterval: 3
+  shootInterval: 6
 
 scout:
   hp: 10

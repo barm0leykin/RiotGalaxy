@@ -341,7 +341,7 @@ namespace RiotGalaxy.Managers
                 if (_level != null)
                 {
                     foreach (var info in _level.Tick(deltaTime))
-                        SpawnEnemy(info.Type, info.Formation);
+                        SpawnEnemy(info.Type, info.Formation, info.Route, info.After);
                 }
 
                 // Аналог основного цикла из GamePlay.cs - обрабатываем все объекты
@@ -600,24 +600,31 @@ Console.WriteLine($"Error initializing gameplay: {ex.Message}");
         }
 
         /// <summary>
-        /// Создать врага сверху экрана. Если formation — занимает ячейку улья и летит в формацию.
+        /// Создать врага сверху экрана. formation — в улей; routeName — пустить по маршруту.
         /// </summary>
-        private void SpawnEnemy(EnemyType type, bool formation)
+        private void SpawnEnemy(EnemyType type, bool formation, string routeName = null, string after = null)
         {
             // Пытаемся занять ячейку улья для формации
             int cx = -1, cy = -1;
             bool inFormation = formation && _hive != null && _hive.TryTakeCell(out cx, out cy);
 
-            // Точка появления: над целевой ячейкой (формация) или случайно по X
-            float x;
+            // Маршрут (если не в формации и задан)
+            Route route = (!inFormation && !string.IsNullOrEmpty(routeName) && _world != null)
+                ? Route.Load(routeName, _world)
+                : null;
+
+            // Точка появления: ячейка улья / первая точка маршрута / случайно по X
+            Vector2 pos;
             if (inFormation)
-                x = _hive.CellWorldPos(cx, cy).X;
+                pos = new Vector2(_hive.CellWorldPos(cx, cy).X, -30);
+            else if (route != null && route.HasPoints)
+                pos = route.Current;
             else
             {
                 float border = ScreenWidth * 0.12f;
-                x = border + (float)_spawnRnd.NextDouble() * (ScreenWidth - 2 * border);
+                float x = border + (float)_spawnRnd.NextDouble() * (ScreenWidth - 2 * border);
+                pos = new Vector2(x, -30);
             }
-            Vector2 pos = new Vector2(x, -30);
 
             Enemy e;
             switch (type)
@@ -631,8 +638,20 @@ Console.WriteLine($"Error initializing gameplay: {ex.Message}");
 
             if (inFormation)
                 e.JoinFormation(_hive, cx, cy);
+            else if (route != null && route.HasPoints)
+                e.SetRoute(route, ParseRouteEnd(after), _hive);
 
             GameObjects.Add(e);
+        }
+
+        private static RouteEndBehavior ParseRouteEnd(string s)
+        {
+            switch (s?.Trim().ToLowerInvariant())
+            {
+                case "formation": return RouteEndBehavior.Formation;
+                case "scatter": return RouteEndBehavior.Scatter;
+                default: return RouteEndBehavior.Bounce;
+            }
         }
 
         /// <summary>Тестовый переход на следующий уровень (кнопка/команда).</summary>

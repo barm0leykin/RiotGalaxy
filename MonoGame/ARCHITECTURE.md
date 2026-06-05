@@ -78,12 +78,13 @@ RiotGalaxy.Core/
 │   ├── Enemy.cs + EnemySmallBlue/Green/Red/Scout.cs + EnemyBoss.cs
 │   ├── Shell.cs + Bullet/Slug/Laser.cs        # снаряды
 │   ├── Bonus.cs (+ BonusHpUp/BulletUp/NukeBomb/Star)
-│   └── World.cs (+ Cell), Hive.cs             # сетка мира и формации
+│   └── World.cs (+ Cell), Hive.cs, Route.cs   # сетка мира, формации, маршруты
 ├── Weapons/                 # система оружия (паттерн «Стратегия»)
 │   ├── Weapon.cs            #   база + WeaponCannon/Minigun/Laser/NoWeapon
 │   └── WeaponOptions.cs, WeaponConfig.cs (грузит weapons.yaml)
 ├── Components/              # компоненты поведения (паттерн «Стратегия»)
 │   ├── MovementComponent.cs, EnemyBounceMovement.cs
+│   ├── FormationMovement.cs, RouteMovement.cs
 │   └── ShootingComponent.cs, CollisionComponent.cs
 ├── Screens/                 # экраны меню (см. §14)
 │   ├── Screen.cs, ScreenSystem.cs
@@ -405,9 +406,16 @@ AudioManager.Instance.PlayEffect("fire1");   // громкость 0.1, как �
 (8×2) поверх ячеек: враги занимают ячейки (`TryTakeCell`) и синхронно барражируют
 (весь улей качается, `Offset`). Враг входит в формацию через `Enemy.JoinFormation` —
 движение сменяется на [FormationMovement](RiotGalaxy.Core/Components/FormationMovement.cs)
-(летит к своей ячейке, затем держит строй). Формация задаётся в YAML-уровне флагом
-`formation: true`. Босс ([EnemyBoss.cs](RiotGalaxy.Core/GameObjects/EnemyBoss.cs)) —
-живучий крупный враг с прицельной стрельбой (отдельного спрайта нет — увеличенный `enemyRed`).
+(летит к своей ячейке, затем держит строй). Формация задаётся в YAML-уровне флагом `formation: true`.
+
+**Маршруты** ([Route.cs](RiotGalaxy.Core/GameObjects/Route.cs) + [RouteMovement](RiotGalaxy.Core/Components/RouteMovement.cs)):
+враг летит по точкам из `Content/Routes/<name>.yaml` (координаты ячеек World). После последней
+точки переключается на стратегию `after`: `bounce` (вниз с отскоком, по умолчанию),
+`scatter` (случайный разлёт) или `formation` (занять ячейку улья и встать в строй).
+В уровне: `{ enemy: blue, route: zmeyka1-left, after: formation }`.
+
+**Босс** ([EnemyBoss.cs](RiotGalaxy.Core/GameObjects/EnemyBoss.cs)) — живучий крупный враг с
+прицельной стрельбой (отдельного спрайта нет — увеличенный `enemyRed`).
 
 ## 13. Бонусы и столкновения (бой)
 
@@ -456,6 +464,7 @@ events:
   - { enemy: red, count: 5 }
   - { wait: 2 }                          # пауза
   - { enemy: green, count: 8, formation: true }  # спавн в формацию (улей)
+  - { enemy: blue, count: 3, route: zmeyka1-left, after: formation } # вход по маршруту; after: bounce/scatter/formation
   - { enemy: boss, count: 1 }            # босс
 ```
 

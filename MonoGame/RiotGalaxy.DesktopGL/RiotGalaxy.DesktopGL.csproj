@@ -32,6 +32,7 @@
   <ItemGroup>
     <None Include="..\RiotGalaxy.Content\Config\*.yaml" Link="Content\Config\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\RiotGalaxy.Content\Levels\*.yaml" Link="Content\Levels\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\RiotGalaxy.Content\Routes\*.yaml" Link="Content\Routes\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

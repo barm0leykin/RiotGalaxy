@@ -20,7 +20,9 @@ namespace RiotGalaxy.Utils
         public struct SpawnInfo
         {
             public EnemyType Type;
-            public bool Formation; // спавнить в формацию (улей)
+            public bool Formation;  // спавнить в формацию (улей)
+            public string Route;    // имя маршрута (null/пусто — без маршрута)
+            public string After;    // поведение после маршрута: formation/scatter/bounce
         }
 
         private enum ActionKind { Spawn, SetInterval, Wait }
@@ -29,6 +31,8 @@ namespace RiotGalaxy.Utils
             public ActionKind Kind;
             public EnemyType Enemy;
             public bool Formation;
+            public string Route;
+            public string After;
             public float Value; // интервал или пауза
         }
 
@@ -73,7 +77,7 @@ namespace RiotGalaxy.Utils
                         int count = ev.Count > 0 ? ev.Count : 1;
                         EnemyType type = ParseEnemy(ev.Enemy);
                         for (int i = 0; i < count; i++)
-                            _queue.Enqueue(new Action { Kind = ActionKind.Spawn, Enemy = type, Formation = ev.Formation });
+                            _queue.Enqueue(new Action { Kind = ActionKind.Spawn, Enemy = type, Formation = ev.Formation, Route = ev.Route, After = ev.After });
                         TotalEnemies += count;
                     }
                     else if (ev.Interval.HasValue)
@@ -111,7 +115,7 @@ namespace RiotGalaxy.Utils
                         _timer += a.Value;
                         break;
                     case ActionKind.Spawn:
-                        spawn.Add(new SpawnInfo { Type = a.Enemy, Formation = a.Formation });
+                        spawn.Add(new SpawnInfo { Type = a.Enemy, Formation = a.Formation, Route = a.Route, After = a.After });
                         _timer += _interval;
                         break;
                 }
@@ -145,6 +149,8 @@ namespace RiotGalaxy.Utils
             public string Enemy { get; set; }
             public int Count { get; set; }
             public bool Formation { get; set; }
+            public string Route { get; set; }
+            public string After { get; set; }
             public float? Interval { get; set; }
             public float? Wait { get; set; }
         }

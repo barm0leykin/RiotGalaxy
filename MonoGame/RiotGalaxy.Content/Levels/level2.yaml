@@ -1,6 +1,7 @@
-# Уровень 2 (перенос из level2.txt; маршруты/sync_cmd опущены — этап 10)
+# Уровень 2 (перенос из level2.txt; теперь с маршрутами «змейка», как в оригинале)
 description: "Enemy Recons"
 spawnInterval: 1.0
 events:
-  - { enemy: blue, count: 4 }
+  - { enemy: blue, count: 3, route: zmeyka1-left, after: formation }
+  - { enemy: blue, count: 3, route: zmeyka1-right, after: scatter }
   - { enemy: red, count: 2 }

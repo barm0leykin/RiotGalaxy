@@ -6,4 +6,5 @@
 description: "First contact!"
 spawnInterval: 1.0
 events:
-  - { enemy: green, count: 2 }
+  - { enemy: scout, count: 2 }
+  - { enemy: green, count: 1 }

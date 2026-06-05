@@ -1,9 +1,9 @@
 # Уровень 3 (перенос из level3.txt)
 description: "First battle"
-spawnInterval: 1.0
+spawnInterval: 1.5
 events:
   - { enemy: blue, count: 3 }
   - { interval: 3 }
-  - { enemy: red, count: 5, formation: true }
+  - { enemy: red, count: 6, formation: true }
   - { interval: 0.5 }
   - { enemy: green, count: 5 }
