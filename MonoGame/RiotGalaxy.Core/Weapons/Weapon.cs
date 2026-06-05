@@ -26,9 +26,7 @@ namespace RiotGalaxy.Weapons
         protected int _fireCount = 0;
 
         // Прицеливание
-        protected float _aimAngle = 0f;            // радианы, 0 = строго вверх по экрану
-        protected Vector2 _aimDir = -Vector2.UnitY; // направление выстрела
-        protected Vector2 _spawnPos;                // точка появления снаряда
+        protected float _aimAngle = 0f;            // базовый угол прицеливания, рад (0 = строго вверх)
 
         // Очередь и перезарядка
         private int _burstRemaining = 0;
@@ -52,19 +50,17 @@ namespace RiotGalaxy.Weapons
         }
 
         /// <summary>
-        /// Прицеливание под углом (рад, 0 = вверх). Вычисляет направление и точку
-        /// появления снаряда так, чтобы он не возникал внутри стрелка.
+        /// Задать БАЗОВЫЙ угол прицеливания (рад, 0 = вверх). Разброс (minigun) добавляется
+        /// поверх него на каждый выстрел, не меняя базу.
         /// </summary>
         public void Aim(float angleRad)
         {
             _aimAngle = angleRad;
-            float sin = (float)Math.Sin(angleRad);
-            float cos = (float)Math.Cos(angleRad);
-            _aimDir = new Vector2(sin, -cos); // angle 0 -> (0,-1) = вверх (в MonoGame Y вниз)
-
-            float offset = _owner.Height * 0.5f; // смещаем от центра стрелка вперёд
-            _spawnPos = _owner.Position + _aimDir * offset;
         }
+
+        /// <summary>Единичный вектор направления для угла (0 = вверх; в MonoGame Y вниз).</summary>
+        private static Vector2 DirFromAngle(float angleRad) =>
+            new Vector2((float)Math.Sin(angleRad), -(float)Math.Cos(angleRad));
 
         /// <summary>
         /// Покадровое обновление: проигрывание очереди и отсчёт перезарядки.
@@ -122,13 +118,15 @@ namespace RiotGalaxy.Weapons
         /// </summary>
         protected void FireOnce()
         {
-            Aim(GetFireAngle()); // обновляем точку появления (стрелок мог сместиться)
+            float angle = GetFireAngle();             // база + разброс (для конкретного выстрела)
+            Vector2 dir = DirFromAngle(angle);
+            Vector2 spawn = _owner.Position + dir * (_owner.Height * 0.5f); // не появляться внутри стрелка
 
-            Shell shell = CreateShell(_spawnPos);
+            Shell shell = CreateShell(spawn);
             shell.Speed = Options.shellSpeed;
             shell.Damage = (int)Options.damage;
-            shell.Direction = _aimDir;
-            shell.Rotation = _aimAngle;
+            shell.Direction = dir;
+            shell.Rotation = angle;
             shell.PlayerSide = (_owner is PlayerShip); // сторона снаряда = сторона стрелка
 
             _fireCount++;

@@ -1,7 +1,8 @@
-# Уровень 2 (перенос из level2.txt; теперь с маршрутами «змейка», как в оригинале)
+# Уровень 2 (перенос из level2.txt): две змейки одновременно (parallel), затем красные.
 description: "Enemy Recons"
 spawnInterval: 1.0
 events:
-  - { enemy: blue, count: 3, route: zmeyka1-left, after: formation }
-  - { enemy: blue, count: 3, route: zmeyka1-right, after: scatter }
-  - { enemy: red, count: 2 }
+  - parallel:                              # обе группы спавнятся одновременно (аналог sync_cmd)
+      - - { enemy: blue, count: 3, route: zmeyka1-left, after: formation }
+      - - { enemy: blue, count: 3, route: zmeyka1-right, after: scatter }
+  - { enemy: red, count: 2 }               # после завершения обеих волн

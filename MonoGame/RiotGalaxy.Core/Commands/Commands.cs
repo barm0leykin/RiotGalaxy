@@ -28,6 +28,7 @@ namespace RiotGalaxy.Commands
                     obj.IsAlive = false;
                 }
             }
+            MessageLog.Add("Уничтожить всех", Microsoft.Xna.Framework.Color.Orange);
         }
     }
 
@@ -135,9 +136,8 @@ namespace RiotGalaxy.Commands
             var player = GameManager.Instance.Player;
             if (player != null)
             {
-                // В будущем здесь будет восстановление здоровья
-                // player.HpUp(player.MaxHealth);
                 player.Health = player.MaxHealth;
+                MessageLog.Add("Полное лечение", Microsoft.Xna.Framework.Color.Lime);
             }
         }
     }

@@ -30,6 +30,7 @@ namespace RiotGalaxy.Managers
         // Состояния touch, адаптировано из CocosSharp
         private bool isTouch = false;
         private bool isTouchBegan = false;
+        private bool _touchOnUI = false; // текущее касание началось на UI-кнопке (не двигаем корабль)
         private Vector2 locationOnScreen;
         private Vector2 previousMousePosition;
         
@@ -117,6 +118,7 @@ namespace RiotGalaxy.Managers
                 // Конец касания
                 isTouch = false;
                 isTouchBegan = false;
+                _touchOnUI = false;
                 HandleTouchesEnded(locationOnScreen);
             }
         }
@@ -239,9 +241,14 @@ namespace RiotGalaxy.Managers
             {
                 isTouchBegan = false;
 
-                if (!HandlePressButtons(locationOnScreen))   // есть ли касание элементов интерфейса?
+                if (HandlePressButtons(locationOnScreen))   // касание попало по UI-кнопке?
                 {
-                    if (GameManager.Instance.CurrentGameState == GameManager.GameState.Paused) // если нет, то мб игра на паузе?
+                    _touchOnUI = true; // это касание — UI, кораблём не управляем до отпускания
+                }
+                else
+                {
+                    _touchOnUI = false;
+                    if (GameManager.Instance.CurrentGameState == GameManager.GameState.Paused) // мб игра на паузе?
                     {
                         CommandPauseWeaponMenu cmd = new CommandPauseWeaponMenu();
                         cmd.Execute();
@@ -252,9 +259,10 @@ namespace RiotGalaxy.Managers
                     }
                 }
             }
-            else if (isTouch)   // нажатие не первое, а касание продолжается - управляем кораблем
+            else if (isTouch)   // касание продолжается — управляем кораблём (если оно не по UI)
             {
-                SetPlayerMoveDirection(locationOnScreen);    // двигаем playerShip            
+                if (!_touchOnUI)
+                    SetPlayerMoveDirection(locationOnScreen);
             }
             else // касаний экрана и клавиатуры нет, ускорение кораблю больше не предаем
             {

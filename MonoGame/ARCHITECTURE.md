@@ -466,6 +466,9 @@ events:
   - { enemy: green, count: 8, formation: true }  # спавн в формацию (улей)
   - { enemy: blue, count: 3, route: zmeyka1-left, after: formation } # вход по маршруту; after: bounce/scatter/formation
   - { enemy: boss, count: 1 }            # босс
+  - parallel:                            # синхронные волны: группы спавнятся одновременно,
+      - - { enemy: blue, count: 3, route: zmeyka1-left }   # основной таймлайн ждёт их завершения
+      - - { enemy: blue, count: 3, route: zmeyka1-right }  # (аналог trigger/sync_cmd из оригинала)
 ```
 
 ## 16. Конфиги (YAML)
@@ -488,9 +491,13 @@ events:
 > в `.xnb`. Они копируются в выход через `<None CopyToOutputDirectory>` (см. §8) и читаются
 > обычным `File.ReadAllText` из `AppContext.BaseDirectory`.
 
-## 17. Тестовая панель (debug)
+## 17. Тестовая панель и сообщения
 
-Внизу слева во время игры — ряд кнопок ([Interface/MyButton.cs](RiotGalaxy.Core/Interface/MyButton.cs),
+**Сообщения** — [MessageLog.cs](RiotGalaxy.Core/Managers/MessageLog.cs): короткие всплывающие
+подписи над панелью кнопок («+25 HP», «Оружие: лазер», «+10 очк.»), затухают. Вызываются из
+точек событий (`Bonus.Apply`, `PlayerShip.ChangeWeapon/UpgradeWeapon`, команды кнопок).
+
+**Тестовая панель (debug).** Внизу слева во время игры — ряд кнопок ([Interface/MyButton.cs](RiotGalaxy.Core/Interface/MyButton.cs),
 регистрируются в `InputManager.GuiButtons`): смена оружия (Cannon/Minigun/Laser), апгрейд,
 лечение, «убить всех», «следующий уровень». Каждая кнопка несёт `ICommand` (папка
 [Commands/](RiotGalaxy.Core/Commands/)). Создаются при старте партии, чистятся при выходе в меню.

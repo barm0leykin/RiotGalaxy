@@ -337,6 +337,9 @@ namespace RiotGalaxy.Managers
                 // Барражирование улья (формации)
                 _hive?.Update(deltaTime);
 
+                // Всплывающие сообщения
+                MessageLog.Update(deltaTime);
+
                 // Спавн врагов по таймлайну уровня
                 if (_level != null)
                 {
@@ -444,6 +447,9 @@ namespace RiotGalaxy.Managers
             // Панель тестовых кнопок
             foreach (var btn in InputManager.Instance.GuiButtons)
                 btn.Draw(_spriteBatch, SimpleTexture);
+
+            // Всплывающие сообщения над кнопками
+            MessageLog.Draw(_spriteBatch, _defaultFont, ScreenWidth, ScreenHeight);
         }
 
         private void DrawPaused(GameTime gameTime)
@@ -807,6 +813,7 @@ Console.WriteLine($"Error initializing gameplay: {ex.Message}");
             // Очистка ресурсов игрового процесса
             GameObjects.Clear();
             InputManager.Instance.GuiButtons.Clear(); // убрать тестовые кнопки
+            MessageLog.Clear();
             Player = null;
         }
         

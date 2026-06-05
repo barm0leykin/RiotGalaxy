@@ -80,7 +80,13 @@ namespace RiotGalaxy.GameObjects
             LoadSprite("Images/bonusHPUp");
         }
 
-        public override void Apply(PlayerShip player) => player.Heal(Utils.BonusConfig.Current.HpUpAmount);
+        public override void Apply(PlayerShip player)
+        {
+            int before = player.Health;
+            player.Heal(Utils.BonusConfig.Current.HpUpAmount);
+            int gained = player.Health - before;
+            Managers.MessageLog.Add(gained > 0 ? $"+{gained} HP" : "HP полное", Color.Lime);
+        }
     }
 
     /// <summary>Улучшение текущего оружия.</summary>
@@ -104,7 +110,11 @@ namespace RiotGalaxy.GameObjects
             LoadSprite("Images/bonusNukeBomb");
         }
 
-        public override void Apply(PlayerShip player) => GameManager.Instance.KillAllEnemies();
+        public override void Apply(PlayerShip player)
+        {
+            GameManager.Instance.KillAllEnemies();
+            Managers.MessageLog.Add("Бомба! Всех в труху", Color.Orange);
+        }
     }
 
     /// <summary>
@@ -171,6 +181,11 @@ namespace RiotGalaxy.GameObjects
             return current + Math.Sign(diff) * maxStep;
         }
 
-        public override void Apply(PlayerShip player) => player.Score += Utils.BonusConfig.Current.StarScore;
+        public override void Apply(PlayerShip player)
+        {
+            int score = Utils.BonusConfig.Current.StarScore;
+            player.Score += score;
+            Managers.MessageLog.Add($"+{score} очк.", Color.Gold);
+        }
     }
 }

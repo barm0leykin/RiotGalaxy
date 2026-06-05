@@ -44,6 +44,7 @@ namespace RiotGalaxy.Commands
     {
         public void Execute()
         {
+            MessageLog.Add("Следующий уровень", Microsoft.Xna.Framework.Color.Yellow);
             GameManager.Instance.DebugNextLevel();
         }
     }

@@ -9,9 +9,9 @@ cannon:
   - { burst: 2, burstInterval: 0.25, reloadSpeed: 2.4,  damage: 10, shellSpeed: 200 }
 
 minigun:
-  - { burst: 3, burstInterval: 0.1,  reloadSpeed: 2.0,  damage: 4,  shellSpeed: 200 }
-  - { burst: 4, burstInterval: 0.1,  reloadSpeed: 2.0,  damage: 4,  shellSpeed: 200 }
-  - { burst: 4, burstInterval: 0.1,  reloadSpeed: 1.6,  damage: 4,  shellSpeed: 200 }
+  - { burst: 3, burstInterval: 0.1,  reloadSpeed: 2.0,  damage: 4,  shellSpeed: 250 }
+  - { burst: 4, burstInterval: 0.1,  reloadSpeed: 2.0,  damage: 4,  shellSpeed: 275 }
+  - { burst: 4, burstInterval: 0.1,  reloadSpeed: 1.6,  damage: 4,  shellSpeed: 300 }
 
 laser:
   - { burst: 1, burstInterval: 0.25, reloadSpeed: 2.65, damage: 10, shellSpeed: 400 }

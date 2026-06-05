@@ -290,6 +290,18 @@ namespace RiotGalaxy.GameObjects
                     Gun = new WeaponLaser(this, lvl);
                     break;
             }
+            Managers.MessageLog.Add("Оружие: " + WeaponName(weaponType), Color.Cyan);
+        }
+
+        private static string WeaponName(WeaponType t)
+        {
+            switch (t)
+            {
+                case WeaponType.Cannon: return "пушка";
+                case WeaponType.MachineGun: return "пулемёт";
+                case WeaponType.Laser: return "лазер";
+                default: return t.ToString();
+            }
         }
 
         /// <summary>
@@ -299,8 +311,13 @@ namespace RiotGalaxy.GameObjects
         {
             if (Gun == null)
                 return;
+            int before = Gun.Level;
             Gun.Upgrade();
             _weaponLevels[(int)CurrentWeapon] = Gun.Level;
+            if (Gun.Level > before)
+                Managers.MessageLog.Add($"Оружие улучшено (ур. {Gun.Level + 1})", Color.Lime);
+            else
+                Managers.MessageLog.Add("Оружие на максимуме", Color.Gray);
         }
 
         /// <summary>
