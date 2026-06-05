@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using Microsoft.Xna.Framework;
 
 namespace RiotGalaxy.GameObjects
@@ -39,20 +37,12 @@ namespace RiotGalaxy.GameObjects
         private static List<Vector2> BuildPoints(string name, World world)
         {
             var pts = new List<Vector2>();
-            try
+            var data = Utils.Yaml.LoadAsset<RouteYaml>("Content/Routes/" + name + ".yaml");
+            if (data?.Points != null)
             {
-                string path = Path.Combine(AppContext.BaseDirectory, "Content", "Routes", name + ".yaml");
-                var data = Utils.Yaml.LoadFile<RouteYaml>(path);
-                if (data?.Points != null)
-                {
-                    foreach (var p in data.Points)
-                        if (p != null && p.Count >= 2)
-                            pts.Add(world.GetCellPosition((int)p[0], (int)p[1]));
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"=== Route '{name}' load failed: {ex.Message} ===");
+                foreach (var p in data.Points)
+                    if (p != null && p.Count >= 2)
+                        pts.Add(world.GetCellPosition((int)p[0], (int)p[1]));
             }
             return pts;
         }

@@ -20,7 +20,7 @@
 
 # ===== Среды разработки =====
 # Visual Studio Code
-.vscode/
+# .vscode/
 *.code-workspace
 
 # Rider / JetBrains
@@ -49,6 +49,10 @@ TestResults/
 # ===== Python (скрипты в tools/) =====
 __pycache__/
 *.py[cod]
+
+# ===== Docker-сборка (Android) =====
+# Пользовательский HOME/кэш контейнера (NuGet, dotnet) — см. docker/*.sh
+MonoGame/docker/.home/
 
 # ===== Логи и временные файлы =====
 *.log

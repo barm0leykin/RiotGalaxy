@@ -327,6 +327,60 @@
 - Реализовать в MonoGame (своя простая система частиц или анимация)
 - **Результат**: визуальная обратная связь при уничтожении
 
+## Этап 16: Сборка под Android + отладка
+
+**Окружение ✅ (2026-06-05, собрано в Docker-образе по PRD — хост не засорён):**
+
+- Образ `riotgalaxy-android-build` (5.08 ГБ): база `mcr.microsoft.com/dotnet/sdk:9.0`, JDK 17, Android SDK (cmdline-tools, platform-tools, `platforms;android-35`, `build-tools;35.0.0`), workload `android` 35.0.105/9.0.100
+- Файлы: `docker/Dockerfile.android`, `docker/build-image.sh` (сборка образа), `docker/shell.sh` (вход с примонтированными исходниками в `/src`), `.dockerignore`
+- Внутри образа: dotnet 9.0.314, java 17.0.19, adb 1.0.41 — проверено
+- ⚠️ Workload — для .NET 9 → Android-проект (16.2) таргетить **net9.0-android** (не net6.0-android). MonoGame.Framework.Android тянется как NuGet при первой сборке внутри контейнера
+- Пересобрать образ: `cd MonoGame && ./docker/build-image.sh`; войти: `./docker/shell.sh`
+
+### 16.1. Кросс-платформенная загрузка ассетов (ПРЕДУСЛОВИЕ) ✅
+
+- Чтение упакованного контента переведено на `TitleContainer.OpenStream("Content/...")` (работает и на Desktop, и на Android): `Yaml.LoadAsset<T>` + `Yaml.AssetExists` ✅
+- Переведены загрузчики: `WeaponConfig`, `EnemyConfig`, `BonusConfig`, `GameOptions` (Config/*.yaml), `Level` (Levels/*.yaml + `CountLevels`), `Route` (Routes/*.yaml) ✅
+- `Yaml.ConfigPath`(абс.) → `Yaml.ConfigAsset`(отн.); `Level.LevelPath` → `Level.LevelAsset` ✅
+- `settings.yaml` (запись) — пока остаётся `File.WriteAllText(AppContext.BaseDirectory)` (writable-хранилище под Android настроим в 16.2/16.3) 🔶
+- Проверено на DesktopGL: `[DBG] Configs loaded. Levels found: 5, player HP: 50` — путь через TitleContainer считывается, сборка зелёная ✅
+- **Результат**: чтение read-only ассетов кросс-платформенно; осталась только запись настроек
+
+### 16.2. Проект RiotGalaxy.Android ✅ (2026-06-05)
+
+- Проект `RiotGalaxy.Android` (`net9.0-android`, вне RiotGalaxy.sln) + `MonoGame.Framework.Android` 3.8.1.303 + YamlDotNet ✅
+- `MainActivity : AndroidGameActivity` (namespace RiotGalaxy) — landscape, создаёт `Game1.Instance`, `SetContentView(view)`, `Run()` ✅
+- Общий код Core НЕ через ProjectReference, а **линковкой исходников** (`<Compile Include="../RiotGalaxy.Core/**/*.cs">`) — Core завязан на DesktopGL-пакет, линковка компилирует тот же код против Android-фреймворка и не ломает desktop/основное решение ✅
+- Контент: `MonoGameContentReference` собрал `.xnb` под `/platform:Android` (32 файла); YAML — как `AndroidAsset` под `assets/Content/{Config,Levels,Routes}` (11 файлов) — пути совпали с `TitleContainer.OpenStream` из 16.1 ✅
+- В Docker-образ добавлены шрифты (`fontconfig`, `fonts-dejavu-core`, `libfreetype6`) — без них MGCB `FontDescriptionProcessor` падал на `TestFont.spritefont` («DejaVu Sans Mono») ✅
+- **Результат**: собирается подписанный (debug) APK `com.riotgalaxy.game-Signed.apk`. Сборка: `./docker/build-apk.sh [Debug|Release]`. Проверена регрессия — desktop-сборка зелёная ✅
+- ✅ **Запущено на устройстве Samsung A56 (SM_A566E)**: главное меню с фоном отображается, контент и YAML-конфиги грузятся, `[DBG]`-логи видны в logcat (тег DOTNET). Установка/запуск: `./docker/run-on-device.sh`
+- Исправлены 3 бага при первом запуске:
+  - `EmbedAssembliesIntoApk=true` для Debug — иначе Fast Deployment кладёт .dll вне APK → `adb install` даёт SIGABRT «No assemblies found»
+  - `MonoGameContentReference` → `<ContentFolder>Content</ContentFolder>` — иначе .xnb кладутся в `assets/RiotGalaxy.Content/`, а `ContentManager` ищет в `assets/Content/`
+  - `SpriteBatch` создаётся теперь в `GameManager.LoadContent`, а не в `Initialize`/конструкторе — на Android `GraphicsDevice` в конструкторе ещё null (ArgumentNullException). Desktop не сломан
+- ⏳ Картинка показывается НЕ на весь экран (масштаб/ориентация) — это 16.3; тач-ввод — тоже 16.3
+
+### 16.3. Ввод и экран ⬜
+- Реальный тач (`TouchPanel`) вместо мыши-как-тача; ориентация landscape; масштаб под экран
+- **Результат**: управление пальцем работает
+
+### 16.4. Сборка/запуск и CI 🔶
+
+- Сборка APK в Docker ✅ (`docker/build-apk.sh`, образ `riotgalaxy-android-build`)
+- Запуск на устройстве ✅ через `docker/run-on-device.sh` (adb из контейнера, USB-проброс `--privileged -v /dev/bus/usb`, ключ adb в `docker/.home/.android`). Проверено на Samsung A56
+- ⬜ Интеграция в CI (этап 6 PRD)
+- **Результат**: автоматическая сборка APK + установка/запуск на подключённом устройстве
+
+### 16.5. Отладочный лог (видимый в VSCode и доступный ассистенту) ✅ (desktop-часть)
+
+- Кросс-платформенный `Utils/Log` (Console + файл `riot.log` рядом с приложением; на Android — `Android.Util.Log` → logcat) ✅
+- Лог-вызовы: старт уровня (`Level N loaded`), конец игры (`Game over`) — без покадрового спама ✅
+- `.vscode/launch.json` + `tasks.json`: F5-отладка DesktopGL (вывод в Debug Console / интегрированный терминал), задача `build-desktopgl` и `run-desktopgl` ✅
+- Лог-файл: `MonoGame/RiotGalaxy.DesktopGL/bin/Debug/net6.0/riot.log` (очищается при старте) — ассистент читает его ✅
+- Android: `adb logcat -s RiotGalaxy:* > /tmp/riot-android.log` — ассистент читает файл ⬜
+- **Результат**: отладочные сообщения видны в VSCode и в `riot.log`, который читает ассистент
+
 ## Приоритеты
 
 1. **Критически важные**: Этапы 1-4 (ассеты и основной игровой процесс)

@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "RiotGalaxy DesktopGL (Debug)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-desktopgl",
+            "program": "${workspaceFolder}/MonoGame/RiotGalaxy.DesktopGL/bin/Debug/net6.0/RiotGalaxy.DesktopGL.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/MonoGame/RiotGalaxy.DesktopGL/bin/Debug/net6.0",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        }
+    ]
+}

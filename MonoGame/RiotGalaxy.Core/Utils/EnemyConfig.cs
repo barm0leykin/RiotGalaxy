@@ -49,7 +49,7 @@ namespace RiotGalaxy.Utils
 
         public static void Load()
         {
-            var data = Yaml.LoadFile<Dictionary<string, Stats>>(Yaml.ConfigPath("enemies.yaml"));
+            var data = Yaml.LoadAsset<Dictionary<string, Stats>>(Yaml.ConfigAsset("enemies.yaml"));
             if (data == null)
                 return;
 

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using RiotGalaxy.GameObjects;
 
 namespace RiotGalaxy.Utils
@@ -58,14 +57,13 @@ namespace RiotGalaxy.Utils
         private readonly List<Timeline> _active = new List<Timeline>(); // активные параллельные волны
         private float _defaultInterval = 1f;
 
-        public static string LevelPath(int n) =>
-            Path.Combine(AppContext.BaseDirectory, "Content", "Levels", $"level{n}.yaml");
+        public static string LevelAsset(int n) => $"Content/Levels/level{n}.yaml";
 
         /// <summary>Сколько уровней доступно (по наличию файлов level1.yaml, level2.yaml, ...).</summary>
         public static int CountLevels()
         {
             int n = 0;
-            while (File.Exists(LevelPath(n + 1)))
+            while (Yaml.AssetExists(LevelAsset(n + 1)))
                 n++;
             return n;
         }
@@ -77,7 +75,7 @@ namespace RiotGalaxy.Utils
             _main = null;
             TotalEnemies = 0;
 
-            var data = Yaml.LoadFile<LevelYaml>(LevelPath(number));
+            var data = Yaml.LoadAsset<LevelYaml>(LevelAsset(number));
             if (data == null)
                 return false;
 

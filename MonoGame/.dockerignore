@@ -1,0 +1,4 @@
+# Dockerfile.android не копирует исходники (они монтируются через -v в shell.sh),
+# поэтому контекст сборки образа не нужен — исключаем всё, кроме самого Dockerfile.
+*
+!docker/Dockerfile.android

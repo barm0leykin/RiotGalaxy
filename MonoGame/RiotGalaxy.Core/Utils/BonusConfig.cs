@@ -15,7 +15,7 @@ namespace RiotGalaxy.Utils
 
         public static void Load()
         {
-            var data = Yaml.LoadFile<Data>(Yaml.ConfigPath("bonuses.yaml"));
+            var data = Yaml.LoadAsset<Data>(Yaml.ConfigAsset("bonuses.yaml"));
             if (data != null)
                 Current = data;
         }

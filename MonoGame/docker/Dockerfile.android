@@ -1,0 +1,61 @@
+# Сборочное окружение для Android-сборки RiotGalaxy.
+# По требованию PRD: всё ставится ВНУТРЬ образа, хост-система не засоряется.
+#
+# Состав: .NET 9 SDK + workload `android`, JDK 17, Android SDK (cmdline-tools,
+# platform-tools, platform android-35, build-tools 35.0.0).
+#
+# Сборка образа:
+#   docker build -f MonoGame/docker/Dockerfile.android -t riotgalaxy-android-build MonoGame
+# Запуск сборки APK (см. docker/build-android.sh) — монтируем исходники внутрь.
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0
+
+# --- системные пакеты + JDK 17 (нужен Android-тулчейну) ---
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        openjdk-17-jdk-headless \
+        unzip \
+        wget \
+        ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+
+# --- Android SDK через command-line tools ---
+ENV ANDROID_SDK_ROOT=/opt/android-sdk
+ENV ANDROID_HOME=/opt/android-sdk
+ARG CMDLINE_TOOLS_VERSION=11076708
+ARG ANDROID_PLATFORM=android-35
+ARG ANDROID_BUILD_TOOLS=35.0.0
+
+RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools \
+    && wget -q https://dl.google.com/android/repository/commandlinetools-linux-${CMDLINE_TOOLS_VERSION}_latest.zip -O /tmp/cmdline-tools.zip \
+    && unzip -q /tmp/cmdline-tools.zip -d /tmp/cmdline-tools \
+    && mv /tmp/cmdline-tools/cmdline-tools ${ANDROID_SDK_ROOT}/cmdline-tools/latest \
+    && rm -rf /tmp/cmdline-tools.zip /tmp/cmdline-tools
+
+ENV PATH=${PATH}:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${ANDROID_SDK_ROOT}/platform-tools
+
+RUN yes | sdkmanager --licenses > /dev/null \
+    && sdkmanager --install \
+        "platform-tools" \
+        "platforms;${ANDROID_PLATFORM}" \
+        "build-tools;${ANDROID_BUILD_TOOLS}" > /dev/null
+
+# --- .NET Android workload ---
+RUN dotnet workload install android --skip-sign-check
+
+# --- шрифты для MGCB FontDescriptionProcessor (spritefont → "DejaVu Sans Mono") ---
+# Отдельным слоем в конце: меняется редко, не инвалидирует тяжёлые слои выше.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        fontconfig \
+        fonts-dejavu-core \
+        libfreetype6 \
+    && rm -rf /var/lib/apt/lists/* \
+    && fc-cache -f
+
+WORKDIR /src
+
+# По умолчанию — интерактивная оболочка; реальные команды сборки задаёт build-android.sh
+CMD ["/bin/bash"]

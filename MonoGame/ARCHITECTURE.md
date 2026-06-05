@@ -322,6 +322,26 @@ var font = content.Load<SpriteFont>("TestFont");
 В проекте загрузка собрана в одном месте — `GameManager.LoadContent()` (фон + звуки
 через `AudioManager`), а корабль грузит себя сам в `PlayerShip.LoadContent()`.
 
+#### YAML-конфиги/уровни/маршруты — через `TitleContainer` (кросс-платформенно)
+
+Бинарные ассеты (`.xnb`) грузит `ContentManager.Load`. А текстовый контент
+(`Content/Config|Levels|Routes/*.yaml`) читается **не** через `File.ReadAllText`, а через
+`TitleContainer.OpenStream("Content/...")` — это работает и на DesktopGL (файлы рядом с
+приложением), и на Android (ассеты внутри APK). Помощники — в
+[Yaml.cs](RiotGalaxy.Core/Utils/Yaml.cs):
+
+```csharp
+var weapons = Yaml.LoadAsset<WeaponsYaml>(Yaml.ConfigAsset("weapons.yaml")); // Content/Config/weapons.yaml
+bool hasLevel = Yaml.AssetExists("Content/Levels/level1.yaml");
+```
+
+Так грузятся `WeaponConfig/EnemyConfig/BonusConfig/GameOptions` (Config), `Level`
+(Levels + `CountLevels`), `Route` (Routes). Пути — относительные, со слешами `/`.
+
+Исключение — `settings.yaml` (его игра **пишет**): идёт через `File.Write/ReadAllText` по
+абсолютному пути (`Yaml.LoadFile`), т.к. бандл приложения только для чтения. Writable-путь
+под Android настроим на этапе Android-проекта.
+
 ### 🔧 Как добавить НОВЫЙ ресурс (пошагово)
 
 1. Положить файл в нужную папку, напр. `RiotGalaxy.Content/Images/boss.png`.
@@ -611,15 +631,86 @@ dotnet publish RiotGalaxy.DesktopGL/RiotGalaxy.DesktopGL.csproj \
 `dotnet-mgcb`) и затем `dotnet publish` под нужный RID. Dockerfile в проекте пока не
 заведён — это часть будущего этапа CI/CD.
 
-### 18.5. Мобильные платформы (Android / iOS) — пока не настроены
+### 18.5. Android-сборка
 
-В решении сейчас **только** `Core`, `Content`, `DesktopGL`. Каталоги
-`RiotGalaxy.Android/` и `RiotGalaxy.iOS/` существуют, но **пустые** — это заготовки под
-будущие этапы.
+Проект `RiotGalaxy.Android/` (`net9.0-android`) собирает APK. Он **вне** `RiotGalaxy.sln`,
+чтобы не требовать android-workload при обычной desktop-сборке на хосте.
 
-Когда дойдём: мобильные сборки MonoGame требуют отдельных проектов-обёрток и .NET
-workloads (`dotnet workload install android` / `ios`), плюс Android SDK / Xcode.
-Платформонезависимая логика из `Core` переиспользуется как есть.
+**Ключевое решение — линковка исходников, а не ProjectReference.** `Core` ссылается на
+пакет `MonoGame.Framework.DesktopGL`, а Android-обёртке нужен `MonoGame.Framework.Android`.
+Поэтому Android-проект не делает ProjectReference на Core, а **компилирует его исходники**:
+
+```xml
+<Compile Include="../RiotGalaxy.Core/**/*.cs" Exclude="...obj...;...bin..." LinkBase="CoreShared" />
+```
+
+Тот же код (включая `Game1`) собирается против Android-фреймворка. Точка входа —
+`MainActivity : AndroidGameActivity` (создаёт `Game1.Instance`, `SetContentView`, `Run()`).
+
+**Контент в APK:**
+- `.xnb` — `MonoGameContentReference` + `<MonoGamePlatform>Android</MonoGamePlatform>`
+  (MGCB пересобирает контент под `/platform:Android`, перекрывая `/platform:DesktopGL`
+  из `.mgcb`).
+- YAML — как `AndroidAsset` с `Link="Assets/Content/..."`, чтобы лечь в `assets/Content/...`
+  внутри APK. Там их находит `TitleContainer.OpenStream("Content/...")` (см. §8) — тот же
+  путь, что и на desktop.
+
+**Сборка — только в Docker** (по PRD, хост не засоряем):
+
+```bash
+cd MonoGame
+./docker/build-image.sh          # один раз: образ riotgalaxy-android-build (.NET9+JDK17+AndroidSDK+workload)
+./docker/build-apk.sh Debug      # APK → RiotGalaxy.Android/bin/Debug/net9.0-android/*-Signed.apk
+./docker/run-on-device.sh        # установить и запустить на USB-телефоне (adb из контейнера), снять logcat
+./docker/shell.sh                # интерактивная оболочка в контейнере (исходники в /src)
+```
+
+`run-on-device.sh` пробрасывает USB в контейнер (`--privileged -v /dev/bus/usb`). При первом
+подключении телефон спросит разрешение на отладку — подтвердить (ключ adb хранится в
+`docker/.home/.android`). Наши `Log.Debug` видны в logcat под тегом **DOTNET**
+(`Console.WriteLine` на .NET Android идёт в logcat).
+
+**Грабли первого запуска (исправлены, важно для понимания):**
+
+- **`EmbedAssembliesIntoApk=true` для Debug** — иначе .NET Android использует Fast Deployment
+  (managed-сборки доставляются отдельно при `dotnet build -t:Run`), и установка готового APK
+  через `adb install` падает с `SIGABRT: No assemblies found in .__override__`.
+- **`<ContentFolder>Content</ContentFolder>` у `MonoGameContentReference`** — иначе `.xnb`
+  пакуются в `assets/RiotGalaxy.Content/`, а `ContentManager` (RootDirectory `Content`) ищет
+  их в `assets/Content/` и не находит.
+- **`SpriteBatch` создаётся в `GameManager.LoadContent`, а не в конструкторе** — на Android
+  `GraphicsDevice` в конструкторе `Game1` ещё null (на DesktopGL `ApplyChanges()` создаёт его
+  сразу, поэтому там работало).
+
+Образ описан в [docker/Dockerfile.android](docker/Dockerfile.android). В него входят шрифты
+(`fonts-dejavu-core`, `fontconfig`) — без них MGCB `FontDescriptionProcessor` не находит
+шрифт `DejaVu Sans Mono` из `TestFont.spritefont`.
+
+> ⚠️ Осталось: реальный тач-ввод (`TouchPanel`), writable-путь для `settings.yaml`
+> (бандл только для чтения), запуск на устройстве/эмуляторе и CI. iOS — не настраивался.
+
+### 18.6. Отладка в VSCode и лог
+
+В корне репозитория есть `.vscode/`:
+
+- **`launch.json`** — конфигурация «RiotGalaxy DesktopGL (Debug)». Жмёшь **F5** —
+  VSCode сначала собирает проект (preLaunchTask `build-desktopgl`), затем запускает
+  `RiotGalaxy.DesktopGL.dll` через `coreclr` с выводом в интегрированный терминал.
+  Работают точки останова, шаги, watch.
+- **`tasks.json`** — задачи `build-desktopgl` (сборка, дефолтная по Ctrl+Shift+B) и
+  `run-desktopgl` (запуск без отладчика).
+
+**Логирование** — [Log.cs](RiotGalaxy.Core/Utils/Log.cs), статический класс
+`RiotGalaxy.Utils.Log`:
+
+- `Log.Debug(msg)` / `Log.Error(msg)` — пишут одновременно в `Console`
+  (видно в терминале/Debug Console VSCode) и в файл `riot.log`.
+- Файл лежит рядом с приложением: `RiotGalaxy.DesktopGL/bin/Debug/net6.0/riot.log`
+  (через `AppContext.BaseDirectory`); **очищается при каждом старте** игры.
+- Сейчас логируются старт уровня и конец игры (без покадрового спама). Добавляй
+  `Log.Debug` точечно для отладки.
+- На Android позже добавим ветку `Android.Util.Log` → `logcat`
+  (`adb logcat -s RiotGalaxy:*`).
 
 ---
 

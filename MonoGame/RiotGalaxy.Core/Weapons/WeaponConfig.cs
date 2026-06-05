@@ -39,7 +39,7 @@ namespace RiotGalaxy.Weapons
         /// <summary>Загрузка параметров оружия из weapons.yaml (при ошибке остаются дефолты).</summary>
         public static void Load()
         {
-            var data = Yaml.LoadFile<WeaponsYaml>(Yaml.ConfigPath("weapons.yaml"));
+            var data = Yaml.LoadAsset<WeaponsYaml>(Yaml.ConfigAsset("weapons.yaml"));
             if (data == null)
                 return;
 

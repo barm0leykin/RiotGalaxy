@@ -1,0 +1,65 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Android-обёртка RiotGalaxy. Таргет net9.0-android (workload android для .NET 9).
+    Общий игровой код берётся из RiotGalaxy.Core НЕ через ProjectReference, а линковкой
+    исходников: Core завязан на пакет MonoGame.Framework.DesktopGL, а здесь нужен
+    MonoGame.Framework.Android. Линковка компилирует тот же код против Android-фреймворка
+    и не ломает основное решение/desktop-сборку (этот проект вне RiotGalaxy.sln).
+  -->
+  <PropertyGroup>
+    <TargetFramework>net9.0-android</TargetFramework>
+    <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+    <OutputType>Exe</OutputType>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>RiotGalaxy</RootNamespace>
+    <AssemblyName>RiotGalaxy</AssemblyName>
+    <ApplicationId>com.riotgalaxy.game</ApplicationId>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <!-- Платформа для MGCB Content Builder -->
+    <MonoGamePlatform>Android</MonoGamePlatform>
+  </PropertyGroup>
+
+  <!--
+    В Debug .NET Android по умолчанию использует Fast Deployment: управляемые .dll кладутся
+    ВНЕ APK и доставляются отдельно только при `dotnet build -t:Run`. Мы ставим готовый APK
+    через `adb install`, поэтому встраиваем сборки в APK — иначе runtime их не находит
+    (SIGABRT: "No assemblies found in .__override__"). Release и так встраивает.
+  -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.Android" Version="3.8.1.303" />
+    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
+    <PackageReference Include="YamlDotNet" Version="18.0.0" />
+  </ItemGroup>
+
+  <!-- Общий код из Core (включая Game1) — компилируется против Android-фреймворка -->
+  <ItemGroup>
+    <Compile Include="../RiotGalaxy.Core/**/*.cs"
+             Exclude="../RiotGalaxy.Core/obj/**/*.cs;../RiotGalaxy.Core/bin/**/*.cs"
+             LinkBase="CoreShared" />
+  </ItemGroup>
+
+  <!-- Бинарный контент (.xnb) собирается MGCB под Android.
+       ContentFolder=Content → xnb лягут в assets/Content/... (без этого MGCB кладёт их в
+       assets/RiotGalaxy.Content/..., и ContentManager с RootDirectory="Content" их не находит). -->
+  <ItemGroup>
+    <MonoGameContentReference Include="..\RiotGalaxy.Content\RiotGalaxy.Content.mgcb">
+      <ContentFolder>Content</ContentFolder>
+    </MonoGameContentReference>
+  </ItemGroup>
+
+  <!-- YAML-конфиги/уровни/маршруты — как Android-ассеты под Content/,
+       чтобы TitleContainer.OpenStream("Content/...") находил их в APK -->
+  <ItemGroup>
+    <AndroidAsset Include="../RiotGalaxy.Content/Config/*.yaml" Link="Assets/Content/Config/%(Filename)%(Extension)" />
+    <AndroidAsset Include="../RiotGalaxy.Content/Levels/*.yaml" Link="Assets/Content/Levels/%(Filename)%(Extension)" />
+    <AndroidAsset Include="../RiotGalaxy.Content/Routes/*.yaml" Link="Assets/Content/Routes/%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>

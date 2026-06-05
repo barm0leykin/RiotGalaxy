@@ -18,7 +18,7 @@ namespace RiotGalaxy.Utils
 
         public static void Load()
         {
-            var data = Yaml.LoadFile<OptionsYaml>(Yaml.ConfigPath("options.yaml"));
+            var data = Yaml.LoadAsset<OptionsYaml>(Yaml.ConfigAsset("options.yaml"));
             if (data == null)
                 return;
 

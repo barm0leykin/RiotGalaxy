@@ -116,9 +116,9 @@ namespace RiotGalaxy.Managers
             _graphics.PreferredBackBufferHeight = ScreenHeight;
             _graphics.ApplyChanges();
 
-            // Создаем SpriteBatch для отрисовки
-            _spriteBatch = new SpriteBatch(_graphics.GraphicsDevice);
-
+            // SpriteBatch НЕ создаём здесь: в конструкторе Game1 GraphicsDevice ещё может быть
+            // не создан (на Android он появляется позже, чем на DesktopGL). Создаём в LoadContent,
+            // когда устройство гарантированно готово (см. LoadContent).
         }
 
         /// <summary>
@@ -127,6 +127,10 @@ namespace RiotGalaxy.Managers
         public void LoadContent()
         {
             System.Diagnostics.Debug.WriteLine("=== GameManager Loading Content ===");
+
+            // Создаём SpriteBatch здесь: GraphicsDevice уже готов на всех платформах
+            // (на Android он недоступен в конструкторе Game1 — см. Initialize).
+            _spriteBatch = new SpriteBatch(_graphics.GraphicsDevice);
 
             // Загружаем фоновое изображение (1280x768, точно под разрешение игры)
             try
@@ -161,6 +165,7 @@ namespace RiotGalaxy.Managers
             // Сколько уровней доступно (по файлам Content/Levels/level*.yaml)
             _totalLevels = Utils.Level.CountLevels();
             if (_totalLevels < 1) _totalLevels = 1;
+            Utils.Log.Debug($"Configs loaded. Levels found: {_totalLevels}, player HP: {Utils.GameOptions.PlayerMaxHp}");
 
             ChangeGameState(GameState.Splash);
         }
@@ -365,6 +370,7 @@ namespace RiotGalaxy.Managers
             // Проверка поражения - игрок уничтожен
             if (Player != null && Player.Health <= 0)
             {
+                Utils.Log.Debug($"Game over: score={Player.Score}, level={_currentLevel}");
                 ChangeGameState(GameState.GameOver);
                 return true;
             }
@@ -578,6 +584,7 @@ Console.WriteLine($"Error initializing gameplay: {ex.Message}");
             }
             EnemiesKilled = 0;
             EnemiesRemaining = _level.TotalEnemies;
+            Utils.Log.Debug($"Level {_currentLevel} loaded: \"{_level.Description}\", enemies={_level.TotalEnemies}");
 
             // Мир и улей (формации) — пересоздаём на каждый уровень (сброс занятых ячеек)
             _world = new World(ScreenWidth, ScreenHeight);
