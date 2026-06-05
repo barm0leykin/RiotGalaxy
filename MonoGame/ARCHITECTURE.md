@@ -75,9 +75,10 @@ RiotGalaxy.Core/
 ├── GameObjects/             # всё, что живёт на экране
 │   ├── GameObject.cs        #   базовый класс (позиция/размер/текстура/Update/Draw)
 │   ├── PlayerShip.cs        #   корабль игрока (HP, щит, оружие, очки)
-│   ├── Enemy.cs + EnemySmallBlue/Green/Red/Scout.cs
+│   ├── Enemy.cs + EnemySmallBlue/Green/Red/Scout.cs + EnemyBoss.cs
 │   ├── Shell.cs + Bullet/Slug/Laser.cs        # снаряды
-│   └── Bonus.cs (+ BonusHpUp/BulletUp/NukeBomb/Star)
+│   ├── Bonus.cs (+ BonusHpUp/BulletUp/NukeBomb/Star)
+│   └── World.cs (+ Cell), Hive.cs             # сетка мира и формации
 ├── Weapons/                 # система оружия (паттерн «Стратегия»)
 │   ├── Weapon.cs            #   база + WeaponCannon/Minigun/Laser/NoWeapon
 │   └── WeaponOptions.cs, WeaponConfig.cs (грузит weapons.yaml)
@@ -90,7 +91,7 @@ RiotGalaxy.Core/
 ├── Commands/                # паттерн «Команда» (смена оружия, kill all, next level…)
 ├── Interface/               # MyButton + кнопки (тестовая панель)
 ├── Utils/                   # Level.cs, GameOptions.cs, GameSettings.cs, Yaml.cs
-└── AI/                      # (пусто — заготовка под этап 10: формации/боссы)
+└── AI/                      # (пусто — заготовка; ИИ врагов пока внутри их классов)
 ```
 
 Эта раскладка повторяет архитектуру оригинала на CocosSharp (см. [prd.md](../prd.md)):
@@ -389,14 +390,24 @@ AudioManager.Instance.PlayEffect("fire1");   // громкость 0.1, как �
 
 ## 12. Враги
 
-[Enemy.cs](RiotGalaxy.Core/GameObjects/Enemy.cs) + типы `EnemySmallBlue/Green/Red/Scout`
-(`EnemyType { RND, SM_SCOUT, BLUE, GREEN, RED }`). У каждого свои Hp/урон/скорость/спрайт.
+[Enemy.cs](RiotGalaxy.Core/GameObjects/Enemy.cs) + типы `EnemySmallBlue/Green/Red/Scout` + `EnemyBoss`
+(`EnemyType { RND, SM_SCOUT, BLUE, GREEN, RED, BOSS }`). Параметры (hp/урон/скорость/интервал
+стрельбы) берутся из `enemies.yaml` через `Enemy.ApplyStats(type)` (с рандомом по диапазонам), см. §16.
 
 - **Движение** — [EnemyBounceMovement](RiotGalaxy.Core/Components/EnemyBounceMovement.cs):
   отскок от боковых границ (поле −10%) + телепорт снизу-вверх. `SetDirection(угол)`.
 - **Стрельба** (базовый AI): по таймеру `ShootInterval` (~3с). Паттерны: синий/зелёный —
   вниз, красный — прицельно в игрока, скаут — не стреляет.
 - Гибель: `TakeDamage`→`Die` (звук `explode1`), уменьшает `EnemiesRemaining`, роняет бонус.
+
+**Мир и формации** ([World.cs](RiotGalaxy.Core/GameObjects/World.cs), [Hive.cs](RiotGalaxy.Core/GameObjects/Hive.cs)):
+`World` — координатная сетка ячеек (16×10), центрирована на экране. `Hive` — формация-улей
+(8×2) поверх ячеек: враги занимают ячейки (`TryTakeCell`) и синхронно барражируют
+(весь улей качается, `Offset`). Враг входит в формацию через `Enemy.JoinFormation` —
+движение сменяется на [FormationMovement](RiotGalaxy.Core/Components/FormationMovement.cs)
+(летит к своей ячейке, затем держит строй). Формация задаётся в YAML-уровне флагом
+`formation: true`. Босс ([EnemyBoss.cs](RiotGalaxy.Core/GameObjects/EnemyBoss.cs)) —
+живучий крупный враг с прицельной стрельбой (отдельного спрайта нет — увеличенный `enemyRed`).
 
 ## 13. Бонусы и столкновения (бой)
 
@@ -440,10 +451,12 @@ AudioManager.Instance.PlayEffect("fire1");   // громкость 0.1, как �
 description: "First battle"
 spawnInterval: 1.0          # интервал между спавнами по умолчанию
 events:
-  - { enemy: blue, count: 3 }
-  - { interval: 3 }          # сменить интервал
+  - { enemy: blue, count: 3 }            # типы: blue/green/red/scout/boss
+  - { interval: 3 }                      # сменить интервал
   - { enemy: red, count: 5 }
-  - { wait: 2 }              # пауза
+  - { wait: 2 }                          # пауза
+  - { enemy: green, count: 8, formation: true }  # спавн в формацию (улей)
+  - { enemy: boss, count: 1 }            # босс
 ```
 
 ## 16. Конфиги (YAML)
@@ -454,7 +467,9 @@ events:
 | Файл | Что | Загрузчик |
 |---|---|---|
 | `Content/Config/weapons.yaml` | параметры оружия по уровням | `Weapons.WeaponConfig.Load()` |
-| `Content/Config/options.yaml` | экран + параметры игрока (HP, скорость…) | `Utils.GameOptions.Load()` |
+| `Content/Config/enemies.yaml` | параметры врагов (hp/урон/скорость/стрельба, рандом min/max) | `Utils.EnemyConfig.Load()` |
+| `Content/Config/bonuses.yaml` | параметры бонусов (хил HP, очки за звезду) | `Utils.BonusConfig.Load()` |
+| `Content/Config/options.yaml` | экран + игрок (HP, скорость, время неуязвимости…) | `Utils.GameOptions.Load()` |
 | `settings.yaml` (рядом с .exe) | громкость (пользовательская) | `Utils.GameSettings` |
 
 Все три читаются в `GameManager.LoadContent`. У каждого конфига есть дефолты в коде —

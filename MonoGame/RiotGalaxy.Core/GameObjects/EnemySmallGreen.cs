@@ -14,9 +14,7 @@ namespace RiotGalaxy.GameObjects
 
         public EnemySmallGreen(Vector2 position) : base(position)
         {
-            Type = EnemyType.GREEN;
-            Hp = MaxHp = 10;
-            Damage = 10;
+            ApplyStats(EnemyType.GREEN);
 
             LoadSprite("Images/enemyGreen");
 
@@ -48,8 +46,9 @@ namespace RiotGalaxy.GameObjects
         /// <summary>Случайно меняет скорость и направление (135..225° — вниз с уклоном).</summary>
         private void NewIdea()
         {
-            CurrentSpeed = 100f + (float)Rnd.NextDouble() * 50f; // 100..150
-            Move.SetDirection(135f + (float)Rnd.NextDouble() * 90f);
+            CurrentSpeed = Utils.EnemyConfig.Get(EnemyType.GREEN).PickSpeed(Rnd); // скорость из конфига
+            // В формации Move == null (движение — FormationMovement), смена курса не нужна
+            Move?.SetDirection(135f + (float)Rnd.NextDouble() * 90f);
         }
     }
 }

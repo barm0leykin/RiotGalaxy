@@ -14,3 +14,5 @@ events:
   - { enemy: red, count: 5 }
   - { interval: 1 }
   - { enemy: green, count: 2 }
+  - { wait: 2 }
+  - { enemy: boss, count: 1 }

@@ -4,6 +4,6 @@ spawnInterval: 1.0
 events:
   - { enemy: blue, count: 3 }
   - { interval: 3 }
-  - { enemy: red, count: 5 }
+  - { enemy: red, count: 5, formation: true }
   - { interval: 0.5 }
   - { enemy: green, count: 5 }

@@ -9,3 +9,4 @@ player:
   maxSpeed: 450
   acceleration: 1500
   brakeSpeed: 800
+  invulnTime: 2.0     # секунды неуязвимости после попадания

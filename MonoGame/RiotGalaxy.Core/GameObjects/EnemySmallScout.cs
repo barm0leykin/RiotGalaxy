@@ -11,9 +11,7 @@ namespace RiotGalaxy.GameObjects
     {
         public EnemySmallScout(Vector2 position) : base(position)
         {
-            Type = EnemyType.SM_SCOUT;
-            Hp = MaxHp = 10;
-            Damage = 5;
+            ApplyStats(EnemyType.SM_SCOUT); // hp/damage/скорость (рандом из конфига)
 
             LoadSprite("Images/enemySmallScout");
 
@@ -21,8 +19,7 @@ namespace RiotGalaxy.GameObjects
             Movement = Move;
             Collision = new EnemyCollisionComponent(this);
 
-            // случайные скорость (60..100) и направление (155..205° — вниз с лёгким уклоном)
-            CurrentSpeed = 60f + (float)Rnd.NextDouble() * 40f;
+            // случайное направление (155..205° — вниз с лёгким уклоном)
             Move.SetDirection(155f + (float)Rnd.NextDouble() * 50f);
         }
     }

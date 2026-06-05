@@ -38,9 +38,10 @@ namespace RiotGalaxy.Screens
 
         protected bool KeyPressed(Keys key) => Kb.IsKeyDown(key) && PrevKb.IsKeyUp(key);
 
-        /// <summary>Клик мыши = отпускание ЛКМ в этом кадре.</summary>
+        /// <summary>Клик мыши = момент нажатия ЛКМ (edge), как и у клавиш — чтобы клик,
+        /// которым открыли экран, не «прокликивал» его на отпускании.</summary>
         protected bool MouseClicked() =>
-            Ms.LeftButton == ButtonState.Released && PrevMs.LeftButton == ButtonState.Pressed;
+            Ms.LeftButton == ButtonState.Pressed && PrevMs.LeftButton == ButtonState.Released;
 
         protected Point MousePoint => new Point(Ms.X, Ms.Y);
 

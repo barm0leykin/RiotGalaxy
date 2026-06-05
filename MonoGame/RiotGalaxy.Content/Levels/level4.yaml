@@ -1,9 +1,7 @@
-# Уровень 4 (перенос из level4.txt; маршруты опущены)
+# Уровень 4 «Hive» — демонстрация формаций (улей 8×2 = 16 ячеек).
+# formation: true — враг занимает ячейку улья и барражирует вместе со всеми.
 description: "Hive"
-spawnInterval: 1.0
+spawnInterval: 0.3
 events:
-  - { enemy: blue, count: 5 }
-  - { enemy: green, count: 5 }
-  - { enemy: red, count: 5 }
-  - { enemy: blue, count: 5 }
-  - { enemy: red, count: 5 }
+  - { enemy: blue, count: 8, formation: true }
+  - { enemy: green, count: 8, formation: true }

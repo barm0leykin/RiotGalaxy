@@ -10,10 +10,7 @@ namespace RiotGalaxy.GameObjects
     {
         public EnemySmallBlue(Vector2 position) : base(position)
         {
-            Type = EnemyType.BLUE;
-            Hp = MaxHp = 10;
-            Damage = 10;
-            MaxSpeed = CurrentSpeed = 130f;
+            ApplyStats(EnemyType.BLUE);
 
             LoadSprite("Images/enemyBlue");
 

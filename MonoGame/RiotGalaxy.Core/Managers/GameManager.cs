@@ -45,6 +45,10 @@ namespace RiotGalaxy.Managers
         public enum GameState { Splash, MainMenu, Settings, Playing, Paused, GameOver, Victory, NextLevel }
         public GameState CurrentGameState { get; private set; }
 
+        // Мир и формации (этап 10)
+        private World _world;
+        private Hive _hive;
+
         // Текущий уровень и прогрессия
         private Utils.Level _level;
         private int _currentLevel = 1;
@@ -147,8 +151,10 @@ namespace RiotGalaxy.Managers
                 Console.WriteLine($"=== Failed to load font 'TestFont': {ex.Message} ===");
             }
 
-            // Загружаем конфиги из YAML (оружие, параметры игры) и сохранённые настройки
+            // Загружаем конфиги из YAML (оружие, враги, параметры игры) и сохранённые настройки
             Weapons.WeaponConfig.Load();
+            Utils.EnemyConfig.Load();
+            Utils.BonusConfig.Load();
             Utils.GameOptions.Load();
             Utils.GameSettings.Load();
 
@@ -328,11 +334,14 @@ namespace RiotGalaxy.Managers
                     userInputHandler.HandleScGameInput();
                 }
                 
+                // Барражирование улья (формации)
+                _hive?.Update(deltaTime);
+
                 // Спавн врагов по таймлайну уровня
                 if (_level != null)
                 {
-                    foreach (var t in _level.Tick(deltaTime))
-                        SpawnEnemy(t);
+                    foreach (var info in _level.Tick(deltaTime))
+                        SpawnEnemy(info.Type, info.Formation);
                 }
 
                 // Аналог основного цикла из GamePlay.cs - обрабатываем все объекты
@@ -563,6 +572,10 @@ Console.WriteLine($"Error initializing gameplay: {ex.Message}");
             }
             EnemiesKilled = 0;
             EnemiesRemaining = _level.TotalEnemies;
+
+            // Мир и улей (формации) — пересоздаём на каждый уровень (сброс занятых ячеек)
+            _world = new World(ScreenWidth, ScreenHeight);
+            _hive = new Hive(_world, 4, 1, 8, 2); // 8×2 у верхней кромки
         }
 
         /// <summary>Удалить все объекты кроме игрока (между уровнями).</summary>
@@ -586,20 +599,39 @@ Console.WriteLine($"Error initializing gameplay: {ex.Message}");
             }
         }
 
-        /// <summary>Создать врага заданного типа сверху экрана в случайной позиции по X.</summary>
-        private void SpawnEnemy(EnemyType type)
+        /// <summary>
+        /// Создать врага сверху экрана. Если formation — занимает ячейку улья и летит в формацию.
+        /// </summary>
+        private void SpawnEnemy(EnemyType type, bool formation)
         {
-            float border = ScreenWidth * 0.12f;
-            float x = border + (float)_spawnRnd.NextDouble() * (ScreenWidth - 2 * border);
+            // Пытаемся занять ячейку улья для формации
+            int cx = -1, cy = -1;
+            bool inFormation = formation && _hive != null && _hive.TryTakeCell(out cx, out cy);
+
+            // Точка появления: над целевой ячейкой (формация) или случайно по X
+            float x;
+            if (inFormation)
+                x = _hive.CellWorldPos(cx, cy).X;
+            else
+            {
+                float border = ScreenWidth * 0.12f;
+                x = border + (float)_spawnRnd.NextDouble() * (ScreenWidth - 2 * border);
+            }
             Vector2 pos = new Vector2(x, -30);
+
             Enemy e;
             switch (type)
             {
                 case EnemyType.BLUE: e = new EnemySmallBlue(pos); break;
                 case EnemyType.GREEN: e = new EnemySmallGreen(pos); break;
                 case EnemyType.RED: e = new EnemySmallRed(pos); break;
+                case EnemyType.BOSS: e = new EnemyBoss(pos); break;
                 default: e = new EnemySmallScout(pos); break;
             }
+
+            if (inFormation)
+                e.JoinFormation(_hive, cx, cy);
+
             GameObjects.Add(e);
         }
 
@@ -682,9 +714,10 @@ Console.WriteLine($"Error initializing gameplay: {ex.Message}");
         /// </summary>
         private void OnPlayerDied()
         {
-            
-            // Меняем состояние игры на GameOver
-            ChangeGameState(GameState.GameOver);
+            // НЕ меняем состояние здесь: смерть происходит внутри цикла обработки объектов
+            // (ProcessCollision), а ChangeGameState→CleanupGameplay чистит список объектов и
+            // привёл бы к падению. Переход в GameOver безопасно выполнит CheckGameEndConditions
+            // в начале следующего кадра (Player.Health <= 0).
         }
         
         /// <summary>

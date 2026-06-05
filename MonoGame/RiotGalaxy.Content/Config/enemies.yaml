@@ -1,0 +1,37 @@
+# Параметры врагов по типам.
+# Поля: hp, damage, shootInterval (сек между выстрелами; 0 — не стреляет).
+# Скорость и интервал стрельбы можно задать диапазоном для рандома:
+#   speed: 130                 — фиксированная
+#   speedMin/speedMax: 100/150 — случайная в диапазоне
+# (то же для shootInterval / shootIntervalMin / shootIntervalMax)
+blue:
+  hp: 10
+  damage: 10
+  speed: 130
+  shootInterval: 3
+
+green:
+  hp: 10
+  damage: 10
+  speedMin: 100
+  speedMax: 150
+  shootInterval: 3
+
+red:
+  hp: 20
+  damage: 10
+  speed: 60
+  shootInterval: 3
+
+scout:
+  hp: 10
+  damage: 5
+  speedMin: 60
+  speedMax: 100
+  shootInterval: 0      # разведчик не стреляет
+
+boss:
+  hp: 200
+  damage: 20
+  speed: 50
+  shootInterval: 1.2

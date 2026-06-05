@@ -64,8 +64,7 @@ namespace RiotGalaxy.GameObjects
 
         // Параметры неуязвимости (аналог GodMode в CocosSharp)
         public bool IsInvulnerable { get; private set; }
-        private float _invulnerabilityTime = 0f;
-        private const float DEFAULT_INVULNERABILITY_TIME = 2000f; // 2 секунды по умолчанию
+        private float _invulnerabilityTime = 0f; // секунды; длительность — из options.yaml (GameOptions.PlayerInvulnTime)
         
         // Состояние игрока (переопределяем базовый)
         public new bool IsAlive { get; private set; } = true;
@@ -200,7 +199,7 @@ namespace RiotGalaxy.GameObjects
             // Если еще живы, активируем временную неуязвимость (щит)
             if (IsAlive)
             {
-                ActivateInvulnerability(DEFAULT_INVULNERABILITY_TIME);
+                ActivateInvulnerability(Utils.GameOptions.PlayerInvulnTime);
             }
         }
 
@@ -261,7 +260,7 @@ namespace RiotGalaxy.GameObjects
             // Position = new Vector2(GameManager.Instance.ScreenWidth / 2, GameManager.Instance.ScreenHeight - 100);
             
             // Даем временную неуязвимость после воскрешения
-            ActivateInvulnerability(DEFAULT_INVULNERABILITY_TIME);
+            ActivateInvulnerability(Utils.GameOptions.PlayerInvulnTime);
             
             // Сброс других параметров
             _timeSinceLastShot = 0;

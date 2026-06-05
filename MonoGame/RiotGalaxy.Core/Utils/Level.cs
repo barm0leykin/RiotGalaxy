@@ -16,11 +16,19 @@ namespace RiotGalaxy.Utils
         public int TotalEnemies { get; private set; }
         public bool AllSpawned => _queue.Count == 0;
 
+        /// <summary>Запрос на спавн врага из таймлайна уровня.</summary>
+        public struct SpawnInfo
+        {
+            public EnemyType Type;
+            public bool Formation; // спавнить в формацию (улей)
+        }
+
         private enum ActionKind { Spawn, SetInterval, Wait }
         private struct Action
         {
             public ActionKind Kind;
             public EnemyType Enemy;
+            public bool Formation;
             public float Value; // интервал или пауза
         }
 
@@ -65,7 +73,7 @@ namespace RiotGalaxy.Utils
                         int count = ev.Count > 0 ? ev.Count : 1;
                         EnemyType type = ParseEnemy(ev.Enemy);
                         for (int i = 0; i < count; i++)
-                            _queue.Enqueue(new Action { Kind = ActionKind.Spawn, Enemy = type });
+                            _queue.Enqueue(new Action { Kind = ActionKind.Spawn, Enemy = type, Formation = ev.Formation });
                         TotalEnemies += count;
                     }
                     else if (ev.Interval.HasValue)
@@ -84,9 +92,9 @@ namespace RiotGalaxy.Utils
         /// <summary>
         /// Продвинуть таймлайн. Возвращает типы врагов, которых нужно заспавнить в этом кадре.
         /// </summary>
-        public List<EnemyType> Tick(float dt)
+        public List<SpawnInfo> Tick(float dt)
         {
-            var spawn = new List<EnemyType>();
+            var spawn = new List<SpawnInfo>();
             if (_queue.Count == 0)
                 return spawn;
 
@@ -103,7 +111,7 @@ namespace RiotGalaxy.Utils
                         _timer += a.Value;
                         break;
                     case ActionKind.Spawn:
-                        spawn.Add(a.Enemy);
+                        spawn.Add(new SpawnInfo { Type = a.Enemy, Formation = a.Formation });
                         _timer += _interval;
                         break;
                 }
@@ -120,6 +128,7 @@ namespace RiotGalaxy.Utils
                 case "red": return EnemyType.RED;
                 case "scout":
                 case "smscout": return EnemyType.SM_SCOUT;
+                case "boss": return EnemyType.BOSS;
                 default: return EnemyType.SM_SCOUT;
             }
         }
@@ -135,6 +144,7 @@ namespace RiotGalaxy.Utils
         {
             public string Enemy { get; set; }
             public int Count { get; set; }
+            public bool Formation { get; set; }
             public float? Interval { get; set; }
             public float? Wait { get; set; }
         }

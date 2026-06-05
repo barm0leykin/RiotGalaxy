@@ -10,7 +10,7 @@ namespace RiotGalaxy.GameObjects
     /// <summary>
     /// Типы врагов (как в CocosSharp).
     /// </summary>
-    public enum EnemyType { RND = 0, SM_SCOUT, BLUE, GREEN, RED }
+    public enum EnemyType { RND = 0, SM_SCOUT, BLUE, GREEN, RED, BOSS }
 
     /// <summary>
     /// Базовый класс врага. Адаптация Enemy из CocosSharp.
@@ -51,15 +51,42 @@ namespace RiotGalaxy.GameObjects
             // Оружие (очереди/перезарядка)
             Gun?.Update(gameTime);
 
-            // Решение о стрельбе по таймеру (базовый AI)
-            _actionTime += dt;
-            if (_actionTime >= ShootInterval)
+            // Решение о стрельбе по таймеру (базовый AI). ShootInterval<=0 — не стреляет.
+            if (ShootInterval > 0f)
             {
-                _actionTime = 0f;
-                Shoot();
+                _actionTime += dt;
+                if (_actionTime >= ShootInterval)
+                {
+                    _actionTime = 0f;
+                    Shoot();
+                }
             }
 
             base.Update(gameTime); // движение через компонент
+        }
+
+        /// <summary>
+        /// Поставить врага в формацию (улей): движение сменяется на полёт к ячейке + барражирование.
+        /// </summary>
+        public void JoinFormation(Hive hive, int cx, int cy)
+        {
+            Movement = new FormationMovement(this, CurrentSpeed, hive, cx, cy);
+            Move = null;
+        }
+
+        /// <summary>
+        /// Применить параметры из конфига (enemies.yaml) к врагу заданного типа,
+        /// включая рандомизацию скорости/интервала стрельбы. Вызывается в конструкторах типов.
+        /// </summary>
+        protected void ApplyStats(EnemyType type)
+        {
+            Type = type;
+            var s = Utils.EnemyConfig.Get(type);
+            Hp = MaxHp = (int)s.Hp;
+            Damage = (int)s.Damage;
+            MaxSpeed = CurrentSpeed = s.PickSpeed(Rnd);
+            ShootInterval = s.PickShootInterval(Rnd);
+            _actionTime = (float)Rnd.NextDouble() * (ShootInterval > 0 ? ShootInterval : 1f); // разнобой старта
         }
 
         /// <summary>Поведение стрельбы. По умолчанию враг не стреляет (переопределяется типами).</summary>

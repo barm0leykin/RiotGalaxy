@@ -14,6 +14,7 @@ namespace RiotGalaxy.Utils
         public static float PlayerMaxSpeed = 450f;
         public static float PlayerAcceleration = 1500f;
         public static float PlayerBrakeSpeed = 800f;
+        public static float PlayerInvulnTime = 2.0f; // секунды неуязвимости после попадания
 
         public static void Load()
         {
@@ -33,6 +34,7 @@ namespace RiotGalaxy.Utils
                 if (data.Player.MaxSpeed > 0) PlayerMaxSpeed = data.Player.MaxSpeed;
                 if (data.Player.Acceleration > 0) PlayerAcceleration = data.Player.Acceleration;
                 if (data.Player.BrakeSpeed > 0) PlayerBrakeSpeed = data.Player.BrakeSpeed;
+                if (data.Player.InvulnTime > 0) PlayerInvulnTime = data.Player.InvulnTime;
             }
         }
 
@@ -54,6 +56,7 @@ namespace RiotGalaxy.Utils
             public float MaxSpeed { get; set; }
             public float Acceleration { get; set; }
             public float BrakeSpeed { get; set; }
+            public float InvulnTime { get; set; }
         }
     }
 }

@@ -80,7 +80,7 @@ namespace RiotGalaxy.GameObjects
             LoadSprite("Images/bonusHPUp");
         }
 
-        public override void Apply(PlayerShip player) => player.Health = player.MaxHealth;
+        public override void Apply(PlayerShip player) => player.Heal(Utils.BonusConfig.Current.HpUpAmount);
     }
 
     /// <summary>Улучшение текущего оружия.</summary>
@@ -113,7 +113,6 @@ namespace RiotGalaxy.GameObjects
     /// </summary>
     public class BonusStar : Bonus
     {
-        private const int ScoreValue = 10;
         private const float MagnetDist = 250f;
         private const float TurnSpeed = 90f; // градусов/сек доворота
         private float _angleDeg = 180f;
@@ -172,6 +171,6 @@ namespace RiotGalaxy.GameObjects
             return current + Math.Sign(diff) * maxStep;
         }
 
-        public override void Apply(PlayerShip player) => player.Score += ScoreValue;
+        public override void Apply(PlayerShip player) => player.Score += Utils.BonusConfig.Current.StarScore;
     }
 }

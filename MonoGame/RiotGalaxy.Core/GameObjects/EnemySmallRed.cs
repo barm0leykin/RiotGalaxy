@@ -11,10 +11,7 @@ namespace RiotGalaxy.GameObjects
     {
         public EnemySmallRed(Vector2 position) : base(position)
         {
-            Type = EnemyType.RED;
-            Hp = MaxHp = 20;
-            Damage = 10;
-            MaxSpeed = CurrentSpeed = 60f;
+            ApplyStats(EnemyType.RED);
 
             LoadSprite("Images/enemyRed");
 
