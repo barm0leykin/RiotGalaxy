@@ -5,5 +5,8 @@
           android:installLocation="auto">
   <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="35" />
   <uses-feature android:glEsVersion="0x00020000" android:required="true" />
-  <application android:label="RiotGalaxy" android:allowBackup="true"></application>
+  <!-- enableOnBackInvokedCallback=true: без него Android 13+ ИГНОРИРУЕТ наш
+       OnBackInvokedCallback (predictive back) и back-жест не доходит до приложения. -->
+  <application android:label="RiotGalaxy" android:allowBackup="true"
+               android:enableOnBackInvokedCallback="true"></application>
 </manifest>

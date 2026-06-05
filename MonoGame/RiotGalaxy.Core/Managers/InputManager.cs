@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Input.Touch;
 using RiotGalaxy.Commands;
 using RiotGalaxy.Interface;
 using RiotGalaxy.Components;
@@ -31,8 +32,9 @@ namespace RiotGalaxy.Managers
         private bool isTouch = false;
         private bool isTouchBegan = false;
         private bool _touchOnUI = false; // текущее касание началось на UI-кнопке (не двигаем корабль)
-        private Vector2 locationOnScreen;
+        private Vector2 locationOnScreen;   // в ВИРТУАЛЬНЫХ координатах (1280x768)
         private Vector2 previousMousePosition;
+        private Vector2 _lastPointerRaw;    // последняя сырая (экранная) позиция указателя/пальца
         
         // Состояния клавиатуры и мыши
         private KeyboardState _currentKeyboardState;
@@ -90,9 +92,30 @@ namespace RiotGalaxy.Managers
         /// </summary>
         private void HandleMouseAsTouch()
         {
-            bool newIsTouch = _currentMouseState.LeftButton == ButtonState.Pressed;
-            Vector2 newLocation = new Vector2(_currentMouseState.X, _currentMouseState.Y);
-            
+            // Источник указателя кросс-платформенный: на Android — палец (TouchPanel),
+            // на desktop — мышь. Сырые экранные координаты переводим в виртуальные.
+            bool newIsTouch;
+            Vector2 raw;
+#if ANDROID
+            var touches = TouchPanel.GetState();
+            if (touches.Count > 0)
+            {
+                newIsTouch = true;
+                raw = touches[0].Position;
+                _lastPointerRaw = raw;
+            }
+            else
+            {
+                newIsTouch = false;
+                raw = _lastPointerRaw; // удерживаем последнюю позицию для корректного "отпускания"
+            }
+#else
+            newIsTouch = _currentMouseState.LeftButton == ButtonState.Pressed;
+            raw = new Vector2(_currentMouseState.X, _currentMouseState.Y);
+            _lastPointerRaw = raw;
+#endif
+            Vector2 newLocation = GameManager.Instance.ScreenToVirtual(raw);
+
             if (newIsTouch && !isTouch)
             {
                 // Начало касания
@@ -202,11 +225,17 @@ namespace RiotGalaxy.Managers
             bool hasKeyboardInput = false;
             Vector2 movementInput = Vector2.Zero;
 
+#if ANDROID
+            // На Android — автоогонь: корабль стреляет непрерывно (палец только двигает).
+            // Темп/очереди/перезарядку контролирует само оружие.
+            player?.Fire();
+#else
             // Стрельба: удержание Пробела. Темп/очереди/перезарядку контролирует само оружие.
             if (IsKeyPressed(Keys.Space) && player != null)
             {
                 player.Fire();
             }
+#endif
 
             // Смена оружия: 1 — пушка, 2 — пулемёт, 3 — лазер
             if (player != null)

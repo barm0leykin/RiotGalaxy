@@ -686,8 +686,28 @@ cd MonoGame
 (`fonts-dejavu-core`, `fontconfig`) — без них MGCB `FontDescriptionProcessor` не находит
 шрифт `DejaVu Sans Mono` из `TestFont.spritefont`.
 
-> ⚠️ Осталось: реальный тач-ввод (`TouchPanel`), writable-путь для `settings.yaml`
-> (бандл только для чтения), запуск на устройстве/эмуляторе и CI. iOS — не настраивался.
+**Масштаб экрана (letterbox) и тач.** Игра логически работает в фиксированных 1280×768
+(`GameManager.ScreenWidth/Height` — виртуальные). На Android back buffer = весь экран
+(`IsFullScreen=true`); вся сцена рисуется через матрицу масштаба в единственном
+`SpriteBatch.Begin(..., _renderMatrix)` (см. `UpdateRenderTransform()`), пропорции
+сохраняются (чёрные поля по бокам). Координаты ввода переводятся обратно
+`GameManager.ScreenToVirtual()`. Тач: `TouchPanel` под `#if ANDROID` в `InputManager`
+(игра) и `Screen` (меню), вместо мыши. На desktop scale=1 — поведение не меняется.
+
+`settings.yaml` на Android пишется в `AppContext.BaseDirectory`
+(`/data/user/0/<pkg>/files/`, writable) — отдельного пути не понадобилось.
+
+**Стрельба и «Назад» на Android.** Стрельба — автоогонь (`#if ANDROID` в
+`InputManager.HandleScGameInput`: `player?.Fire()` каждый кадр; темп ограничивает оружие).
+Кнопка «Назад»: на Android 13+ системный back приходит ТОЛЬКО через predictive back
+(`OnBackInvokedDispatcher`), а не через `OnBackPressed`/`KEYCODE_BACK`. Поэтому в
+`MainActivity` зарегистрирован `IOnBackInvokedCallback`, и — обязательно — в манифесте
+выставлен `android:enableOnBackInvokedCallback="true"` (без флага система игнорирует
+наш колбэк). Логика разнесена по потокам: `GameManager.OnBackRequested()` (из UI-потока только ставит
+флаг) и `ProcessPendingBack()` (смена состояния в игровом потоке, без гонки с `Update`).
+Из игры → меню, из меню/заставки → выход.
+
+> ⚠️ Осталось: запуск на эмуляторе/CI (этап 6 PRD). iOS — не настраивался.
 
 ### 18.6. Отладка в VSCode и лог
 

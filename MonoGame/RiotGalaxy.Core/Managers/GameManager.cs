@@ -69,13 +69,42 @@ namespace RiotGalaxy.Managers
         public List<GameObject> GameObjects { get; private set; }
         public PlayerShip Player { get; private set; }
 
-        // Базовые игровые параметры
+        // Базовые игровые параметры (ВИРТУАЛЬНОЕ разрешение — вся игровая логика в нём)
         public int ScreenWidth { get; private set; }
         public int ScreenHeight { get; private set; }
-        
+
+        // Letterbox-масштабирование виртуального кадра (1280x768) под реальный back buffer
+        // (на Android — весь экран). Вся отрисовка идёт через _renderMatrix, ввод
+        // преобразуется обратно через ScreenToVirtual.
+        private Matrix _renderMatrix = Matrix.Identity;
+        private float _renderScale = 1f;
+        private Vector2 _renderOffset = Vector2.Zero;
+
+
         // Вспомогательные текстуры
         public Texture2D SimpleTexture { get; set; }
         public GraphicsDevice GraphicsDevice => _graphics.GraphicsDevice;
+
+        /// <summary>
+        /// Пересчитывает letterbox-матрицу под текущий размер back buffer (вызывается каждый
+        /// кадр перед отрисовкой — покрывает смену ориентации/размера экрана).
+        /// </summary>
+        private void UpdateRenderTransform()
+        {
+            var vp = _graphics.GraphicsDevice.Viewport;
+            float scale = Math.Min((float)vp.Width / ScreenWidth, (float)vp.Height / ScreenHeight);
+            if (scale <= 0f) scale = 1f;
+            _renderScale = scale;
+            _renderOffset = new Vector2(
+                (vp.Width - ScreenWidth * scale) / 2f,
+                (vp.Height - ScreenHeight * scale) / 2f);
+            _renderMatrix = Matrix.CreateScale(scale, scale, 1f)
+                          * Matrix.CreateTranslation(_renderOffset.X, _renderOffset.Y, 0f);
+        }
+
+        /// <summary>Переводит координаты экрана (пиксели мыши/тача) в виртуальные (1280x768).</summary>
+        public Vector2 ScreenToVirtual(Vector2 screenPoint) =>
+            (screenPoint - _renderOffset) / _renderScale;
 
         // Доступ к загрузчику контента (нужен игровым объектам для загрузки спрайтов)
         public ContentManager Content => _content;
@@ -111,10 +140,17 @@ namespace RiotGalaxy.Managers
             _graphics = graphics;
             _content = content;
 
-            // Устанавливаем разрешение экрана
+#if ANDROID
+            // На Android оставляем back buffer равным размеру экрана (полноэкранно):
+            // фиксированный PreferredBackBuffer заставил бы рисовать игру в углу.
+            // Виртуальный кадр 1280x768 масштабируется letterbox'ом (см. UpdateRenderTransform).
+            _graphics.IsFullScreen = true;
+#else
+            // Desktop: окно ровно под виртуальное разрешение (scale=1, без полей).
             _graphics.PreferredBackBufferWidth = ScreenWidth;
             _graphics.PreferredBackBufferHeight = ScreenHeight;
             _graphics.ApplyChanges();
+#endif
 
             // SpriteBatch НЕ создаём здесь: в конструкторе Game1 GraphicsDevice ещё может быть
             // не создан (на Android он появляется позже, чем на DesktopGL). Создаём в LoadContent,
@@ -131,6 +167,7 @@ namespace RiotGalaxy.Managers
             // Создаём SpriteBatch здесь: GraphicsDevice уже готов на всех платформах
             // (на Android он недоступен в конструкторе Game1 — см. Initialize).
             _spriteBatch = new SpriteBatch(_graphics.GraphicsDevice);
+            UpdateRenderTransform(); // первичный расчёт letterbox-матрицы (до первого Draw)
 
             // Загружаем фоновое изображение (1280x768, точно под разрешение игры)
             try
@@ -224,7 +261,9 @@ namespace RiotGalaxy.Managers
         {
             _graphics.GraphicsDevice.Clear(Color.Black);
 
-            _spriteBatch.Begin();
+            // Letterbox: пересчитываем матрицу под текущий back buffer и масштабируем всю сцену.
+            UpdateRenderTransform();
+            _spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, _renderMatrix);
 
             // Рисуем фоновое изображение (задник) под всеми состояниями
             if (_background != null)
@@ -256,6 +295,38 @@ namespace RiotGalaxy.Managers
             }
 
             _spriteBatch.End();
+        }
+
+        // Запрошен переход «в меню» по кнопке Назад. Выставляется из UI-потока (OnBackPressed),
+        // а сама смена состояния выполняется в игровом потоке (ProcessPendingBack) — иначе
+        // гонка с циклом Update (чистка GameObjects) роняет игру.
+        private volatile bool _backToMenuPending;
+
+        /// <summary>
+        /// Запрос «Назад» из UI-потока (Android Back, см. MainActivity). НЕ меняет состояние сам.
+        /// </summary>
+        /// <returns>true, если приложение должно закрыться (мы уже в меню/заставке);
+        /// false — переход в меню отложен в игровой поток.</returns>
+        public bool OnBackRequested()
+        {
+            switch (CurrentGameState)
+            {
+                case GameState.MainMenu:
+                case GameState.Splash:
+                    return true; // выходим из приложения (закрытие активности — на UI-потоке)
+                default:
+                    _backToMenuPending = true; // смену состояния сделает игровой поток
+                    return false;
+            }
+        }
+
+        /// <summary>Обрабатывает отложенный запрос «Назад» — вызывать из игрового потока (Game1.Update).</summary>
+        public void ProcessPendingBack()
+        {
+            if (!_backToMenuPending)
+                return;
+            _backToMenuPending = false;
+            ChangeGameState(GameState.MainMenu);
         }
 
         /// <summary>

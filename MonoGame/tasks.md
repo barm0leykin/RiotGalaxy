@@ -361,9 +361,15 @@
   - `SpriteBatch` создаётся теперь в `GameManager.LoadContent`, а не в `Initialize`/конструкторе — на Android `GraphicsDevice` в конструкторе ещё null (ArgumentNullException). Desktop не сломан
 - ⏳ Картинка показывается НЕ на весь экран (масштаб/ориентация) — это 16.3; тач-ввод — тоже 16.3
 
-### 16.3. Ввод и экран ⬜
-- Реальный тач (`TouchPanel`) вместо мыши-как-тача; ориентация landscape; масштаб под экран
-- **Результат**: управление пальцем работает
+### 16.3. Ввод и экран ✅ (2026-06-05)
+
+- **Масштаб (letterbox)** ✅: игровая логика осталась в виртуальных 1280×768; на Android back buffer = весь экран (`IsFullScreen=true`, `#if ANDROID`), вся сцена рисуется через матрицу масштаба в единственном `SpriteBatch.Begin(... _renderMatrix)`. `GameManager.UpdateRenderTransform()` (каждый кадр) + `ScreenToVirtual()`. Пропорции сохранены, чёрные поля по бокам. Desktop: scale=1, без изменений
+- **Тач** ✅: `TouchPanel` на Android (`#if ANDROID`) вместо мыши и в `InputManager` (игра), и в `Screen` (меню); сырые координаты → виртуальные через `ScreenToVirtual`. Гашение «проклика» первого кадра сохранено
+- **Ориентация** landscape (через `MainActivity` ScreenOrientation.SensorLandscape) ✅
+- **Автоогонь** ✅: на Android (`#if ANDROID` в `InputManager.HandleScGameInput`) корабль стреляет непрерывно (палец только двигает); на desktop — Space как раньше
+- **Кнопка «Назад»** ✅: из игры/экранов → главное меню, из меню/заставки → выход (`GameManager.OnBackRequested` + потокобезопасный `ProcessPendingBack`). На Android 13+ back идёт через predictive back — зарегистрирован `IOnBackInvokedCallback` в `MainActivity` + **`android:enableOnBackInvokedCallback="true"`** в манифесте (без флага система игнорирует колбэк!); fallback `OnBackPressed`/`OnKeyDown` для старых устройств
+- **settings.yaml (запись)** ✅: на Android `AppContext.BaseDirectory` = `/data/user/0/<pkg>/files/` (writable внутреннее хранилище), отдельный путь не нужен — снимает 🔶 из 16.1
+- **Результат**: проверено на Samsung A56 — меню на весь экран по высоте, «Начать игру» по тапу, корабль следует за пальцем, автоогонь, кнопка «Назад» (игра→меню→выход) ✅
 
 ### 16.4. Сборка/запуск и CI 🔶
 

@@ -81,6 +81,10 @@ namespace RiotGalaxy.Core
         {
             var keyboardState = Keyboard.GetState();
 
+            // Кнопка «Назад» на Android: MainActivity.OnBackPressed (UI-поток) выставляет флаг,
+            // а смену состояния делаем здесь, в игровом потоке (без гонки с циклом Update).
+            _gameManager.ProcessPendingBack();
+
             switch (_gameManager.CurrentGameState)
             {
                 case GameManager.GameState.Playing:
