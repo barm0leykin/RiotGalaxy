@@ -99,8 +99,8 @@ RiotGalaxy.Core/
 сохранены паттерны **Strategy** (компоненты/оружие), **Command** (команды), **State**
 (состояния игры).
 
-> Папка `AI/` пока пустая — заготовка под этап 10 (формации/боссы). Остальное реализовано;
-> актуальный статус по этапам — в [tasks.md](tasks.md).
+> Папка `AI/` — машина состояний врагов (`EnemyAI`/`AIState`, порт `BehAI` из CocoSharp), см. §12.
+> Актуальный статус по этапам — в [tasks.md](tasks.md).
 
 ---
 
@@ -417,9 +417,29 @@ AudioManager.Instance.PlayEffect("fire1");   // громкость 0.1, как �
 
 - **Движение** — [EnemyBounceMovement](RiotGalaxy.Core/Components/EnemyBounceMovement.cs):
   отскок от боковых границ (поле −10%) + телепорт снизу-вверх. `SetDirection(угол)`.
-- **Стрельба** (базовый AI): по таймеру `ShootInterval` (~3с). Паттерны: синий/зелёный —
-  вниз, красный — прицельно в игрока, скаут — не стреляет.
+- **Стрельба**: по таймеру `ShootInterval`. Паттерны: синий/зелёный — вниз, красный —
+  прицельно в игрока, скаут — не стреляет. Флаг `ShootSafe` временно глушит стрельбу
+  (им управляют состояния ИИ).
 - Гибель: `TakeDamage`→`Die` (звук `explode1`), уменьшает `EnemiesRemaining`, роняет бонус.
+
+**ИИ — машина состояний** ([AI/](RiotGalaxy.Core/AI/), порт `BehAI`/`AIState` из CocoSharp).
+У врага есть опциональный `Ai` ([EnemyAI](RiotGalaxy.Core/AI/EnemyAI.cs)) — контроллер с
+состояниями ([AIState.cs](RiotGalaxy.Core/AI/AIState.cs)): **TakeOff** (влетает, не стреляет),
+**Swarming** (медленно роится, стреляет), **Attack** (быстро, стреляет чаще). Контроллеры по типам:
+`EnemyAIRed` (TakeOff→Swarming), `EnemyAIBlue` (TakeOff→Swarming↔Attack), `EnemyAIDumb` (ничего).
+Состояния через API `Enemy` управляют движением/скоростью/темпом стрельбы
+(`UseBounceMovement`, `SetMoveDirection`, `SetShootInterval`, `ShootSafe`). `Ai` отключается
+при входе в формацию/маршрут (там движение задаёт YAML).
+
+**Вылеты из улья (sortie, Galaga)** — поверх формации. В описании уровня `sortie: true`
+(+ `sortieInterval`, `sortieCount`) включает у `Hive` координатор: раз в N секунд он
+отправляет `count` осевших юнитов в пике-атаку ([SortieMovement](RiotGalaxy.Core/Components/SortieMovement.cs)).
+Юнит пикирует вниз, уходит за нижнюю границу, появляется сверху и возвращается в свою ячейку
+(снова `FormationMovement`). **Тактика пике** выбирается случайно из списка `tactics` типа врага
+(`enemies.yaml`): `random` (вниз с отскоком), `snake` (змейка), `ram` (таран в точку игрока),
+`ellipse` (петля). Скорость вылета — `attackSpeed` (траектории привязаны к ней, в т.ч. `ellipse`).
+В строю улья враги **не стреляют** (как в Galaga, `ShootSafe=true`) — огонь только в вылете.
+`Hive` ведёт учёт членов (`Register`/`NotifyReturned`).
 
 **Мир и формации** ([World.cs](RiotGalaxy.Core/GameObjects/World.cs), [Hive.cs](RiotGalaxy.Core/GameObjects/Hive.cs)):
 `World` — координатная сетка ячеек (16×10), центрирована на экране. `Hive` — формация-улей

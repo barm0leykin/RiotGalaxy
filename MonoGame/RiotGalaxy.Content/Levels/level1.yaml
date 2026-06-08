@@ -1,10 +1,13 @@
-# Уровень 1 (перенос из level1.txt)
-# events обрабатываются по порядку:
-#   { enemy: <green|blue|red|scout>, count: N } — заспавнить N врагов с текущим интервалом
-#   { interval: T }  — задать интервал между спавнами (сек)
-#   { wait: T }      — пауза T секунд
-description: "First contact!"
-spawnInterval: 1.0
+# Уровень 1 «First Contact» — мягкий ввод: учимся двигаться и стрелять.
+# Скауты не стреляют, зелёные изредка бьют вниз. Без формаций.
+# Формат events:
+#   { enemy: <scout|green|blue|red|boss>, count: N } — заспавнить N врагов с текущим интервалом
+#   { interval: T } — интервал между спавнами (сек); { wait: T } — пауза
+description: "First Contact"
+spawnInterval: 1.2
 events:
+  - { enemy: scout, count: 3 }
+  - { wait: 1 }
+  - { enemy: green, count: 3 }
+  - { interval: 0.8 }
   - { enemy: scout, count: 2 }
-  - { enemy: green, count: 1 }

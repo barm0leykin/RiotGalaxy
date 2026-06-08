@@ -4,9 +4,9 @@
 maxWeaponLevel: 3
 
 cannon:
-  - { burst: 1, burstInterval: 0.25, reloadSpeed: 2.0,  damage: 10, shellSpeed: 200 }
-  - { burst: 1, burstInterval: 0.25, reloadSpeed: 1.5,  damage: 10, shellSpeed: 200 }
-  - { burst: 2, burstInterval: 0.25, reloadSpeed: 2.4,  damage: 10, shellSpeed: 200 }
+  - { burst: 1, burstInterval: 0.25, reloadSpeed: 2.0,  damage: 10, shellSpeed: 250 }
+  - { burst: 1, burstInterval: 0.25, reloadSpeed: 1.5,  damage: 10, shellSpeed: 250 }
+  - { burst: 2, burstInterval: 0.25, reloadSpeed: 2.4,  damage: 10, shellSpeed: 250 }
 
 minigun:
   - { burst: 3, burstInterval: 0.1,  reloadSpeed: 2.0,  damage: 4,  shellSpeed: 250 }

@@ -24,6 +24,7 @@ namespace RiotGalaxy.GameObjects
         public int Damage { get; set; } = 10;
         public float MaxSpeed { get; set; } = 100f;
         public float CurrentSpeed { get; set; } = 100f;
+        public float AttackSpeed { get; set; } = 100f; // скорость во время вылета/атаки из улья
 
         // Типизированный доступ к компоненту движения с отскоком
         protected EnemyBounceMovement Move;
@@ -33,7 +34,15 @@ namespace RiotGalaxy.GameObjects
         protected float ShootInterval = 3f; // сек между выстрелами
         private float _actionTime;
 
+        // ИИ-машина состояний (опционально; аналог Enemy.ai из CocosSharp). Если задан —
+        // управляет движением/скоростью/стрельбой. Формация/маршрут (YAML) её отключают.
+        public AI.EnemyAI Ai { get; set; }
+        /// <summary>Если true — враг временно не стреляет (управляется состоянием ИИ, аналог gun.Safe).</summary>
+        public bool ShootSafe { get; set; }
+
         protected static readonly Random Rnd = new Random();
+        /// <summary>Источник случайности для состояний ИИ.</summary>
+        public Random AiRandom => Rnd;
 
         public Enemy(Vector2 position) : base(position, new Vector2(45, 45))
         {
@@ -48,11 +57,14 @@ namespace RiotGalaxy.GameObjects
 
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            // ИИ-машина состояний (если задана): управляет движением/скоростью/стрельбой
+            Ai?.Update(dt);
+
             // Оружие (очереди/перезарядка)
             Gun?.Update(gameTime);
 
-            // Решение о стрельбе по таймеру (базовый AI). ShootInterval<=0 — не стреляет.
-            if (ShootInterval > 0f)
+            // Решение о стрельбе по таймеру. ShootInterval<=0 или ShootSafe — не стреляет.
+            if (ShootInterval > 0f && !ShootSafe)
             {
                 _actionTime += dt;
                 if (_actionTime >= ShootInterval)
@@ -70,6 +82,8 @@ namespace RiotGalaxy.GameObjects
         /// </summary>
         public void JoinFormation(Hive hive, int cx, int cy)
         {
+            Ai = null;          // формация управляет движением сама
+            ShootSafe = true;   // в строю улья не стреляем (как в Galaga) — огонь только в вылете
             Movement = new FormationMovement(this, CurrentSpeed, hive, cx, cy);
             Move = null;
         }
@@ -77,8 +91,43 @@ namespace RiotGalaxy.GameObjects
         /// <summary>Пустить врага по маршруту; end — поведение после маршрута (отскок/разлёт/формация).</summary>
         public void SetRoute(Route route, RouteEndBehavior end = RouteEndBehavior.Bounce, Hive hive = null)
         {
+            Ai = null; // маршрут управляет движением сам
             Movement = new RouteMovement(this, CurrentSpeed, route, end, hive);
             Move = null;
+        }
+
+        // ----- API для состояний ИИ (AI/AIState.cs) -----
+
+        /// <summary>Переключить владельца на движение с отскоком (создаёт компонент по текущей скорости).</summary>
+        public void UseBounceMovement()
+        {
+            Move = new EnemyBounceMovement(this, CurrentSpeed);
+            Movement = Move;
+        }
+
+        /// <summary>Задать курс (градусы; 0=вверх,180=вниз), если активно движение с отскоком.</summary>
+        public void SetMoveDirection(float angleDeg) => Move?.SetDirection(angleDeg);
+
+        /// <summary>Сменить темп стрельбы (сек между выстрелами) и сбросить таймер.</summary>
+        public void SetShootInterval(float seconds)
+        {
+            ShootInterval = seconds;
+            _actionTime = 0f;
+        }
+
+        /// <summary>Отправить врага в вылет из улья (пике-атака с возвратом в ячейку cx,cy).
+        /// Тактика пике выбирается случайно из списка типа врага (enemies.yaml).</summary>
+        public void StartSortie(Hive hive, int cx, int cy)
+        {
+            Move = null;
+            ShootSafe = false; // в вылете стреляем
+
+            var tactics = Utils.EnemyConfig.Get(Type).Tactics;
+            SortieTactic tactic = SortieTactic.Random;
+            if (tactics != null && tactics.Count > 0)
+                tactic = SortieMovement.ParseTactic(tactics[Rnd.Next(tactics.Count)]);
+
+            Movement = new SortieMovement(this, AttackSpeed, hive, cx, cy, tactic);
         }
 
         /// <summary>
@@ -92,6 +141,8 @@ namespace RiotGalaxy.GameObjects
             Hp = MaxHp = (int)s.Hp;
             Damage = (int)s.Damage;
             MaxSpeed = CurrentSpeed = s.PickSpeed(Rnd);
+            float atk = s.PickAttackSpeed(Rnd);
+            AttackSpeed = atk > 0f ? atk : MaxSpeed; // 0 в конфиге → берём обычную скорость
             ShootInterval = s.PickShootInterval(Rnd);
             _actionTime = (float)Rnd.NextDouble() * (ShootInterval > 0 ? ShootInterval : 1f); // разнобой старта
         }

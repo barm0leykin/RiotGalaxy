@@ -660,6 +660,10 @@ Console.WriteLine($"Error initializing gameplay: {ex.Message}");
             // Мир и улей (формации) — пересоздаём на каждый уровень (сброс занятых ячеек)
             _world = new World(ScreenWidth, ScreenHeight);
             _hive = new Hive(_world, 4, 1, 8, 2); // 8×2 у верхней кромки
+
+            // Вылеты из улья (Galaga) — если включены в описании уровня
+            if (_level.Sortie)
+                _hive.EnableSortie(_level.SortieInterval, _level.SortieCount);
         }
 
         /// <summary>Удалить все объекты кроме игрока (между уровнями).</summary>
@@ -721,7 +725,10 @@ Console.WriteLine($"Error initializing gameplay: {ex.Message}");
             }
 
             if (inFormation)
+            {
                 e.JoinFormation(_hive, cx, cy);
+                _hive.Register(e, cx, cy); // учёт в улье — для координации вылетов
+            }
             else if (route != null && route.HasPoints)
                 e.SetRoute(route, ParseRouteEnd(after), _hive);
 

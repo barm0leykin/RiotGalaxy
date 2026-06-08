@@ -1,18 +1,16 @@
-# Уровень 5 (перенос из level5.txt; маршруты опущены)
-description: "Red fear"
-spawnInterval: 1.0
+# Уровень 5 «Red Fear» — кульминация: агрессивный улей (вылеты по двое каждые 2с),
+# затем волны и БОСС.
+description: "Red Fear"
+spawnInterval: 0.35
+sortie: true
+sortieInterval: 2
+sortieCount: 2
 events:
-  - { enemy: green, count: 5 }
-  - { interval: 2 }
-  - { enemy: red, count: 10 }
-  - { interval: 0.5 }
-  - { enemy: blue, count: 5 }
-  - { enemy: blue, count: 5 }
-  - { interval: 2 }
-  - { enemy: red, count: 10 }
+  - { enemy: blue, count: 8, formation: true }
+  - { enemy: red, count: 8, formation: true }    # 16 в улье — постоянный поток пике
+  - { wait: 3 }
   - { interval: 1 }
-  - { enemy: red, count: 5 }
-  - { interval: 1 }
-  - { enemy: green, count: 2 }
+  - { enemy: green, count: 6 }
+  - { enemy: red, count: 4 }                      # свободные красные с ИИ
   - { wait: 2 }
-  - { enemy: boss, count: 1 }
+  - { enemy: boss, count: 1 }                     # финальный босс

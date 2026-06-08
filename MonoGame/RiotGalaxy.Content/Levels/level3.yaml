@@ -1,9 +1,13 @@
-# Уровень 3 (перенос из level3.txt)
-description: "First battle"
-spawnInterval: 1.5
+# Уровень 3 «The Swarm» — полный улей (16) с более частыми вылетами,
+# затем свободные красные (ИИ: влетают, роятся, прицельно стреляют).
+description: "The Swarm"
+spawnInterval: 0.35
+sortie: true
+sortieInterval: 3
+sortieCount: 1
 events:
-  - { enemy: blue, count: 3 }
-  - { interval: 3 }
-  - { enemy: red, count: 6, formation: true }
-  - { interval: 0.5 }
-  - { enemy: green, count: 5 }
+  - { enemy: blue, count: 8, formation: true }
+  - { enemy: green, count: 8, formation: true }   # улей заполнен (8×2)
+  - { wait: 2 }
+  - { interval: 1 }
+  - { enemy: red, count: 4 }                       # свободные красные с ИИ-машиной состояний

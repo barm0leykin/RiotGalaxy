@@ -14,10 +14,11 @@ namespace RiotGalaxy.GameObjects
 
             LoadSprite("Images/enemyBlue");
 
-            Move = new EnemyBounceMovement(this, CurrentSpeed);
-            Move.SetDirection(180f); // строго вниз
-            Movement = Move;
             Collision = new EnemyCollisionComponent(this);
+
+            // ИИ-машина состояний (порт ObjBehAIEnemyBlue): взлёт → роение ↔ атака.
+            // Сама задаёт движение/курс. Формация/маршрут из YAML её отключают.
+            Ai = new AI.EnemyAIBlue(this);
         }
 
         // Синий стреляет строго вниз (аналог ObjBehShootDown)

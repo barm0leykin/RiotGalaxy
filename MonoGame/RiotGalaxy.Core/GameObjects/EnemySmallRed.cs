@@ -15,10 +15,11 @@ namespace RiotGalaxy.GameObjects
 
             LoadSprite("Images/enemyRed");
 
-            Move = new EnemyBounceMovement(this, CurrentSpeed);
-            Move.SetDirection(180f); // вниз, медленно
-            Movement = Move;
             Collision = new EnemyCollisionComponent(this);
+
+            // ИИ-машина состояний (порт ObjBehAIEnemyRed): влетает → роится и стреляет.
+            // Сама задаёт движение/курс. Формация/маршрут из YAML её отключают.
+            Ai = new AI.EnemyAIRed(this);
         }
 
         // Красный целится прямо в игрока (аналог ObjBehShootAimToPlayer)

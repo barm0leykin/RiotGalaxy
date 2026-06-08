@@ -4,24 +4,16 @@
 #   speed: 130                 — фиксированная
 #   speedMin/speedMax: 100/150 — случайная в диапазоне
 # (то же для shootInterval / shootIntervalMin / shootIntervalMax)
-blue:
-  hp: 10
-  damage: 10
-  speed: 130
-  shootInterval: 4
-
-green:
-  hp: 10
-  damage: 10
-  speedMin: 100
-  speedMax: 150
-  shootInterval: 4
-
-red:
-  hp: 20
-  damage: 10
-  speed: 60
-  shootInterval: 6
+#
+# attackSpeed — скорость во время вылета/атаки из улья (0/нет — берётся обычная speed).
+#   Все тактики (в т.ч. ellipse/snake) привязаны к этой скорости — линейная скорость ≈ attackSpeed.
+#
+# tactics — список тактик пике при вылете из улья (sortie). При каждом вылете
+# выбирается случайная из списка. Возможные значения:
+#   random  — прямо вниз с уклоном и отскоком от боков
+#   snake   — змейкой (синус по X)
+#   ram     — таран: прямо в точку, где был игрок на момент вылета
+#   ellipse — петля/дуга (Galaga-стиль)
 
 scout:
   hp: 10
@@ -29,6 +21,32 @@ scout:
   speedMin: 60
   speedMax: 100
   shootInterval: 0      # разведчик не стреляет
+  tactics: [random]
+
+blue:
+  hp: 10
+  damage: 10
+  speed: 130
+  attackSpeed: 200
+  shootInterval: 4
+  tactics: [snake, ram]
+
+green:
+  hp: 10
+  damage: 10
+  speedMin: 100
+  speedMax: 150
+  attackSpeed: 200
+  shootInterval: 4
+  tactics: [random, snake]
+
+red:
+  hp: 20
+  damage: 10
+  speed: 60
+  attackSpeed: 160
+  shootInterval: 6
+  tactics: [ram, ellipse]
 
 boss:
   hp: 200

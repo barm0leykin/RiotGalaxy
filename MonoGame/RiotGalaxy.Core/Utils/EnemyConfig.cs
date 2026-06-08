@@ -21,8 +21,18 @@ namespace RiotGalaxy.Utils
             public float ShootIntervalMin { get; set; }
             public float ShootIntervalMax { get; set; }
 
+            // Скорость во время вылета/атаки из улья (0 — использовать обычную Speed).
+            public float AttackSpeed { get; set; }
+            public float AttackSpeedMin { get; set; }
+            public float AttackSpeedMax { get; set; }
+
+            /// <summary>Тактики пике при вылете из улья (random/snake/ram/ellipse). Пусто — random.</summary>
+            public List<string> Tactics { get; set; }
+
             public float PickSpeed(Random r) => Pick(Speed, SpeedMin, SpeedMax, r);
             public float PickShootInterval(Random r) => Pick(ShootInterval, ShootIntervalMin, ShootIntervalMax, r);
+            /// <summary>Скорость атаки; 0 — не задана (вызывающий берёт обычную скорость).</summary>
+            public float PickAttackSpeed(Random r) => Pick(AttackSpeed, AttackSpeedMin, AttackSpeedMax, r);
 
             private static float Pick(float fixedValue, float min, float max, Random r) =>
                 (max > min) ? min + (float)r.NextDouble() * (max - min) : fixedValue;
@@ -31,10 +41,10 @@ namespace RiotGalaxy.Utils
         // Дефолтные параметры (совпадают с прежними хардкодами)
         private static readonly Dictionary<EnemyType, Stats> _defaults = new Dictionary<EnemyType, Stats>
         {
-            [EnemyType.BLUE]     = new Stats { Hp = 10, Damage = 10, Speed = 130, ShootInterval = 3 },
-            [EnemyType.GREEN]    = new Stats { Hp = 10, Damage = 10, SpeedMin = 100, SpeedMax = 150, ShootInterval = 3 },
-            [EnemyType.RED]      = new Stats { Hp = 20, Damage = 10, Speed = 60, ShootInterval = 3 },
-            [EnemyType.SM_SCOUT] = new Stats { Hp = 10, Damage = 5, SpeedMin = 60, SpeedMax = 100, ShootInterval = 0 },
+            [EnemyType.BLUE]     = new Stats { Hp = 10, Damage = 10, Speed = 130, AttackSpeed = 200, ShootInterval = 3, Tactics = new List<string> { "snake", "ram" } },
+            [EnemyType.GREEN]    = new Stats { Hp = 10, Damage = 10, SpeedMin = 100, SpeedMax = 150, AttackSpeed = 200, ShootInterval = 3, Tactics = new List<string> { "random", "snake" } },
+            [EnemyType.RED]      = new Stats { Hp = 20, Damage = 10, Speed = 60, AttackSpeed = 160, ShootInterval = 3, Tactics = new List<string> { "ram", "ellipse" } },
+            [EnemyType.SM_SCOUT] = new Stats { Hp = 10, Damage = 5, SpeedMin = 60, SpeedMax = 100, AttackSpeed = 150, ShootInterval = 0, Tactics = new List<string> { "random" } },
             [EnemyType.BOSS]     = new Stats { Hp = 200, Damage = 20, Speed = 50, ShootInterval = 1.2f },
         };
 

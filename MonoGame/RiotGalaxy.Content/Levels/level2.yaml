@@ -1,8 +1,14 @@
-# Уровень 2 (перенос из level2.txt): две змейки одновременно (parallel), затем красные.
-description: "Enemy Recons"
-spawnInterval: 1.0
+# Уровень 2 «Recon Snakes» — знакомство с маршрутами и ульем.
+# Сначала разведчики заходят змейкой с двух сторон (parallel) и разлетаются,
+# затем формируется улей синих с редкими вылетами (sortie).
+description: "Recon Snakes"
+spawnInterval: 0.8
+sortie: true
+sortieInterval: 4      # вылеты редкие — мягкое знакомство
+sortieCount: 1
 events:
-  - parallel:                              # обе группы спавнятся одновременно (аналог sync_cmd)
-      - - { enemy: blue, count: 3, route: zmeyka1-left, after: formation }
-      - - { enemy: blue, count: 3, route: zmeyka1-right, after: scatter }
-  - { enemy: red, count: 2 }               # после завершения обеих волн
+  - parallel:
+      - - { enemy: scout, count: 3, route: zmeyka1-left, after: scatter }
+      - - { enemy: scout, count: 3, route: zmeyka1-right, after: scatter }
+  - { wait: 1.5 }
+  - { enemy: blue, count: 8, formation: true }   # улей 8 — пикируют snake/ram

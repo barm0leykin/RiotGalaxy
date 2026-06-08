@@ -1,7 +1,14 @@
-# Уровень 4 «Hive» — демонстрация формаций (улей 8×2 = 16 ячеек).
-# formation: true — враг занимает ячейку улья и барражирует вместе со всеми.
-description: "Hive"
-spawnInterval: 0.3
+# Уровень 4 «Crossfire» — заходы с двух сторон + улей красных (опасные ellipse/ram-вылеты).
+# Вылеты участились и идут по двое (sortieCount: 2).
+description: "Crossfire"
+spawnInterval: 0.35
+sortie: true
+sortieInterval: 2.5
+sortieCount: 2
 events:
-  - { enemy: blue, count: 8, formation: true }
-  - { enemy: green, count: 8, formation: true }
+  - parallel:
+      - - { enemy: green, count: 4, route: zmeyka1-left, after: scatter }
+      - - { enemy: green, count: 4, route: zmeyka1-right, after: scatter }
+  - { wait: 1 }
+  - { enemy: red, count: 6, formation: true }    # красные в улье — пикируют петлёй/тараном
+  - { enemy: blue, count: 6, formation: true }

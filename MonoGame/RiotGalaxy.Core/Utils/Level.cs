@@ -17,6 +17,11 @@ namespace RiotGalaxy.Utils
         public int TotalEnemies { get; private set; }
         public bool AllSpawned => (_main == null || _main.Done) && _active.Count == 0;
 
+        // Вылеты из улья (Galaga): включаются на уровне, темп — в YAML
+        public bool Sortie { get; private set; }
+        public float SortieInterval { get; private set; } = 4f;
+        public int SortieCount { get; private set; } = 1;
+
         /// <summary>Запрос на спавн врага из таймлайна уровня.</summary>
         public struct SpawnInfo
         {
@@ -81,6 +86,10 @@ namespace RiotGalaxy.Utils
 
             Description = data.Description ?? "";
             _defaultInterval = data.SpawnInterval > 0 ? data.SpawnInterval : 1f;
+
+            Sortie = data.Sortie;
+            SortieInterval = data.SortieInterval > 0 ? data.SortieInterval : 4f;
+            SortieCount = data.SortieCount > 0 ? data.SortieCount : 1;
 
             int total = 0;
             var actions = BuildActions(data.Events, ref total);
@@ -208,6 +217,10 @@ namespace RiotGalaxy.Utils
         {
             public string Description { get; set; }
             public float SpawnInterval { get; set; } = 1f;
+            // Вылеты из улья (Galaga): sortie/sortieInterval/sortieCount
+            public bool Sortie { get; set; }
+            public float SortieInterval { get; set; } = 4f;
+            public int SortieCount { get; set; } = 1;
             public List<EventYaml> Events { get; set; }
         }
         private class EventYaml

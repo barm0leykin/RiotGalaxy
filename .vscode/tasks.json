@@ -28,6 +28,36 @@
             ],
             "problemMatcher": "$msCompile",
             "group": "test"
+        },
+        {
+            "label": "android: build APK (docker)",
+            "detail": "Собрать Android APK в Docker-образе (docker/build-apk.sh Debug)",
+            "command": "./docker/build-apk.sh",
+            "args": [ "Debug" ],
+            "type": "process",
+            "options": { "cwd": "${workspaceFolder}/MonoGame" },
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "android: run on device (docker+adb)",
+            "detail": "Установить и запустить APK на USB-устройстве, снять logcat (docker/run-on-device.sh)",
+            "command": "./docker/run-on-device.sh",
+            "args": [ "Debug", "10" ],
+            "type": "process",
+            "options": { "cwd": "${workspaceFolder}/MonoGame" },
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "android: build image (docker, one-time)",
+            "detail": "Собрать сборочный Docker-образ (.NET9+JDK17+AndroidSDK+workload)",
+            "command": "./docker/build-image.sh",
+            "args": [],
+            "type": "process",
+            "options": { "cwd": "${workspaceFolder}/MonoGame" },
+            "problemMatcher": [],
+            "group": "build"
         }
     ]
 }
