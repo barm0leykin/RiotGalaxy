@@ -12,6 +12,15 @@ namespace RiotGalaxy.Weapons
     {
         public static int MaxWeaponLevel = 3;
 
+        /// <summary>Магнит корабля — притяжение звёзд-очков (оборудование, из weapons.yaml).</summary>
+        public class MagnetOptions
+        {
+            public float Radius { get; set; } = 250f;    // радиус действия, px
+            public float PullSpeed { get; set; } = 300f;  // скорость притяжения звезды
+            public float TurnSpeed { get; set; } = 360f;  // скорость доворота к игроку, град/сек
+        }
+        public static MagnetOptions Magnet = new MagnetOptions();
+
         // [cannon]  burst 1;1;2  bInterval 0.25  reload 2;1.5;2.4  damage 10  shellSpeed 200
         public static WeaponOptions[] Cannons =
         {
@@ -52,6 +61,13 @@ namespace RiotGalaxy.Weapons
             if (cannon != null) Cannons = cannon;
             if (minigun != null) Miniguns = minigun;
             if (laser != null) Lasers = laser;
+
+            if (data.Magnet != null)
+            {
+                if (data.Magnet.Radius > 0) Magnet.Radius = data.Magnet.Radius;
+                if (data.Magnet.PullSpeed > 0) Magnet.PullSpeed = data.Magnet.PullSpeed;
+                if (data.Magnet.TurnSpeed > 0) Magnet.TurnSpeed = data.Magnet.TurnSpeed;
+            }
         }
 
         private static WeaponOptions[] Convert(List<WeaponLevelYaml> levels)
@@ -74,6 +90,13 @@ namespace RiotGalaxy.Weapons
             public List<WeaponLevelYaml> Cannon { get; set; }
             public List<WeaponLevelYaml> Minigun { get; set; }
             public List<WeaponLevelYaml> Laser { get; set; }
+            public MagnetYaml Magnet { get; set; }
+        }
+        private class MagnetYaml
+        {
+            public float Radius { get; set; }
+            public float PullSpeed { get; set; }
+            public float TurnSpeed { get; set; }
         }
         private class WeaponLevelYaml
         {

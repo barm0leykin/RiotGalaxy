@@ -123,9 +123,8 @@ namespace RiotGalaxy.GameObjects
     /// </summary>
     public class BonusStar : Bonus
     {
-        private const float MagnetDist = 250f;
-        private const float TurnSpeed = 90f; // градусов/сек доворота
-        private float _angleDeg = 180f;
+        private const float FallSpeed = 70f;    // скорость падения вне зоны магнита
+        private float _angleDeg = 180f;          // текущий курс (град); 180 = вниз
         private readonly float _rotateSpeed;
 
         private static readonly Random Rnd = new Random();
@@ -133,9 +132,9 @@ namespace RiotGalaxy.GameObjects
         public BonusStar(Vector2 pos) : base(pos)
         {
             Type = BonusType.STAR;
-            CurrentSpeed = 70f;
+            CurrentSpeed = FallSpeed;
             LoadSprite("Images/bonusStar");
-            SetDirection(_angleDeg);
+            SetDirection(_angleDeg); // по умолчанию падает вниз
             _rotateSpeed = (float)(Rnd.NextDouble() * 4.0 - 2.0); // вращение вокруг своей оси
         }
 
@@ -149,19 +148,22 @@ namespace RiotGalaxy.GameObjects
             var player = GameManager.Instance.Player;
             if (player != null)
             {
-                float dist = Vector2.Distance(Position, player.Position);
+                var magnet = Weapons.WeaponConfig.Magnet; // оборудование корабля (weapons.yaml)
+                Vector2 d = player.Position - Position;
                 float target;
-                if (dist < MagnetDist)
+                if (d.LengthSquared() < magnet.Radius * magnet.Radius)
                 {
-                    // в зоне магнита — плавно доворачиваем к игроку
-                    Vector2 d = player.Position - Position;
+                    // в зоне магнита — плавно доворачиваем КУРС на игрока и ускоряемся
+                    CurrentSpeed = magnet.PullSpeed;
                     target = MathHelper.ToDegrees((float)Math.Atan2(d.X, -d.Y));
                 }
                 else
                 {
-                    target = 180f; // иначе плавно возвращаемся к падению вниз
+                    // вне зоны — плавно возвращаемся к падению вниз
+                    CurrentSpeed = FallSpeed;
+                    target = 180f;
                 }
-                _angleDeg = ApproachAngle(_angleDeg, target, TurnSpeed * dt);
+                _angleDeg = ApproachAngle(_angleDeg, target, magnet.TurnSpeed * dt);
                 SetDirection(_angleDeg);
             }
 
@@ -173,12 +175,20 @@ namespace RiotGalaxy.GameObjects
                 IsAlive = false;
         }
 
+        /// <summary>Плавный доворот current→target за шаг maxStep (град), кратчайшим путём.</summary>
         private static float ApproachAngle(float current, float target, float maxStep)
         {
-            float diff = target - current;
+            // Кратчайшая разница в диапазоне (-180, 180] — иначе на границе ±180° доворот «длинным путём»
+            float diff = Mod360(target - current + 180f) - 180f;
             if (Math.Abs(diff) <= maxStep)
-                return target;
-            return current + Math.Sign(diff) * maxStep;
+                return Mod360(target);
+            return Mod360(current + Math.Sign(diff) * maxStep);
+        }
+
+        private static float Mod360(float a)
+        {
+            a %= 360f;
+            return a < 0 ? a + 360f : a;
         }
 
         public override void Apply(PlayerShip player)

@@ -3,6 +3,14 @@
 #       reloadSpeed (сек между очередями), damage (урон), shellSpeed (скорость снаряда)
 maxWeaponLevel: 3
 
+# Магнит — оборудование корабля: притягивает звёзды-очки.
+#   radius — радиус действия (px); pullSpeed — скорость притяжения звезды;
+#   turnSpeed — скорость доворота звезды на игрока (град/сек)
+magnet:
+  radius: 150
+  pullSpeed: 150
+  turnSpeed: 120
+
 cannon:
   - { burst: 1, burstInterval: 0.25, reloadSpeed: 2.0,  damage: 10, shellSpeed: 250 }
   - { burst: 1, burstInterval: 0.25, reloadSpeed: 1.5,  damage: 10, shellSpeed: 250 }
