@@ -466,8 +466,14 @@ AudioManager.Instance.PlayEffect("fire1");   // громкость 0.1, как �
 
 **Бонусы** — [Bonus.cs](RiotGalaxy.Core/GameObjects/Bonus.cs): `BonusHpUp` (хил),
 `BonusBulletUp` (апгрейд оружия), `BonusNukeBomb` (убить всех), `BonusStar` (очки,
-притягивается к игроку в радиусе магнита). Падают вниз; при подборе вызывается `Apply(player)`.
+притягивается к игроку). Падают вниз; при подборе вызывается `Apply(player)`.
 Выпадают при гибели врага (`SpawnBonusOnEnemyDeath`: всегда звезда + 30% шанс усиления).
+
+**Магнит звезды** — оборудование корабля, параметры в `weapons.yaml` (`magnet`:
+`radius`/`pullSpeed`/`turnSpeed`, см. `WeaponConfig.Magnet`). В радиусе `radius` звезда
+**плавно доворачивает** курс на игрока (скорость доворота `turnSpeed` град/сек, кратчайшим
+путём — `ApproachAngle` нормализует угол через ±180°, иначе на границе разворот «не туда»)
+и летит к нему со скоростью `pullSpeed`; вне радиуса — медленно падает вниз.
 
 ## 14. Меню и экраны (ScreenSystem)
 
@@ -518,8 +524,8 @@ events:
 
 | Файл | Что | Загрузчик |
 |---|---|---|
-| `Content/Config/weapons.yaml` | параметры оружия по уровням | `Weapons.WeaponConfig.Load()` |
-| `Content/Config/enemies.yaml` | параметры врагов (hp/урон/скорость/стрельба, рандом min/max) | `Utils.EnemyConfig.Load()` |
+| `Content/Config/weapons.yaml` | оружие по уровням + `magnet` (магнит корабля) | `Weapons.WeaponConfig.Load()` |
+| `Content/Config/enemies.yaml` | враги (hp/урон/скорость/`attackSpeed`/стрельба/`tactics`, рандом min/max) | `Utils.EnemyConfig.Load()` |
 | `Content/Config/bonuses.yaml` | параметры бонусов (хил HP, очки за звезду) | `Utils.BonusConfig.Load()` |
 | `Content/Config/options.yaml` | экран + игрок (HP, скорость, время неуязвимости…) | `Utils.GameOptions.Load()` |
 | `settings.yaml` (рядом с .exe) | громкость (пользовательская) | `Utils.GameSettings` |
